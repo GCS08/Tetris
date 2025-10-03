@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Tetris.ViewModels"
+             xmlns:m="clr-namespace:Tetris.Models"
+             x:Class="Tetris.Views.LoginPage"
+             x:DataType="vm:LoginPageVM"
+             IsBusy="{Binding IsBusy}">
+    <VerticalStackLayout
+        Padding="30,0"
+        Spacing="25">
+        <Label
+            FontAttributes="Bold"
+            FontSize="28"
+            HorizontalOptions="Center"
+            Margin="70"
+            Text="{x:Static m:Strings.LoginTitle}"/>
+        <Border
+            Padding="5"
+            Stroke="Blue"
+            StrokeShape="RoundRectangle 8"
+            StrokeThickness="2">
+            <Entry 
+                Margin="5"
+                Placeholder="{x:Static m:Strings.UserName}"
+                ClearButtonVisibility="WhileEditing"
+                FontSize="20"
+                ReturnType="Next"
+                Text="{Binding UserName}"/>
+        </Border>
+        <Border
+            Padding="5"
+            Stroke="Red"
+            StrokeShape="RoundRectangle 8"
+            StrokeThickness="2">
+            <Grid ColumnDefinitions="*,Auto">
+                <Entry 
+                    Margin="5"
+                    Placeholder="{x:Static m:Strings.Password}"
+                    ClearButtonVisibility="WhileEditing"
+                    FontSize="20"
+                    ReturnType="Done"
+                    Text="{Binding Password}"
+                    IsPassword="{Binding IsPassword}"/>
+                <Button
+                    BackgroundColor="Transparent"
+                    Command="{Binding ToggleIsPasswordCommand}"
+                    FontFamily="MaterialSymbols"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    TextColor="Black"
+                    FontSize="23"
+                    Margin="0,0,25,0"
+                    Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"/>
+            </Grid>
+        </Border>
+        <Button
+            Text="{x:Static m:Strings.SubmitLoginButtonText}"
+            HorizontalOptions="Center"
+            FontSize="20"
+            Command="{Binding LoginCommand}"/>
+        <Label HorizontalOptions="Center" FontSize="17">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="{x:Static m:Strings.DontOwnAccountText}" />
+                    <Span Text="{x:Static m:Strings.Register}" TextColor="Blue" TextDecorations="Underline">
+                        <Span.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavToRegisterCommand}" />
+                        </Span.GestureRecognizers>
+                    </Span>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+    </VerticalStackLayout>
+</ContentPage>
