@@ -41,7 +41,7 @@ namespace Tetris.ViewModels
         public bool IsPassword { get; set; } = true;
         public RegisterPageVM()
         {
-            RegisterCommand = new Command(async () => await Register(), CanRegister);
+            RegisterCommand = new Command(Register, CanRegister);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
         }
         private void ToggleIsPassword()
@@ -53,10 +53,9 @@ namespace Tetris.ViewModels
         {
             return user.CanRegister();
         }
-        private async Task Register()
+        private void Register()
         {
-            if (user.Register())
-                await Shell.Current.GoToAsync("///MainPage");
+            user.Register();
         }
         private async void NavToLogin()
         {

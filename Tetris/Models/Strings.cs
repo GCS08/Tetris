@@ -15,5 +15,7 @@
         public const string Login = "Login!";
         public const string LoginOrRegister = "Login/Register? Click me!";
         public const string Welcome = "Welcome ";
+        public const string CreatUserError = "CreatUserError";
+        public const string Ok = "Ok";
     }
 }

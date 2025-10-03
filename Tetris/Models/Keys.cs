@@ -12,5 +12,7 @@
         public const string Settings1Key = "settings1Key";
         public const string Settings2Key = "settings2Key";
         public const string DateJoinedKey = "dateJoinedKey";
+        public const string FbApiKey = "AIzaSyBJMACGbBPQwxUUiOmHZZcxvamwodqG8hQ";
+        public const string FbAppDomainKey = "com.meitar.tetris";
     }
 }

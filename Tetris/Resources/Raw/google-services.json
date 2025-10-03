@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992625626513",
+    "project_id": "tetris-gcs71",
+    "storage_bucket": "tetris-gcs71.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992625626513:android:cb998ec71740a5903d5e30",
+        "android_client_info": {
+          "package_name": "com.meitar.tetris"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJMACGbBPQwxUUiOmHZZcxvamwodqG8hQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,10 @@
-﻿namespace Tetris.Models
+﻿using Tetris.ModelsLogic;
+
+namespace Tetris.Models
 {
     abstract class UserModel
     {
+        protected FbData fbd = new();
         public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
@@ -13,7 +16,7 @@
         public bool Settings2 { get; set; } = true;
         public string DateJoined { get; set; } = string.Empty;
         public abstract bool Login();
-        public abstract bool Register();
+        public abstract void Register();
         public abstract bool CanLogin();
         public abstract bool CanRegister();
     }

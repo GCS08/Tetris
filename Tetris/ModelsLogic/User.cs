@@ -1,4 +1,5 @@
-﻿using Tetris.Models;
+﻿using System.Xml.Linq;
+using Tetris.Models;
 using static Tetris.Models.ConstData;
     
 namespace Tetris.ModelsLogic
@@ -19,13 +20,33 @@ namespace Tetris.ModelsLogic
             Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
         }
         public override bool Login() { return true; }
-        public override bool Register()
+        public override void Register()
+        {
+            fbd.CreateUserAsync(UserName, Password, Email, OnCompleteRegister);
+        }
+
+        private void OnCompleteRegister(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+                SaveToPreferences();
+            else
+                Shell.Current.DisplayAlert(Strings.CreatUserError, task.Exception?.Message, Strings.Ok);
+        }
+
+        private void SaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
-            Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.EmailKey, Email);
-            return true;
+            Preferences.Set(Keys.PasswordKey, Password);
+            Preferences.Set(Keys.TotalLinesKey, 0);
+            Preferences.Set(Keys.GamesPlayedKey, 0);
+            Preferences.Set(Keys.HighestScoreKey, 0);
+            Preferences.Set(Keys.Settings0Key, 0);
+            Preferences.Set(Keys.Settings1Key, 0);
+            Preferences.Set(Keys.Settings2Key, 0);
+            Preferences.Set(Keys.DateJoinedKey, 0);
         }
+
         public override bool CanLogin()
         {
             return IsUserNameValid() && IsPasswordValid();
