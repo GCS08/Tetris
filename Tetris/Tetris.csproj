@@ -38,6 +38,13 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Reference Include="Xamarin.Firebase.Auth.Interop">
+		<Aliases>XamarinAuthInterop</Aliases>
+	  </Reference>
+	</ItemGroup>
+
+	
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
 	  <ApplicationId>com.meitar.tetris</ApplicationId>
 	</PropertyGroup>

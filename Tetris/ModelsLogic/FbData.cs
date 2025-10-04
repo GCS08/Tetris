@@ -7,10 +7,23 @@ namespace Tetris.ModelsLogic
 {
     class FbData:FbDataModel
     {
-        public override async void CreateUserAsync(string userName, string password, string email, Action<Task> OnCompleteRegister)
+        public override async Task CreateUserAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
         {
-            await facl.CreateUserWithEmailAndPasswordAsync(userName, password, email).ContinueWith(OnCompleteRegister);
+            // Always build the task first
+            Task task = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
+
+            // Run it and call the callback when done
+            try
+            {
+                await task;
+            }
+            finally
+            {
+                // Invoke the callback no matter what happened
+                OnCompleteRegister(task);
+            }
         }
+
         public override async void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete)
         {
             await facl.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(OnComplete);

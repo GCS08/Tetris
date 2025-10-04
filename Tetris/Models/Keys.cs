@@ -14,5 +14,11 @@
         public const string DateJoinedKey = "dateJoinedKey";
         public const string FbApiKey = "AIzaSyBJMACGbBPQwxUUiOmHZZcxvamwodqG8hQ";
         public const string FbAppDomainKey = "com.meitar.tetris";
+        public const string EmailExistsErrorKey = "EMAIL_EXISTS";
+        public const string OperationNotAllowedErrorKey = "OPERATION_NOT_ALLOWED";
+        public const string WeakPasswordErrorKey = "WEAK_PASSWORD : Password should be at least 6 characters";
+        public const string MissingEmailErrorKey = "MISSING_EMAIL";
+        public const string MissingPasswordErrorKey = "MISSING_PASSWORD";
+        public const string InvalidEmailErrorKey = "INVALID_EMAIL";
     }
 }

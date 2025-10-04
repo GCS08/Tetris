@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Tetris.Models;
+using System.Text.Json;
 using static Tetris.Models.ConstData;
     
 namespace Tetris.ModelsLogic
@@ -20,17 +21,78 @@ namespace Tetris.ModelsLogic
             Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
         }
         public override bool Login() { return true; }
-        public override void Register()
+        public override async Task Register()
         {
-            fbd.CreateUserAsync(UserName, Password, Email, OnCompleteRegister);
+            await fbd.CreateUserAsync(Email, Password, UserName, OnCompleteRegister);
         }
+
 
         private void OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
+            {
                 SaveToPreferences();
+            }
             else
-                Shell.Current.DisplayAlert(Strings.CreatUserError, task.Exception?.Message, Strings.Ok);
+            {
+                Exception? ex = task.Exception?.InnerException;
+                string errorMessage = string.Empty;
+
+                if (ex != null)
+                {
+                    try
+                    {
+                        // Find the "Response:" part
+                        int responseIndex = ex.Message.IndexOf("Response:");
+                        if (responseIndex >= 0)
+                        {
+                            // Take everything after "Response:"
+                            string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
+
+                            // Some Firebase responses might have extra closing braces, remove trailing stuff
+                            int lastBrace = jsonPart.LastIndexOf('}');
+                            if (lastBrace >= 0)
+                                jsonPart = jsonPart.Substring(0, lastBrace + 1);
+
+                            // Parse JSON
+                            JsonDocument json = JsonDocument.Parse(jsonPart);
+
+                            JsonElement errorElem = json.RootElement.GetProperty("error");
+                            string firebaseMessage = errorElem.GetProperty("message").ToString();
+
+                            switch (firebaseMessage)
+                            {
+                                case Keys.EmailExistsErrorKey:
+                                    errorMessage = Strings.EmailExistsError;
+                                    break;
+                                case Keys.OperationNotAllowedErrorKey:
+                                    errorMessage = Strings.OperationNotAllowedError;
+                                    break;
+                                case Keys.WeakPasswordErrorKey:
+                                    errorMessage = Strings.WeakPasswordError;
+                                    break;
+                                case Keys.MissingEmailErrorKey:
+                                    errorMessage = Strings.MissingEmailError;
+                                    break;
+                                case Keys.MissingPasswordErrorKey:
+                                    errorMessage = Strings.MissingPasswordError;
+                                    break;
+                                case Keys.InvalidEmailErrorKey:
+                                    errorMessage = Strings.InvalidEmailError;
+                                    break;
+                                default:
+                                    errorMessage = Strings.DefaultRegisterError;
+                                    break;
+                            } 
+                        }
+                    }
+                    catch
+                    {
+                        errorMessage = Strings.FailedJsonError;
+                    }
+                }
+                Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.Understood);
+            }
         }
 
         private void SaveToPreferences()

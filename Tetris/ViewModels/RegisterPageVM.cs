@@ -53,9 +53,9 @@ namespace Tetris.ViewModels
         {
             return user.CanRegister();
         }
-        private void Register()
+        private async void Register()
         {
-            user.Register();
+            await user.Register();
         }
         private async void NavToLogin()
         {
