@@ -16,6 +16,20 @@ namespace Tetris.ModelsLogic
             try
             {
                 await task;
+                Firebase.Auth.User user = facl.User;
+                await fdb.Collection("users").Document(user.Uid).SetAsync(new
+                {
+                    UserName = userName,
+                    Email = email,
+                    Password = password,
+                    DateJoined = DateTime.Now.ToString("dd/MM/yy"),
+                    GamesPlayed = 0,
+                    HighestScore = 0,
+                    Settings0 = true,
+                    Settings1 = true,
+                    Settings2 = true,
+                    TotalLinesCleared = 0,
+                });
             }
             finally
             {
