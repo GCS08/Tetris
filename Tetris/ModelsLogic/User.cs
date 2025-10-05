@@ -103,10 +103,10 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.TotalLinesKey, 0);
             Preferences.Set(Keys.GamesPlayedKey, 0);
             Preferences.Set(Keys.HighestScoreKey, 0);
-            Preferences.Set(Keys.Settings0Key, 0);
-            Preferences.Set(Keys.Settings1Key, 0);
-            Preferences.Set(Keys.Settings2Key, 0);
-            Preferences.Set(Keys.DateJoinedKey, 0);
+            Preferences.Set(Keys.Settings0Key, true);
+            Preferences.Set(Keys.Settings1Key, true);
+            Preferences.Set(Keys.Settings2Key, true);
+            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
         }
 
         public override bool CanLogin()
