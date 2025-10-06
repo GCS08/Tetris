@@ -7,10 +7,8 @@ namespace Tetris.Models
     {
         protected FirebaseAuthClient facl;
         protected IFirestore fdb;
-        public abstract string DisplayName { get; }
-        public abstract string UserId { get; }
-        public abstract Task CreateUserAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
-        public abstract void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract Task CreateUserWithEmailAndPWAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract Task SignInWithEmailAndPWdAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

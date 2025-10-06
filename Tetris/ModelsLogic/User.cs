@@ -2,7 +2,8 @@
 using Tetris.Models;
 using System.Text.Json;
 using static Tetris.Models.ConstData;
-    
+using System.Threading.Tasks;
+
 namespace Tetris.ModelsLogic
 {
     class User : UserModel
@@ -20,10 +21,42 @@ namespace Tetris.ModelsLogic
             Preferences.Get(Keys.Settings2Key, true);
             Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
         }
-        public override bool Login() { return true; }
+        public override async Task Login()
+        {
+            await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
+        }
+
+        private void OnCompleteLogin(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                System.Diagnostics.Debug.WriteLine("Hayde!");
+                LoginSaveToPreferences();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(task.Exception?.InnerException?.Message);
+            }
+        }
+
+        private void LoginSaveToPreferences()
+        {
+            Preferences.Set(Keys.UserNameKey, "");
+
+            Preferences.Set(Keys.EmailKey, Email);
+            Preferences.Set(Keys.PasswordKey, Password);
+            Preferences.Set(Keys.TotalLinesKey, 0);
+            Preferences.Set(Keys.GamesPlayedKey, 0);
+            Preferences.Set(Keys.HighestScoreKey, 0);
+            Preferences.Set(Keys.Settings0Key, true);
+            Preferences.Set(Keys.Settings1Key, true);
+            Preferences.Set(Keys.Settings2Key, true);
+            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
+        }
+
         public override async Task Register()
         {
-            await fbd.CreateUserAsync(Email, Password, UserName, OnCompleteRegister);
+            await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
         }
 
 
@@ -31,7 +64,7 @@ namespace Tetris.ModelsLogic
         {
             if (task.IsCompletedSuccessfully)
             {
-                SaveToPreferences();
+                RegisterSaveToPreferences();
             }
             else
             {
@@ -81,7 +114,7 @@ namespace Tetris.ModelsLogic
             }
         }
 
-        private void SaveToPreferences()
+        private void RegisterSaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.EmailKey, Email);
@@ -97,7 +130,7 @@ namespace Tetris.ModelsLogic
 
         public override bool CanLogin()
         {
-            return IsUserNameValid() && IsPasswordValid();
+            return IsEmailValid() && IsPasswordValid();
         }
         public override bool CanRegister()
         {

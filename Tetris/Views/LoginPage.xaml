@@ -22,11 +22,11 @@
             StrokeThickness="2">
             <Entry 
                 Margin="5"
-                Placeholder="{x:Static m:Strings.UserName}"
+                Placeholder="{x:Static m:Strings.Email}"
                 ClearButtonVisibility="WhileEditing"
                 FontSize="20"
                 ReturnType="Next"
-                Text="{Binding UserName}"/>
+                Text="{Binding Email}"/>
         </Border>
         <Border
             Padding="5"

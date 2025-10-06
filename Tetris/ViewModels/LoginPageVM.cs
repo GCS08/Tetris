@@ -11,12 +11,12 @@ namespace Tetris.ViewModels
         public ICommand ToggleIsPasswordCommand { get; }
         public bool IsBusy { get; set; } = false;
         private User user = new();
-        public string UserName
+        public string Email
         {
-            get => user.UserName;
+            get => user.Email;
             set
             {
-                user.UserName = value;
+                user.Email = value;
                 (LoginCommand as Command)?.ChangeCanExecute();
             }
         }
@@ -48,7 +48,7 @@ namespace Tetris.ViewModels
         {
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));
-            await Task.Delay(5000);
+            await user.Login();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
         }

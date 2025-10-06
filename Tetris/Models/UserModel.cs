@@ -15,7 +15,7 @@ namespace Tetris.Models
         public bool Settings1 { get; set; } = true;
         public bool Settings2 { get; set; } = true;
         public string DateJoined { get; set; } = string.Empty;
-        public abstract bool Login();
+        public abstract Task Login();
         public abstract Task Register();
         public abstract bool CanLogin();
         public abstract bool CanRegister();

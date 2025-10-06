@@ -7,17 +7,24 @@ namespace Tetris.ModelsLogic
 {
     class FbData:FbDataModel
     {
-        public override async Task CreateUserAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
+        public override async Task CreateUserWithEmailAndPWAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
         {
+            // Prepare the task
             Task<Firebase.Auth.UserCredential> task = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
 
             try
             {
-                // Try creating the user
+                // Register the user
                 UserCredential credential = await task;
-                Firebase.Auth.User user = facl.User;
+                Firebase.Auth.User user = credential.User;
 
-                await fdb.Collection("users").Document(user.Uid).SetAsync(new
+                // Immediately sign in the new user to ensure request.auth is not null
+                await facl.SignInWithEmailAndPasswordAsync(email, password);
+                
+                
+                var userId = facl.User.Uid;
+                // Now the user is authenticated, we can safely write to Firestore
+                await fdb.Collection("users").Document(userId).SetAsync(new
                 {
                     UserName = userName,
                     Email = email,
@@ -30,6 +37,7 @@ namespace Tetris.ModelsLogic
                     Settings2 = true,
                     TotalLinesCleared = 0,
                 });
+
             }
             catch (Exception ex)
             {
@@ -44,28 +52,54 @@ namespace Tetris.ModelsLogic
                 OnCompleteRegister(task);
             }
         }
-
-
-        public override async void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete)
+        public override async Task SignInWithEmailAndPWdAsync(string email, string password, Action<System.Threading.Tasks.Task> OnCompleteLogin)
         {
-            await facl.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(OnComplete);
-        }
+            // Prepare the task
+            Task<Firebase.Auth.UserCredential> task = facl.SignInWithEmailAndPasswordAsync(email, password);
 
-        public override string DisplayName
-        {
-            get
+            try
             {
-                string dn = string.Empty;
-                if (facl.User != null)
-                    dn = facl.User.Info.DisplayName;
-                return dn;
+                await task;
+            }
+            catch (Exception ex)
+            {
+                // If the Firebase call failed, store the exception manually
+                TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
+                tcs.SetException(ex);
+                task = tcs.Task;
+            }
+            finally
+            {
+                // Always invoke the callback, even after a failure
+                OnCompleteLogin(task);
             }
         }
-        public override string UserId
+        class FbDataAboutUser : FbData
         {
-            get
+            public async Task<T?> GetUserFieldAsync<T>(string key)
             {
-                return facl.User.Uid;
+                try
+                {
+                    var snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
+
+                    if (!snapshot.Exists)
+                        return default; // document does not exist
+
+                    var data = snapshot.Data; // this is Dictionary<string, object>
+                    if (data == null || !data.ContainsKey(key))
+                        return default; // field does not exist
+
+                    object value = data[key]!; // get the object
+
+                    if (value is T tValue)
+                        return tValue;
+
+                    return (T?)Convert.ChangeType(value, typeof(T));
+                }
+                catch
+                {
+                    return default; // return null/default if anything fails
+                }
             }
         }
     }

@@ -55,7 +55,11 @@ namespace Tetris.ViewModels
         }
         private async void Register()
         {
+            IsBusy = true;
+            OnPropertyChanged(nameof(IsBusy));
             await user.Register();
+            IsBusy = false;
+            OnPropertyChanged(nameof(IsBusy));
         }
         private async void NavToLogin()
         {
