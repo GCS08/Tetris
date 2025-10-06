@@ -60,30 +60,16 @@ namespace Tetris.ModelsLogic
                             JsonElement errorElem = json.RootElement.GetProperty("error");
                             string firebaseMessage = errorElem.GetProperty("message").ToString();
 
-                            switch (firebaseMessage)
+                            errorMessage = firebaseMessage switch
                             {
-                                case Keys.EmailExistsErrorKey:
-                                    errorMessage = Strings.EmailExistsError;
-                                    break;
-                                case Keys.OperationNotAllowedErrorKey:
-                                    errorMessage = Strings.OperationNotAllowedError;
-                                    break;
-                                case Keys.WeakPasswordErrorKey:
-                                    errorMessage = Strings.WeakPasswordError;
-                                    break;
-                                case Keys.MissingEmailErrorKey:
-                                    errorMessage = Strings.MissingEmailError;
-                                    break;
-                                case Keys.MissingPasswordErrorKey:
-                                    errorMessage = Strings.MissingPasswordError;
-                                    break;
-                                case Keys.InvalidEmailErrorKey:
-                                    errorMessage = Strings.InvalidEmailError;
-                                    break;
-                                default:
-                                    errorMessage = Strings.DefaultRegisterError;
-                                    break;
-                            } 
+                                Keys.EmailExistsErrorKey => Strings.EmailExistsError,
+                                Keys.OperationNotAllowedErrorKey => Strings.OperationNotAllowedError,
+                                Keys.WeakPasswordErrorKey => Strings.WeakPasswordError,
+                                Keys.MissingEmailErrorKey => Strings.MissingEmailError,
+                                Keys.MissingPasswordErrorKey => Strings.MissingPasswordError,
+                                Keys.InvalidEmailErrorKey => Strings.InvalidEmailError,
+                                _ => Strings.DefaultRegisterError,
+                            };
                         }
                     }
                     catch

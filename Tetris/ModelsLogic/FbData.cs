@@ -9,14 +9,14 @@ namespace Tetris.ModelsLogic
     {
         public override async Task CreateUserAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
         {
-            // Always build the task first
-            Task task = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
+            Task<Firebase.Auth.UserCredential> task = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
 
-            // Run it and call the callback when done
             try
             {
-                await task;
+                // Try creating the user
+                UserCredential credential = await task;
                 Firebase.Auth.User user = facl.User;
+
                 await fdb.Collection("users").Document(user.Uid).SetAsync(new
                 {
                     UserName = userName,
@@ -31,12 +31,20 @@ namespace Tetris.ModelsLogic
                     TotalLinesCleared = 0,
                 });
             }
+            catch (Exception ex)
+            {
+                // If the Firebase call failed, store the exception manually
+                TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
+                tcs.SetException(ex);
+                task = tcs.Task;
+            }
             finally
             {
-                // Invoke the callback no matter what happened
+                // Always invoke the callback, even after a failure
                 OnCompleteRegister(task);
             }
         }
+
 
         public override async void SignInWithEmailAndPasswordAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete)
         {
