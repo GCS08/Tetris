@@ -41,8 +41,8 @@ namespace Tetris.ModelsLogic
 
         private void LoginSaveToPreferences()
         {
-            Preferences.Set(Keys.UserNameKey, "");
-
+            // Specify the type argument explicitly as string for GetUsername<T>
+            Preferences.Set(Keys.UserNameKey, fbd.GetUserDataAsync<string>(Keys.UserNameKey).Result);
             Preferences.Set(Keys.EmailKey, Email);
             Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.TotalLinesKey, 0);

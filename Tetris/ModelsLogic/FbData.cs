@@ -5,7 +5,7 @@ using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    class FbData:FbDataModel
+    class FbData : FbDataModel
     {
         public override async Task CreateUserWithEmailAndPWAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
         {
@@ -74,33 +74,18 @@ namespace Tetris.ModelsLogic
                 OnCompleteLogin(task);
             }
         }
-        class FbDataAboutUser : FbData
+        public override async Task<T> GetUserDataAsync<T>(string key)
         {
-            public async Task<T?> GetUserFieldAsync<T>(string key)
+            if (string.IsNullOrEmpty(facl.User?.Uid))
+                return default!;
+
+            IDocumentSnapshot? snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
+            if (snapshot.Exists)
             {
-                try
-                {
-                    var snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
-
-                    if (!snapshot.Exists)
-                        return default; // document does not exist
-
-                    var data = snapshot.Data; // this is Dictionary<string, object>
-                    if (data == null || !data.ContainsKey(key))
-                        return default; // field does not exist
-
-                    object value = data[key]!; // get the object
-
-                    if (value is T tValue)
-                        return tValue;
-
-                    return (T?)Convert.ChangeType(value, typeof(T));
-                }
-                catch
-                {
-                    return default; // return null/default if anything fails
-                }
+                T? value = snapshot.Get<T>(key);
+                return value != null ? value : default!;
             }
+            return default!;
         }
     }
 }
