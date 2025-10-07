@@ -5,7 +5,7 @@ using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    class FbData : FbDataModel
+    public class FbData : FbDataModel
     {
         public override async Task CreateUserWithEmailAndPWAsync(string email, string password, string userName, Action<Task> OnCompleteRegister)
         {
@@ -26,16 +26,16 @@ namespace Tetris.ModelsLogic
                 // Now the user is authenticated, we can safely write to Firestore
                 await fdb.Collection("users").Document(userId).SetAsync(new
                 {
-                    UserName = userName,
-                    Email = email,
-                    Password = password,
-                    DateJoined = DateTime.Now.ToString("dd/MM/yy"),
-                    GamesPlayed = 0,
-                    HighestScore = 0,
-                    Settings0 = true,
-                    Settings1 = true,
-                    Settings2 = true,
-                    TotalLinesCleared = 0,
+                    userName = userName,
+                    email = email,
+                    password = password,
+                    dateJoined = DateTime.Now.ToString("dd/MM/yy"),
+                    gamesPlayed = 0,
+                    highestScore = 0,
+                    settings0 = true,
+                    settings1 = true,
+                    settings2 = true,
+                    totalLinesCleared = 0,
                 });
 
             }
@@ -86,6 +86,18 @@ namespace Tetris.ModelsLogic
                 return value != null ? value : default!;
             }
             return default!;
+        }
+        public override void SignOut()
+        {
+            try
+            {
+                await facl.SignOut();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(facl == null);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tetris.ModelsLogic
 {
-    class User : UserModel
+    public class User : UserModel
     {
         public User()
         {
@@ -20,6 +20,11 @@ namespace Tetris.ModelsLogic
             Preferences.Get(Keys.Settings1Key, true);
             Preferences.Get(Keys.Settings2Key, true);
             Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
+        }
+        public override void SignOut()
+        {
+            fbd.SignOut();
+            Preferences.Clear();
         }
         public override async Task Login()
         {
@@ -45,13 +50,13 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.UserNameKey, fbd.GetUserDataAsync<string>(Keys.UserNameKey).Result);
             Preferences.Set(Keys.EmailKey, Email);
             Preferences.Set(Keys.PasswordKey, Password);
-            Preferences.Set(Keys.TotalLinesKey, 0);
-            Preferences.Set(Keys.GamesPlayedKey, 0);
-            Preferences.Set(Keys.HighestScoreKey, 0);
-            Preferences.Set(Keys.Settings0Key, true);
-            Preferences.Set(Keys.Settings1Key, true);
-            Preferences.Set(Keys.Settings2Key, true);
-            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
+            Preferences.Set(Keys.TotalLinesKey, fbd.GetUserDataAsync<int>(Keys.TotalLinesKey).Result);
+            Preferences.Set(Keys.GamesPlayedKey, fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey).Result);
+            Preferences.Set(Keys.HighestScoreKey, fbd.GetUserDataAsync<int>(Keys.HighestScoreKey).Result);
+            Preferences.Set(Keys.Settings0Key, fbd.GetUserDataAsync<bool>(Keys.Settings0Key).Result);
+            Preferences.Set(Keys.Settings1Key, fbd.GetUserDataAsync<bool>(Keys.Settings1Key).Result);
+            Preferences.Set(Keys.Settings2Key, fbd.GetUserDataAsync<bool>(Keys.Settings2Key).Result);
+            Preferences.Set(Keys.DateJoinedKey, fbd.GetUserDataAsync<string>(Keys.DateJoinedKey).Result);
         }
 
         public override async Task Register()
@@ -65,6 +70,7 @@ namespace Tetris.ModelsLogic
             if (task.IsCompletedSuccessfully)
             {
                 RegisterSaveToPreferences();
+                Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Strings.RegisterSuccess, Strings.RegisterSuccessButton);
             }
             else
             {
@@ -110,7 +116,7 @@ namespace Tetris.ModelsLogic
                         errorMessage = Strings.FailedJsonError;
                     }
                 }
-                Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.Understood);
+                Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
             }
         }
 

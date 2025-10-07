@@ -1,13 +1,13 @@
 ﻿using Tetris.ViewModels;
 
-namespace Tetris
+namespace Tetris.Views;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    public MainPage()
     {
-        public MainPage()
-        {
-            InitializeComponent();
-            BindingContext = new MainPageVM();
-        }
+        InitializeComponent();
+        BindingContext = new MainPageVM();
     }
 }
+

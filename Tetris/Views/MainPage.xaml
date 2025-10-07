@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Tetris.ViewModels"
              xmlns:m="clr-namespace:Tetris.Models"
-             x:Class="Tetris.MainPage"
+             x:Class="Tetris.Views.MainPage"
              x:DataType="vm:MainPageVM">
 
     <ScrollView>

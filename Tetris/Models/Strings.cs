@@ -26,6 +26,9 @@
                                         " shaysol1233@gmail.com";
         public const string FailedJsonError = "Something went wrong.\nThe system couldn't identify the error.";
         public const string RegisterErrorTitle = "Error creating a user:";
-        public const string Understood = "Understood!";
+        public const string RegisterFailButton = "Understood!";
+        public const string RegisterSuccessTitle = "Account created successfully:";
+        public const string RegisterSuccess = "Thank you for creating an account!\nEnjoy our Tetris!";
+        public const string RegisterSuccessButton = "Hooray!";
     }
 }
