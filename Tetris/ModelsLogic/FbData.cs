@@ -19,10 +19,10 @@ namespace Tetris.ModelsLogic
                 Firebase.Auth.User user = credential.User;
 
                 // Immediately sign in the new user to ensure request.auth is not null
-                await facl.SignInWithEmailAndPasswordAsync(email, password);
+                //await facl.SignInWithEmailAndPasswordAsync(email, password);
                 
                 
-                var userId = facl.User.Uid;
+                string userId = facl.User.Uid;
                 // Now the user is authenticated, we can safely write to Firestore
                 await fdb.Collection("users").Document(userId).SetAsync(new
                 {

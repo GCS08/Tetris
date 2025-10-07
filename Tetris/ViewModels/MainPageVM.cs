@@ -11,15 +11,16 @@ namespace Tetris.ViewModels
         readonly User user = new();
         public MainPageVM()
         {
+            Preferences.Clear();
             WelcomeUserName = Strings.Welcome + Preferences.Get(Keys.UserNameKey,"Guest");
         }
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        
+        public void Refresh()
         {
-            if (query.ContainsKey("refresh"))
-            {
-                WelcomeUserName = Strings.Welcome + Preferences.Get(Keys.UserNameKey, "Guest");
-            }
+            WelcomeUserName = Strings.Welcome + Preferences.Get(Keys.UserNameKey, "Guest");
+            OnPropertyChanged(WelcomeUserName);
         }
+
 
         private async void NavToLogin()
         {
