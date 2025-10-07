@@ -76,28 +76,24 @@ namespace Tetris.ModelsLogic
         }
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
-            if (string.IsNullOrEmpty(facl.User?.Uid))
-                return default!;
-
-            IDocumentSnapshot? snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
-            if (snapshot.Exists)
-            {
-                T? value = snapshot.Get<T>(key);
-                return value != null ? value : default!;
-            }
-            return default!;
-        }
-        public override void SignOut()
-        {
             try
             {
-                await facl.SignOut()ף
+                if (string.IsNullOrEmpty(facl.User?.Uid))
+                    return default!;
+
+                IDocumentSnapshot? snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
+                if (snapshot.Exists)
+                {
+                    T? value = snapshot.Get<T>(key);
+                    return value != null ? value : default!;
+                }
+                return default!;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(facl == null);
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
+            return default!;
         }
     }
 }

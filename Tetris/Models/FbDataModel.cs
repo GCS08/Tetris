@@ -10,7 +10,6 @@ namespace Tetris.Models
         public abstract Task CreateUserWithEmailAndPWAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
         public abstract Task SignInWithEmailAndPWdAsync(string email, string password, Action<System.Threading.Tasks.Task> OnComplete);
         public abstract Task<T> GetUserDataAsync<T>(string key);
-        public abstract void SignOut();
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

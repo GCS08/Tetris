@@ -21,22 +21,17 @@ namespace Tetris.ModelsLogic
             Preferences.Get(Keys.Settings2Key, true);
             Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
         }
-        public override void SignOut()
-        {
-            fbd.SignOut();
-            Preferences.Clear();
-        }
         public override async Task Login()
         {
             await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
         }
 
-        private void OnCompleteLogin(Task task)
+        private async void OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 System.Diagnostics.Debug.WriteLine("Hayde!");
-                LoginSaveToPreferences();
+                await LoginSaveToPreferencesAsync();
             }
             else
             {
@@ -44,26 +39,35 @@ namespace Tetris.ModelsLogic
             }
         }
 
-        private void LoginSaveToPreferences()
+        private async Task LoginSaveToPreferencesAsync()
         {
-            // Specify the type argument explicitly as string for GetUsername<T>
-            Preferences.Set(Keys.UserNameKey, fbd.GetUserDataAsync<string>(Keys.UserNameKey).Result);
+            // Await all async Firebase reads
+            string userName = await fbd.GetUserDataAsync<string>(Keys.UserNameKey);
+            int totalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
+            int gamesPlayed = await fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey);
+            int highestScore = await fbd.GetUserDataAsync<int>(Keys.HighestScoreKey);
+            bool settings0 = await fbd.GetUserDataAsync<bool>(Keys.Settings0Key);
+            bool settings1 = await fbd.GetUserDataAsync<bool>(Keys.Settings1Key);
+            bool settings2 = await fbd.GetUserDataAsync<bool>(Keys.Settings2Key);
+            string dateJoined = await fbd.GetUserDataAsync<string>(Keys.DateJoinedKey);
+
+            // Now store everything in Preferences
+            Preferences.Set(Keys.UserNameKey, userName);
             Preferences.Set(Keys.EmailKey, Email);
             Preferences.Set(Keys.PasswordKey, Password);
-            Preferences.Set(Keys.TotalLinesKey, fbd.GetUserDataAsync<int>(Keys.TotalLinesKey).Result);
-            Preferences.Set(Keys.GamesPlayedKey, fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey).Result);
-            Preferences.Set(Keys.HighestScoreKey, fbd.GetUserDataAsync<int>(Keys.HighestScoreKey).Result);
-            Preferences.Set(Keys.Settings0Key, fbd.GetUserDataAsync<bool>(Keys.Settings0Key).Result);
-            Preferences.Set(Keys.Settings1Key, fbd.GetUserDataAsync<bool>(Keys.Settings1Key).Result);
-            Preferences.Set(Keys.Settings2Key, fbd.GetUserDataAsync<bool>(Keys.Settings2Key).Result);
-            Preferences.Set(Keys.DateJoinedKey, fbd.GetUserDataAsync<string>(Keys.DateJoinedKey).Result);
+            Preferences.Set(Keys.TotalLinesKey, totalLines);
+            Preferences.Set(Keys.GamesPlayedKey, gamesPlayed);
+            Preferences.Set(Keys.HighestScoreKey, highestScore);
+            Preferences.Set(Keys.Settings0Key, settings0);
+            Preferences.Set(Keys.Settings1Key, settings1);
+            Preferences.Set(Keys.Settings2Key, settings2);
+            Preferences.Set(Keys.DateJoinedKey, dateJoined);
         }
 
         public override async Task Register()
         {
             await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
         }
-
 
         private void OnCompleteRegister(Task task)
         {
