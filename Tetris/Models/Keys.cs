@@ -20,5 +20,9 @@
         public const string MissingEmailErrorKey = "MISSING_EMAIL";
         public const string MissingPasswordErrorKey = "MISSING_PASSWORD";
         public const string InvalidEmailErrorKey = "INVALID_EMAIL";
+
+        public const string InvalidCredentialsErrorKey = "INVALID_LOGIN_CREDENTIALS";
+        public const string UserDisabledErrorKey = "USER_DISABLED";
+        public const string ManyAttemptsErrorKey = "TOO_MANY_ATTEMPTS_TRY_LATER";
     }
 }

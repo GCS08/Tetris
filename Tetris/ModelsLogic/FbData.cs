@@ -1,6 +1,7 @@
 ﻿using Firebase.Auth;
 using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
+using System.Threading.Tasks;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -52,10 +53,11 @@ namespace Tetris.ModelsLogic
                 OnCompleteRegister(task);
             }
         }
-        public override async Task SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task> OnCompleteLogin)
+        public override async Task<bool> SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
             // Start Firebase sign-in
             Task<Firebase.Auth.UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
+            bool success = false;
 
             try
             {
@@ -71,11 +73,17 @@ namespace Tetris.ModelsLogic
             }
             finally
             {
-                // Await the callback safely
-                await OnCompleteLogin(firebaseTask);
+                // Always invoke the callback, even if the sign-in failed
+                success = await OnCompleteLogin(firebaseTask);
             }
-        }
 
+            return success;
+        }
+        public override void SignOut()
+        {
+            if (facl != null && facl.User != null)
+                facl.SignOut();
+        }
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))

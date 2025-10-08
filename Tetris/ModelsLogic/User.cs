@@ -8,36 +8,76 @@ namespace Tetris.ModelsLogic
 {
     public class User : UserModel
     {
-        public User()
+        private string IdentifyFireBaseError(Task task)
         {
-            Preferences.Get(Keys.UserNameKey, "Guest");
-            Preferences.Get(Keys.EmailKey, string.Empty);
-            Preferences.Get(Keys.PasswordKey, string.Empty);
-            Preferences.Get(Keys.TotalLinesKey, 0);
-            Preferences.Get(Keys.GamesPlayedKey, 0);
-            Preferences.Get(Keys.HighestScoreKey, 0);
-            Preferences.Get(Keys.Settings0Key, true);
-            Preferences.Get(Keys.Settings1Key, true);
-            Preferences.Get(Keys.Settings2Key, true);
-            Preferences.Get(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
-        }
-        public override async Task Login()
-        {
-            await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
-        }
+            Exception? ex = task.Exception?.InnerException;
+            string errorMessage = string.Empty;
 
-        private async Task OnCompleteLogin(Task task)
+            if (ex != null)
+            {
+                try
+                {
+                    // Find the "Response:" part
+                    int responseIndex = ex.Message.IndexOf("Response:");
+                    if (responseIndex >= 0)
+                    {
+                        // Take everything after "Response:"
+                        string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
+
+                        // Some Firebase responses might have extra closing braces, remove trailing stuff
+                        int lastBrace = jsonPart.LastIndexOf('}');
+                        if (lastBrace >= 0)
+                            jsonPart = jsonPart.Substring(0, lastBrace + 1);
+
+                        // Parse JSON
+                        JsonDocument json = JsonDocument.Parse(jsonPart);
+
+                        JsonElement errorElem = json.RootElement.GetProperty("error");
+                        string firebaseMessage = errorElem.GetProperty("message").ToString();
+
+                        errorMessage = firebaseMessage switch
+                        {
+                            Keys.EmailExistsErrorKey => Strings.EmailExistsError,
+                            Keys.OperationNotAllowedErrorKey => Strings.OperationNotAllowedError,
+                            Keys.WeakPasswordErrorKey => Strings.WeakPasswordError,
+                            Keys.MissingEmailErrorKey => Strings.MissingEmailError,
+                            Keys.MissingPasswordErrorKey => Strings.MissingPasswordError,
+                            Keys.InvalidEmailErrorKey => Strings.InvalidEmailError,
+                            Keys.InvalidCredentialsErrorKey => Strings.InvalidCredentialsError,
+                            Keys.UserDisabledErrorKey => Strings.UserDisabledError,
+                            Keys.ManyAttemptsErrorKey => Strings.ManyAttemptsError,
+                            _ => Strings.DefaultRegisterError,
+                        };
+                    }
+                }
+                catch
+                {
+                    errorMessage = Strings.FailedJsonError;
+                }
+            }
+            return errorMessage;
+        }
+        public override async Task<bool> Login()
+        {
+            bool success = await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
+            return success;
+        }
+        private async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
+                await Shell.Current.DisplayAlert(Strings.LoginSuccessTitle, Strings.LoginSuccess, Strings.LoginSuccessButton);
+                return true;
             }
             else
             {
                 System.Diagnostics.Debug.WriteLine($"Login failed: {task.Exception?.InnerException?.Message}");
+                string errorMessage = IdentifyFireBaseError(task);
+                await Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
+                return false;
             }
         }
-
         private async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
@@ -62,12 +102,10 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.Settings2Key, settings2);
             Preferences.Set(Keys.DateJoinedKey, dateJoined);
         }
-
         public override async Task Register()
         {
             await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
         }
-
         private void OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
@@ -77,52 +115,10 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                Exception? ex = task.Exception?.InnerException;
-                string errorMessage = string.Empty;
-
-                if (ex != null)
-                {
-                    try
-                    {
-                        // Find the "Response:" part
-                        int responseIndex = ex.Message.IndexOf("Response:");
-                        if (responseIndex >= 0)
-                        {
-                            // Take everything after "Response:"
-                            string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
-
-                            // Some Firebase responses might have extra closing braces, remove trailing stuff
-                            int lastBrace = jsonPart.LastIndexOf('}');
-                            if (lastBrace >= 0)
-                                jsonPart = jsonPart.Substring(0, lastBrace + 1);
-
-                            // Parse JSON
-                            JsonDocument json = JsonDocument.Parse(jsonPart);
-
-                            JsonElement errorElem = json.RootElement.GetProperty("error");
-                            string firebaseMessage = errorElem.GetProperty("message").ToString();
-
-                            errorMessage = firebaseMessage switch
-                            {
-                                Keys.EmailExistsErrorKey => Strings.EmailExistsError,
-                                Keys.OperationNotAllowedErrorKey => Strings.OperationNotAllowedError,
-                                Keys.WeakPasswordErrorKey => Strings.WeakPasswordError,
-                                Keys.MissingEmailErrorKey => Strings.MissingEmailError,
-                                Keys.MissingPasswordErrorKey => Strings.MissingPasswordError,
-                                Keys.InvalidEmailErrorKey => Strings.InvalidEmailError,
-                                _ => Strings.DefaultRegisterError,
-                            };
-                        }
-                    }
-                    catch
-                    {
-                        errorMessage = Strings.FailedJsonError;
-                    }
-                }
+                string errorMessage = IdentifyFireBaseError(task);
                 Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
             }
         }
-
         private void RegisterSaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
@@ -135,6 +131,11 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.Settings1Key, true);
             Preferences.Set(Keys.Settings2Key, true);
             Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
+        }
+        public override void SignOut()
+        {
+            fbd.SignOut();
+            Preferences.Clear();
         }
 
         public override bool CanLogin()
@@ -200,6 +201,6 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-        
+
     }
 }

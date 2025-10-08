@@ -1,16 +1,18 @@
-﻿using System.Windows.Input;
+﻿using Microsoft.Extensions.Logging;
+using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class LoginPageVM : ObservableObject
+    internal class LoginPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand LoginCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
+        private readonly App? app;
+        private readonly User user;
         public bool IsBusy { get; set; } = false;
-        private User user = new();
         public string Email
         {
             get => user.Email;
@@ -32,6 +34,8 @@ namespace Tetris.ViewModels
         public bool IsPassword { get; set; } = true;
         public LoginPageVM()
         {
+            app = Application.Current as App;
+            user = app!.user;
             LoginCommand = new Command(async () => await Login(), CanLogin);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
         }
@@ -48,11 +52,24 @@ namespace Tetris.ViewModels
         {
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));
-            await user.Login();
+            bool successfullyLogged = await user.Login();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
-            await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            if (successfullyLogged)
+                await Shell.Current.GoToAsync("///MainPage?refresh=true");
+        }
 
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            // This will be triggered every time the page is navigated to
+            RefreshProperties();
+        }
+        private void RefreshProperties()
+        {
+            OnPropertyChanged(nameof(Email));
+            OnPropertyChanged(nameof(Password));
+            Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Email, Strings.RegisterSuccessButton);
+            Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Password, Strings.RegisterSuccessButton);
         }
         private async void NavToRegister()
         {

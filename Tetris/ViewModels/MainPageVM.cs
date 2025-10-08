@@ -1,25 +1,30 @@
 ﻿using System.Windows.Input;
-using Tetris.ModelsLogic;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
     internal class MainPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
-        private bool isRegistered;
-        public bool LoginVisibility
+        public ICommand SignOutCommand { get => new Command(SignOut); }
+        private readonly App? app;
+        private User user;
+        private bool isLogged;
+        private bool IsLogged
         {
-            get => !isRegistered;
+            get => isLogged;
             set
             {
-                if (isRegistered != value)
+                if (isLogged != value)
                 {
-                    isRegistered = value;
-                    OnPropertyChanged(nameof(LoginVisibility));
+                    isLogged = value;
+                    SeveralPropertiesChange();
                 }
             }
         }
+        public bool SignOutVisibility => IsLogged;
+        public bool LoginVisibility => !IsLogged;
         private string? welcomeUserName;
         public string? WelcomeUserName
         {
@@ -36,14 +41,22 @@ namespace Tetris.ViewModels
 
         public MainPageVM()
         {
+            app = Application.Current as App;
+            user = app!.user;
             Preferences.Clear();
+            user.SignOut();
             RefreshProperties();
         }
-
+        private void SeveralPropertiesChange()
+        {
+            string[] nameOfs = { nameof(WelcomeUserName), nameof(LoginVisibility), nameof(SignOutVisibility) };
+            for (int i = 0; i < nameOfs.Length; i++)
+                OnPropertyChanged(nameOfs[i]);
+        }
         private void RefreshProperties()
         {
             WelcomeUserName = $"{Strings.Welcome} {Preferences.Get(Keys.UserNameKey, "Guest")}!";
-            LoginVisibility = Preferences.Get(Keys.EmailKey, string.Empty) != string.Empty;
+            IsLogged = Preferences.Get(Keys.EmailKey, string.Empty) != string.Empty;
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -54,7 +67,13 @@ namespace Tetris.ViewModels
 
         private async void NavToLogin()
         {
-            await Shell.Current.GoToAsync("///LoginPage");
+            await Shell.Current.GoToAsync("///LoginPage?refresh=true");
+        }
+        private void SignOut()
+        {
+            user.SignOut();
+            user = new();
+            RefreshProperties();
         }
     }
 }

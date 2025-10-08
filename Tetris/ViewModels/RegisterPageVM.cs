@@ -10,7 +10,8 @@ namespace Tetris.ViewModels
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand ToggleIsPasswordCommand { get; }
         public bool IsBusy { get; set; } = false;
-        private User user = new();
+        private readonly App? app;
+        private readonly User user;
         public string UserName
         {
             get => user.UserName;
@@ -41,6 +42,8 @@ namespace Tetris.ViewModels
         public bool IsPassword { get; set; } = true;
         public RegisterPageVM()
         {
+            app = Application.Current as App;
+            user = app!.user;
             RegisterCommand = new Command(Register, CanRegister);
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
         }

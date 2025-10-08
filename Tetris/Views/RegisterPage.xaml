@@ -20,11 +20,16 @@
                 Padding="30,0"
                 Spacing="25">
                 <Label
-                    FontAttributes="Bold"
-                    FontSize="28"
-                    HorizontalOptions="Center"
-                    Margin="62"
-                    Text="{x:Static m:Strings.RegisterTitle}"/>
+                FontAttributes="Bold"
+                FontSize="38"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Margin="0,60"
+                TextColor="White"
+                CharacterSpacing="1"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                Text="{x:Static m:Strings.RegisterTitle}"/>
                 <Border
                     Padding="5"
                     Stroke="Blue"
@@ -35,7 +40,9 @@
                         Placeholder="{x:Static m:Strings.UserName}"
                         ClearButtonVisibility="WhileEditing"
                         FontSize="20"
-                        ReturnType="Next"
+                        TextColor="White"
+                        ReturnType="Go"
+                        FlowDirection="LeftToRight"
                         Text="{Binding UserName}"/>
                 </Border>
                 <Border
@@ -48,7 +55,9 @@
                         Placeholder="{x:Static m:Strings.Email}"
                         ClearButtonVisibility="WhileEditing"
                         FontSize="20"
-                        ReturnType="Next"
+                        TextColor="White"
+                        ReturnType="Go"
+                        FlowDirection="LeftToRight"
                         Text="{Binding Email}"/>
                 </Border>
                 <Border
@@ -56,24 +65,27 @@
                     Stroke="Green"
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="2">
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          FlowDirection="LeftToRight">
                         <Entry 
-                            Margin="5"
                             Placeholder="{x:Static m:Strings.Password}"
                             ClearButtonVisibility="WhileEditing"
+                            FlowDirection="LeftToRight"
+                            TextColor="White"
                             FontSize="20"
                             ReturnType="Done"
+                            Margin="5"
                             Text="{Binding Password}"
                             IsPassword="{Binding IsPassword}"/>
                         <Button
                             BackgroundColor="Transparent"
+                            Grid.Column="1"
                             Command="{Binding ToggleIsPasswordCommand}"
                             FontFamily="MaterialSymbols"
                             HorizontalOptions="End"
                             VerticalOptions="Center"
-                            TextColor="Black"
+                            TextColor="White"
                             FontSize="23"
-                            Margin="0,0,25,0"
                             Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"/>
                     </Grid>
                 </Border>
@@ -82,11 +94,11 @@
                     HorizontalOptions="Center"
                     FontSize="20"
                     Command="{Binding RegisterCommand}"/>
-                <Label HorizontalOptions="Center" FontSize="17">
+                <Label HorizontalOptions="Center" FontSize="17" Margin="0,25,0,0">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="{x:Static m:Strings.OwnAccountText}" />
-                            <Span Text="{x:Static m:Strings.Login}" TextColor="Blue" TextDecorations="Underline">
+                            <Span Text="{x:Static m:Strings.OwnAccountText}" TextColor="White" />
+                            <Span Text="{x:Static m:Strings.Login}" TextColor="LightBlue" TextDecorations="Underline">
                                 <Span.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding NavToLoginCommand}" />
                                 </Span.GestureRecognizers>

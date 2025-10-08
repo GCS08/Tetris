@@ -37,6 +37,7 @@
                         Placeholder="{x:Static m:Strings.Email}"
                         ClearButtonVisibility="WhileEditing"
                         FontSize="20"
+                        TextColor="White"
                         ReturnType="Go"
                         FlowDirection="LeftToRight"
                         Text="{Binding Email}"/>
@@ -55,11 +56,12 @@
                             TextColor="White"
                             FontSize="20"
                             ReturnType="Done"
-                            Margin="5,5,35,5"
+                            Margin="5"
                             Text="{Binding Password}"
                             IsPassword="{Binding IsPassword}"/>
                         <Button
                             BackgroundColor="Transparent"
+                            Grid.Column="1"
                             Command="{Binding ToggleIsPasswordCommand}"
                             FontFamily="MaterialSymbols"
                             HorizontalOptions="End"

@@ -26,12 +26,20 @@
                     HorizontalTextAlignment="Center"/>
                 <Button
                     IsVisible="{Binding LoginVisibility}"
-                    Text="{x:Static m:Strings.LoginOrRegister}"
+                    Text="{x:Static m:Strings.LoginOrRegisterButton}"
                     BorderColor="Blue"
                     BorderWidth="2"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
                     Command="{Binding NavToLoginCommand}"/>
+                <Button
+                    IsVisible="{Binding SignOutVisibility}"
+                    Text="{x:Static m:Strings.SignOutButton}"
+                    BorderColor="Blue"
+                    BorderWidth="2"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Command="{Binding SignOutCommand}"/>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
