@@ -19,9 +19,9 @@ namespace Tetris.ModelsLogic
                 Firebase.Auth.User user = credential.User;
 
                 // Immediately sign in the new user to ensure request.auth is not null
-                //await facl.SignInWithEmailAndPasswordAsync(email, password);
-                
-                
+                await facl.SignInWithEmailAndPasswordAsync(email, password);
+
+
                 string userId = facl.User.Uid;
                 // Now the user is authenticated, we can safely write to Firestore
                 await fdb.Collection("users").Document(userId).SetAsync(new
@@ -52,48 +52,42 @@ namespace Tetris.ModelsLogic
                 OnCompleteRegister(task);
             }
         }
-        public override async Task SignInWithEmailAndPWdAsync(string email, string password, Action<System.Threading.Tasks.Task> OnCompleteLogin)
+        public override async Task SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task> OnCompleteLogin)
         {
-            // Prepare the task
-            Task<Firebase.Auth.UserCredential> task = facl.SignInWithEmailAndPasswordAsync(email, password);
+            // Start Firebase sign-in
+            Task<Firebase.Auth.UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
 
             try
             {
-                await task;
+                // Await Firebase sign-in
+                await firebaseTask;
             }
             catch (Exception ex)
             {
-                // If the Firebase call failed, store the exception manually
+                // Wrap the exception in a Task to pass to the callback
                 TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
                 tcs.SetException(ex);
-                task = tcs.Task;
+                firebaseTask = tcs.Task;
             }
             finally
             {
-                // Always invoke the callback, even after a failure
-                OnCompleteLogin(task);
+                // Await the callback safely
+                await OnCompleteLogin(firebaseTask);
             }
         }
+
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
-            try
-            {
-                if (string.IsNullOrEmpty(facl.User?.Uid))
-                    return default!;
-
-                IDocumentSnapshot? snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
-                if (snapshot.Exists)
-                {
-                    T? value = snapshot.Get<T>(key);
-                    return value != null ? value : default!;
-                }
+            if (string.IsNullOrEmpty(facl.User?.Uid))
                 return default!;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
-            }
-            return default!;
+            IDocumentSnapshot snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
+            if (!snapshot.Exists)
+                return default!;
+
+            // Firebase Cloud Firestore supports strongly-typed Get<T>
+            T? value = snapshot.Get<T>(key);
+            return value != null ? value : default!;
         }
+
     }
 }

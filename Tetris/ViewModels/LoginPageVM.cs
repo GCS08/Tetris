@@ -51,7 +51,8 @@ namespace Tetris.ViewModels
             await user.Login();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
-            await Shell.Current.GoToAsync("///MainPage");
+            await Shell.Current.GoToAsync("///MainPage?refresh=true");
+
         }
         private async void NavToRegister()
         {

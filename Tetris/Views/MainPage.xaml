@@ -6,21 +6,34 @@
              x:Class="Tetris.Views.MainPage"
              x:DataType="vm:MainPageVM">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Label
-                Text="{Binding WelcomeUserName}"
-                HorizontalOptions="Center"/>
-            <Button
-                Text="{x:Static m:Strings.LoginOrRegister}"
-                BorderColor="Blue"
-                BorderWidth="2"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                Command="{Binding NavToLoginCommand}"/>
-        </VerticalStackLayout>
-    </ScrollView>
+    <Grid>
+        <!-- Background Image -->
+        <Image Source="background.png"
+               Aspect="AspectFill"
+               Grid.RowSpan="1"
+               Grid.ColumnSpan="1"/>
+
+        <!-- Main Content -->
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="30,30"
+                Spacing="25">
+                <Label
+                    Text="{Binding WelcomeUserName}"
+                    HorizontalOptions="Center"
+                    TextColor="White"
+                    FontSize="40"
+                    HorizontalTextAlignment="Center"/>
+                <Button
+                    IsVisible="{Binding LoginVisibility}"
+                    Text="{x:Static m:Strings.LoginOrRegister}"
+                    BorderColor="Blue"
+                    BorderWidth="2"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Command="{Binding NavToLoginCommand}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 
 </ContentPage>

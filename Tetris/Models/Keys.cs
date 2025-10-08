@@ -5,7 +5,7 @@
         public const string UserNameKey = "userName";
         public const string PasswordKey = "password";
         public const string EmailKey = "email";
-        public const string TotalLinesKey = "totalLines";
+        public const string TotalLinesKey = "totalLinesCleared";
         public const string GamesPlayedKey = "gamesPlayed";
         public const string HighestScoreKey = "highestScore";
         public const string Settings0Key = "settings0";

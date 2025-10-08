@@ -14,7 +14,7 @@
         public const string Register = "Register!";
         public const string Login = "Login!";
         public const string LoginOrRegister = "Login/Register? Click me!";
-        public const string Welcome = "Welcome ";
+        public const string Welcome = "Welcome";
         public const string EmailExistsError = "The email address is already in use by another account.";
         public const string OperationNotAllowedError = "Unable to create an account in this method.";
         public const string WeakPasswordError = "The password is too weak. It should be at least 8 characters.";

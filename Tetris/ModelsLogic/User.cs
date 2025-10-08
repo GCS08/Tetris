@@ -26,16 +26,15 @@ namespace Tetris.ModelsLogic
             await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
         }
 
-        private async void OnCompleteLogin(Task task)
+        private async Task OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
-                System.Diagnostics.Debug.WriteLine("Hayde!");
                 await LoginSaveToPreferencesAsync();
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine(task.Exception?.InnerException?.Message);
+                System.Diagnostics.Debug.WriteLine($"Login failed: {task.Exception?.InnerException?.Message}");
             }
         }
 
