@@ -42,5 +42,6 @@
         public const string LoginSuccess = "Welcome back!\nEnjoy our Tetris!";
         public const string RegisterSuccessButton = "Hooray!";
         public const string LoginSuccessButton = "Hayde!";
+        public const string LoginWithGoogleButtonText = "Login with Google!";
     }
 }

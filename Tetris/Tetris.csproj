@@ -99,9 +99,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <GoogleServicesJson Include="Resources\Raw\google-services.json">
-	    <CopyToOutputDirectory></CopyToOutputDirectory>
-	  </GoogleServicesJson>
+	  <GoogleServicesJson Include="Resources\Raw\google-services.json" />
 	</ItemGroup>
 
 	<ItemGroup>

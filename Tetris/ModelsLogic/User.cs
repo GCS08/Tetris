@@ -57,6 +57,42 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
+        //public override async Task<bool> LoginWithGoogle()
+        //{
+        //    try
+        //    {
+        //        // Replace with your Firebase auto-created Android client ID
+        //        string clientId = "YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com";
+        //        string redirectUri = "com.meitar.tetris:/oauth2redirect"; // your app scheme
+
+        //        string state = Guid.NewGuid().ToString("N");
+        //        string nonce = Guid.NewGuid().ToString("N");
+
+        //        string authUrl =
+        //            $"https://accounts.google.com/o/oauth2/v2/auth" +
+        //            $"?client_id={clientId}" +
+        //            $"&redirect_uri={redirectUri}" +
+        //            $"&response_type=token%20id_token" +
+        //            $"&scope=openid%20email%20profile" +
+        //            $"&state={state}" +
+        //            $"&nonce={nonce}";
+
+        //        var result = await WebAuthenticator.Default.AuthenticateAsync(
+        //            new Uri(authUrl),
+        //            new Uri(redirectUri)
+        //        );
+
+        //        // id_token is returned in the Properties dictionary
+        //        string idToken = result.Properties["id_token"];
+
+        //        // Now send this to Firebase
+        //        await fbd.SignInWithFirebaseGoogleIdToken(idToken);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await Shell.Current.DisplayAlert("Error", $"Google Sign-In failed: {ex.Message}", "OK");
+        //    }
+        //}
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
@@ -122,7 +158,6 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-
         private void RegisterSaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);
@@ -205,6 +240,5 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-
     }
 }

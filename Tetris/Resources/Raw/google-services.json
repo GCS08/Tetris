@@ -12,7 +12,20 @@
           "package_name": "com.meitar.tetris"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "992625626513-ogf685se567d9i2vtgfahehp8bqq0glh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.meitar.tetris",
+            "certificate_hash": "edf8dabb852f91c606da3f95cff9a4d1db1e5feb"
+          }
+        },
+        {
+          "client_id": "992625626513-v36g3pv2r62j4htotnocqeh22g4kfpe3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBJMACGbBPQwxUUiOmHZZcxvamwodqG8hQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992625626513-v36g3pv2r62j4htotnocqeh22g4kfpe3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

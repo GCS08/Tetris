@@ -48,7 +48,6 @@ namespace Tetris.ModelsLogic
             }
             return success;
         }
-
         public override async Task<bool> SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
             // Start Firebase sign-in
