@@ -8,10 +8,11 @@ namespace Tetris.ViewModels
     internal class LoginPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
+        public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand LoginCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
-        private readonly App? app;
-        private readonly User user;
+        private App? app;
+        private User user;
         public bool IsBusy { get; set; } = false;
         public string Email
         {
@@ -58,22 +59,30 @@ namespace Tetris.ViewModels
             if (successfullyLogged)
                 await Shell.Current.GoToAsync("///MainPage?refresh=true");
         }
-
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            // This will be triggered every time the page is navigated to
+            app = Application.Current as App;
+            user = app!.user;
             RefreshProperties();
         }
         private void RefreshProperties()
         {
-            OnPropertyChanged(nameof(Email));
-            OnPropertyChanged(nameof(Password));
-            Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Email, Strings.RegisterSuccessButton);
-            Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Password, Strings.RegisterSuccessButton);
+            IsPassword = true;
+            SeveralPropertiesChange();
+        }
+        private void SeveralPropertiesChange()
+        {
+            string[] nameOfs = { nameof(Email), nameof(Password), nameof(IsPassword) };
+            for (int i = 0; i < nameOfs.Length; i++)
+                OnPropertyChanged(nameOfs[i]);
         }
         private async void NavToRegister()
         {
-            await Shell.Current.GoToAsync("///RegisterPage");
+            await Shell.Current.GoToAsync("///RegisterPage?refresh=true");
+        }
+        private async void NavHome()
+        {
+            await Shell.Current.GoToAsync("///MainPage?refresh=true");
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Tetris.Models
     {
         protected FirebaseAuthClient facl;
         protected IFirestore fdb;
-        public abstract Task CreateUserWithEmailAndPWAsync(string email, string password, string name, Action<System.Threading.Tasks.Task> OnComplete);
+        public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, Task<bool>> OnCompleteRegister);
         public abstract Task<bool> SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin);
         public abstract void SignOut();
         public abstract Task<T> GetUserDataAsync<T>(string key);

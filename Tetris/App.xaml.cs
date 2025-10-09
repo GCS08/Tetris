@@ -8,7 +8,6 @@ namespace Tetris
         public App()
         {
             InitializeComponent();
-
             MainPage = new AppShell();
         }
     }

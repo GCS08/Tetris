@@ -14,6 +14,19 @@
                Grid.RowSpan="1"
                Grid.ColumnSpan="1"/>
 
+        <!-- Back Arrow Button -->
+        <Button 
+            FontFamily="MaterialSymbols"
+            Text="{StaticResource IconArrow_left_alt}"
+            FontSize="28"
+            TextColor="White"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            Margin="5"
+            ZIndex="1"
+            BackgroundColor="Transparent"
+            Command="{Binding NavBackHomeCommand}"/>
+
         <!-- Main Content -->
         <ScrollView>
             <VerticalStackLayout

@@ -102,23 +102,27 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.Settings2Key, settings2);
             Preferences.Set(Keys.DateJoinedKey, dateJoined);
         }
-        public override async Task Register()
+        public override async Task<bool> Register()
         {
-            await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
+            bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
+            return success;
         }
-        private void OnCompleteRegister(Task task)
+        private async Task<bool> OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 RegisterSaveToPreferences();
-                Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Strings.RegisterSuccess, Strings.RegisterSuccessButton);
+                await Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Strings.RegisterSuccess, Strings.RegisterSuccessButton);
+                return true;
             }
             else
             {
                 string errorMessage = IdentifyFireBaseError(task);
-                Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
+                await Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
+                return false;
             }
         }
+
         private void RegisterSaveToPreferences()
         {
             Preferences.Set(Keys.UserNameKey, UserName);

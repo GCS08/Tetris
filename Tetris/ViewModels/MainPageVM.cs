@@ -69,10 +69,10 @@ namespace Tetris.ViewModels
         {
             await Shell.Current.GoToAsync("///LoginPage?refresh=true");
         }
-        private void SignOut()
+        private  void SignOut()
         {
             user.SignOut();
-            user = new();
+            app!.user = new();
             RefreshProperties();
         }
     }

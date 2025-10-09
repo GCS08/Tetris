@@ -4,14 +4,15 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class RegisterPageVM : ObservableObject
+    internal class RegisterPageVM : ObservableObject, IQueryAttributable
     {
-        public ICommand RegisterCommand { get; }
         public ICommand NavToLoginCommand => new Command(NavToLogin);
+        public ICommand NavBackHomeCommand => new Command(NavHome);
+        public ICommand RegisterCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
         public bool IsBusy { get; set; } = false;
-        private readonly App? app;
-        private readonly User user;
+        private App? app;
+        private User user;
         public string UserName
         {
             get => user.UserName;
@@ -60,14 +61,36 @@ namespace Tetris.ViewModels
         {
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));
-            await user.Register();
+            bool successfullyRegistered = await user.Register();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
-            await Shell.Current.GoToAsync("///MainPage");
+            if (successfullyRegistered)
+                await Shell.Current.GoToAsync("///MainPage?refresh=true");
+        }
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            app = Application.Current as App;
+            user = app!.user;
+            RefreshProperties();
+        }
+        private void RefreshProperties()
+        {
+            IsPassword = true;
+            SeveralPropertiesChange();
+        }
+        private void SeveralPropertiesChange()
+        {
+            string[] nameOfs = { nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword) };
+            for (int i = 0; i < nameOfs.Length; i++)
+                OnPropertyChanged(nameOfs[i]);
         }
         private async void NavToLogin()
         {
             await Shell.Current.GoToAsync("///LoginPage");
+        }
+        private async void NavHome()
+        {
+            await Shell.Current.GoToAsync("///MainPage?refresh=true");
         }
     }
 }
