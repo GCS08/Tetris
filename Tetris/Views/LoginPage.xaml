@@ -93,11 +93,11 @@
                     FontSize="20"
                     Command="{Binding LoginCommand}"/>
 
-                <!--<Button
+                <Button
                     Text="{x:Static m:Strings.LoginWithGoogleButtonText}"
                     HorizontalOptions="Center"
                     FontSize="20"
-                    Command="{Binding GoogleSignInCommand}"/>-->
+                    Command="{Binding GoogleLoginCommand}"/>
 
                 <Label HorizontalOptions="Center" FontSize="17" Margin="0,14,0,0">
                     <Label.FormattedText>
