@@ -43,7 +43,13 @@
         public const string RegisterSuccessButton = "Hooray!";
         public const string LoginSuccessButton = "Hayde!";
         public const string LoginWithGoogleButtonText = "Login with Google!";
-        public const string ForgotPassword = "Forgot your password?";
+        public const string ForgotPassword = "Forgot your password? ";
         public const string ClickMe = "Click me!";
+        public const string ResetPWTitle = "An email has been sent:";
+        public const string ResetPWErrorTitle = "Error sending a mail:";
+        public const string ResetPWMessage = "An email with a link to reset your password has been sent to the provided email.\n" +
+            "Please follow the instructions in the email and try again.";
+        public const string ResetPWButton = "I will!";
+        public const string ResetPWErrorButton = "I'll right it right away!";
     }
 }

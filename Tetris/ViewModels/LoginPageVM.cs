@@ -63,7 +63,11 @@ namespace Tetris.ViewModels
         }
         private async Task ForgotPassword()
         {
-            user.ResetPassword();
+            IsBusy = true;
+            OnPropertyChanged(nameof(IsBusy));
+            await user.ResetPassword();
+            IsBusy = false;
+            OnPropertyChanged(nameof(IsBusy));
         }
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {

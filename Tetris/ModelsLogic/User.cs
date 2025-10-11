@@ -72,7 +72,6 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine($"Login failed: {task.Exception?.InnerException?.Message}");
                 string errorMessage = IdentifyFireBaseError(task);
                 await Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
                 return false;
@@ -142,8 +141,19 @@ namespace Tetris.ModelsLogic
         }
         public async Task ResetPassword()
         {
-            await fbd.SendPasswordResetEmailAsync(Email);
-            await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+            await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
+        }
+        private async Task OnCompleteSendEmail(Task task)
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+            }
+            else
+            {
+                string errorMessage = IdentifyFireBaseError(task);
+                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorTitle);
+            }
         }
         public override bool CanLogin()
         {

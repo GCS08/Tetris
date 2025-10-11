@@ -25,7 +25,6 @@ namespace Tetris.ModelsLogic
                 {
                     userName,
                     email,
-                    password,
                     dateJoined = DateTime.Now.ToString("dd/MM/yy"),
                     gamesPlayed = 0,
                     highestScore = 0,
@@ -78,9 +77,27 @@ namespace Tetris.ModelsLogic
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }
-        public async Task SendPasswordResetEmailAsync(string email)
+        public async Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail)
         {
-            await facl.ResetEmailPasswordAsync(email);
+            // Start Firebase sign-in
+            Task firebaseTask = facl.ResetEmailPasswordAsync(email);
+            try
+            {
+                // Await Firebase sign-in
+                await firebaseTask;
+            }
+            catch (Exception ex)
+            {
+                // Wrap the exception in a Task to pass to the callback
+                TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
+                tcs.SetException(ex);
+                firebaseTask = tcs.Task;
+            }
+            finally
+            {
+                // Always invoke the callback, even if the sign-in failed
+                await OnCompleteSendEmail(firebaseTask);
+            }
         }
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
