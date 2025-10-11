@@ -57,28 +57,6 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        
-        public async Task<bool> LoginWithGoogle()
-        {
-            bool success = await fbd.SignInWithGoogleAsync(OnCompleteGoogleLogin);
-            return success;
-        }
-        private async Task<bool> OnCompleteGoogleLogin(Task task)
-        {
-            if (task.IsCompletedSuccessfully)
-            {
-                await LoginSaveToPreferencesAsync();
-                await Shell.Current.DisplayAlert("Login Successful", "Welcome with Google!", "OK");
-                return true;
-            }
-            else
-            {
-                string errorMessage = IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert("Login Failed", errorMessage, "OK");
-                return false;
-            }
-        }
-
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
@@ -162,7 +140,11 @@ namespace Tetris.ModelsLogic
             fbd.SignOut();
             Preferences.Clear();
         }
-
+        public async Task ResetPassword()
+        {
+            await fbd.SendPasswordResetEmailAsync(Email);
+            await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+        }
         public override bool CanLogin()
         {
             return IsEmailValid() && IsPasswordValid();

@@ -9,8 +9,8 @@ namespace Tetris.ViewModels
     {
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);
-        public ICommand GoogleLoginCommand { get; }
         public ICommand LoginCommand { get; }
+        public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
         private App? app;
         private User user;
@@ -38,19 +38,9 @@ namespace Tetris.ViewModels
         {
             app = Application.Current as App;
             user = app!.user;
-            GoogleLoginCommand = new Command(async () => await LoginWithGoogle());
             LoginCommand = new Command(async () => await Login(), CanLogin);
+            ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
-        }
-        private async Task LoginWithGoogle()
-        {
-            IsBusy = true;
-            OnPropertyChanged(nameof(IsBusy));
-            bool successfullyLogged = await user.LoginWithGoogle();
-            IsBusy = false;
-            OnPropertyChanged(nameof(IsBusy));
-            if (successfullyLogged)
-                await Shell.Current.GoToAsync("///MainPage?refresh=true");
         }
         private void ToggleIsPassword()
         {
@@ -70,6 +60,10 @@ namespace Tetris.ViewModels
             OnPropertyChanged(nameof(IsBusy));
             if (successfullyLogged)
                 await Shell.Current.GoToAsync("///MainPage?refresh=true");
+        }
+        private async Task ForgotPassword()
+        {
+            user.ResetPassword();
         }
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {

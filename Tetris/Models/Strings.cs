@@ -43,5 +43,7 @@
         public const string RegisterSuccessButton = "Hooray!";
         public const string LoginSuccessButton = "Hayde!";
         public const string LoginWithGoogleButtonText = "Login with Google!";
+        public const string ForgotPassword = "Forgot your password?";
+        public const string ClickMe = "Click me!";
     }
 }

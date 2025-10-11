@@ -93,12 +93,6 @@
                     FontSize="20"
                     Command="{Binding LoginCommand}"/>
 
-                <Button
-                    Text="{x:Static m:Strings.LoginWithGoogleButtonText}"
-                    HorizontalOptions="Center"
-                    FontSize="20"
-                    Command="{Binding GoogleLoginCommand}"/>
-
                 <Label HorizontalOptions="Center" FontSize="17" Margin="0,14,0,0">
                     <Label.FormattedText>
                         <FormattedString>
@@ -106,6 +100,19 @@
                             <Span Text="{x:Static m:Strings.Register}" TextColor="LightBlue" TextDecorations="Underline">
                                 <Span.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding NavToRegisterCommand}" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label HorizontalOptions="Center" FontSize="17" Margin="0,14,0,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="{x:Static m:Strings.ForgotPassword}" TextColor="White" />
+                            <Span Text="{x:Static m:Strings.ClickMe}" TextColor="LightBlue" TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                                 </Span.GestureRecognizers>
                             </Span>
                         </FormattedString>
