@@ -1,10 +1,11 @@
 ﻿namespace Tetris.Models
 {
-    internal static class Strings
+    internal class Strings
     {
         public const string UserName = "Enter your username:";
         public const string Email = "Enter your email:";
         public const string Password = "Enter your password:";
+        public const string passwordRepeat = "Please repeat your password:";
         public const string LoginTitle = "Login to Tetris!";
         public const string RegisterTitle = "Register to Tetris!";
         public const string SubmitLoginButtonText = "Login!";
@@ -23,15 +24,15 @@
         public const string MissingPasswordError = "Please provide a password to create an account.";
         public const string InvalidEmailError = "Please provide a valid email to create an account.";
         public const string InvalidCredentialsError = "One of the provided credentials (email/password) was incorrect.\n" +
-                                                   "Please re-check your input and try again.";
+            "Please re-check your input and try again.";
         public const string UserDisabledError = "Your account has been disabled.\n" +
-                                                    "Contact our team at 'shaysol1233@gmail.com' for more details.";
+            "Contact our team at 'shaysol1233@gmail.com' for more details.";
         public const string ManyAttemptsError = "There have been too many failed attempts, and your account has been temporarily disabled.\n" +
-                                                   "Please try again later.";
+            "Please try again later.";
         public const string DefaultRegisterError = "Something went wrong, please try again later.\n" +
-                                                    "If the error persists, contact our developer team at 'shaysol1233@gmail.com'.";
+            "If the error persists, contact our developer team at 'shaysol1233@gmail.com'.";
         public const string FailedJsonError = "Something went wrong.\nThe system couldn't identify the error.\n" +
-                                                    "Please try again";
+            "Please try again";
         public const string RegisterErrorTitle = "Error creating a user:";
         public const string LoginErrorTitle = "Error logging in:";
         public const string RegisterFailButton = "Understood!";
@@ -51,5 +52,40 @@
             "Please follow the instructions in the email and try again.";
         public const string ResetPWButton = "I will!";
         public const string ResetPWErrorButton = "I'll right it right away!";
+        public const string EmailShortErrorTitle = "Email too short:";
+        public string EmailShortErrorMessage = "The email you provided is too short.\n" +
+            "Your email's minimum length must be " + ConstData.MinCharacterInEmail + " characters.\n" +
+            "Please re-check it and try again.";
+        public const string EmailShortErrorButton = "e-kay@gmail.com!";
+        public const string EmailInvalidErrorTitle = "Invalid email:";
+        public const string EmailInvalidErrorMessage = "The email you provided is invalid.\n" +
+            "Please make sure it has '@' sign and a '.' and try again.";
+        public const string EmailInvalidErrorButton = "ok@y.";
+        public const string PasswordShortErrorTitle = "Password too short:";
+        public string PasswordShortErrorMessage = "The password you provided is too short.\n" +
+            "Your password's minimum length must be " + ConstData.MinCharacterInPW + " characters.\n" +
+            "Please re-check it and try again.";
+        public const string PasswordShortErrorButton = "oki-doki!";
+        public const string PasswordNumberErrorTitle = "Password doesn't have a number:";
+        public const string PasswordNumberErrorMessage = "Your password must contain at least one number.\n" +
+            "Please add one (or any other number) and try again.";
+        public const string PasswordNumberErrorButton = "5ure!";
+        public const string PasswordLowerCaseErrorTitle = "Password doesn't have a lower-case letter:";
+        public const string PasswordLowerCaseErrorMessage = "Your password must contain at least one lower-case letter.\n" +
+            "Please add one and try again.";
+        public const string PasswordLowerCaseErrorButton = "SURE!";
+        public const string PasswordUpperCaseErrorTitle = "Password doesn't have an upper-case letter:";
+        public const string PasswordUpperCaseErrorMessage = "Your password must contain at least one upper-case letter.\n" +
+            "Please add one and try again.";
+        public const string PasswordUpperCaseErrorButton = "sure!";
+        public const string UserNameShortErrorTitle = "Username too short:";
+        public string UserNameShortErrorMessage = "The username you provided is too short.\n" +
+            "Your username's minimum length must be " + ConstData.MinCharacterInUN + " characters.\n" +
+            "Please re-check it and try again.";
+        public const string UserNameShortErrorButton = "FineThenOkay!";
+        public const string UserNameNumberErrorTitle = "Username doesn't have a number:";
+        public const string UserNameNumberErrorMessage = "Your username must contain at least one number.\n" +
+            "Please add one (or any other number) and try again.";
+        public const string UserNameNumberErrorButton = "0kay!";
     }
 }

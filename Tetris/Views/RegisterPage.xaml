@@ -75,7 +75,7 @@
                 </Border>
                 <Border
                     Padding="5"
-                    Stroke="Green"
+                    Stroke="Orange"
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="2">
                     <Grid ColumnDefinitions="*,Auto"
@@ -89,17 +89,46 @@
                             ReturnType="Done"
                             Margin="5"
                             Text="{Binding Password}"
-                            IsPassword="{Binding IsPassword}"/>
+                            IsPassword="{Binding IsPassword1}"/>
                         <Button
                             BackgroundColor="Transparent"
                             Grid.Column="1"
-                            Command="{Binding ToggleIsPasswordCommand}"
+                            Command="{Binding ToggleIsPassword1Command}"
                             FontFamily="MaterialSymbols"
                             HorizontalOptions="End"
                             VerticalOptions="Center"
                             TextColor="White"
                             FontSize="23"
-                            Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"/>
+                            Text="{Binding IsPassword1, Converter={StaticResource passwordIconConvert}}"/>
+                    </Grid>
+                </Border>
+                <Border
+                    Padding="5"
+                    Stroke="Green"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="2">
+                    <Grid ColumnDefinitions="*,Auto"
+                          FlowDirection="LeftToRight">
+                        <Entry 
+                            Placeholder="{x:Static m:Strings.passwordRepeat}"
+                            ClearButtonVisibility="WhileEditing"
+                            FlowDirection="LeftToRight"
+                            TextColor="White"
+                            FontSize="20"
+                            ReturnType="Done"
+                            Margin="5"
+                            Text="{Binding PasswordRepeat}"
+                            IsPassword="{Binding IsPassword2}"/>
+                        <Button
+                            BackgroundColor="Transparent"
+                            Grid.Column="1"
+                            Command="{Binding ToggleIsPassword2Command}"
+                            FontFamily="MaterialSymbols"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center"
+                            TextColor="White"
+                            FontSize="23"
+                            Text="{Binding IsPassword2, Converter={StaticResource passwordIconConvert}}"/>
                     </Grid>
                 </Border>
                 <Button

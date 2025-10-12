@@ -8,7 +8,8 @@ namespace Tetris.ModelsLogic
 {
     public class User : UserModel
     {
-        private string IdentifyFireBaseError(Task task)
+        Strings dynamicStrings = new();
+        public override string IdentifyFireBaseError(Task task)
         {
             Exception? ex = task.Exception?.InnerException;
             string errorMessage = string.Empty;
@@ -159,28 +160,60 @@ namespace Tetris.ModelsLogic
         {
             return IsEmailValid() && IsPasswordValid();
         }
-        public override bool CanRegister()
+        public override bool CanRegister(string repeatPassword)
         {
-            return IsUserNameValid() && IsPasswordValid() && IsEmailValid();
+            return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
         }
         private bool IsEmailValid()
         {
-            if (Email.Length < MinCharacterInEmail || !HasAtSign(Email)
-                || !HasDot(Email))
+            if (Email.Length < MinCharacterInEmail)
+            {
+                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
                 return false;
+            }
+            if (!HasAtSign(Email) || !HasDot(Email))
+            {
+                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
+                return false;
+            }
             return true;
         }
         private bool IsPasswordValid()
         {
-            if (Password.Length < MinCharacterInPW || !HasNumber(Password)
-                || !HasLowerCase(Password) || !HasUpperCase(Password))
+            if (Password.Length < MinCharacterInPW)
+            {
+                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
                 return false;
+            }
+            if (!HasNumber(Password))
+            {
+                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
+                return false;
+            }
+            if (!HasLowerCase(Password))
+            {
+                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
+                return false;
+            }
+            if (!HasUpperCase(Password))
+            {
+                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
+                return false;
+            }
             return true;
         }
         private bool IsUserNameValid()
         {
-            if (UserName.Length < MinCharacterInUN || !HasNumber(UserName))
+            if (UserName.Length < MinCharacterInUN)
+            {
+                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
                 return false;
+            }
+            if (!HasNumber(UserName))
+            {
+                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
+                return false;
+            }
             return true;
         }
         private static bool HasAtSign(string str)

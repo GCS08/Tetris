@@ -9,7 +9,8 @@ namespace Tetris.ViewModels
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand RegisterCommand { get; }
-        public ICommand ToggleIsPasswordCommand { get; }
+        public ICommand ToggleIsPassword1Command { get; }
+        public ICommand ToggleIsPassword2Command { get; }
         public bool IsBusy { get; set; } = false;
         private App? app;
         private User user;
@@ -18,8 +19,10 @@ namespace Tetris.ViewModels
             get => user.UserName;
             set
             {
-                user.UserName = value;
-                (RegisterCommand as Command)?.ChangeCanExecute();
+                if (value != user.UserName)
+                {
+                    user.UserName = value;
+                }
             }
         }
         public string Email
@@ -27,8 +30,10 @@ namespace Tetris.ViewModels
             get => user.Email;
             set
             {
-                user.Email = value;
-                (RegisterCommand as Command)?.ChangeCanExecute();
+                if (value != user.Email)
+                {
+                    user.Email = value;
+                }
             }
         }
         public string Password
@@ -36,36 +41,60 @@ namespace Tetris.ViewModels
             get => user.Password;
             set
             {
-                user.Password = value;
-                (RegisterCommand as Command)?.ChangeCanExecute();
+                if (value != user.Password)
+                {
+                    user.Password = value;
+                }
             }
         }
-        public bool IsPassword { get; set; } = true;
+        private string passwordRepeat = "";
+        public string PasswordRepeat
+        {
+            get => passwordRepeat;
+            set
+            {
+                if (value != passwordRepeat)
+                {
+                    passwordRepeat = value;
+                }
+            }
+        }
+        public bool IsPassword1 { get; set; } = true;
+        public bool IsPassword2 { get; set; } = true;
         public RegisterPageVM()
         {
             app = Application.Current as App;
             user = app!.user;
-            RegisterCommand = new Command(Register, CanRegister);
-            ToggleIsPasswordCommand = new Command(ToggleIsPassword);
+            RegisterCommand = new Command(async () => await Register());
+            ToggleIsPassword1Command = new Command(ToggleIsPassword1);
+            ToggleIsPassword2Command = new Command(ToggleIsPassword2);
         }
-        private void ToggleIsPassword()
+        private void ToggleIsPassword1()
         {
-            IsPassword = !IsPassword;
-            OnPropertyChanged(nameof(IsPassword));
+            IsPassword1 = !IsPassword1;
+            OnPropertyChanged(nameof(IsPassword1));
+        }
+        private void ToggleIsPassword2()
+        {
+            IsPassword2 = !IsPassword2;
+            OnPropertyChanged(nameof(IsPassword2));
         }
         private bool CanRegister()
         {
-            return user.CanRegister();
+            return user.CanRegister(passwordRepeat);
         }
-        private async void Register()
+        private async Task Register()
         {
-            IsBusy = true;
-            OnPropertyChanged(nameof(IsBusy));
-            bool successfullyRegistered = await user.Register();
-            IsBusy = false;
-            OnPropertyChanged(nameof(IsBusy));
-            if (successfullyRegistered)
-                await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            if (CanRegister())
+            {
+                IsBusy = true;
+                OnPropertyChanged(nameof(IsBusy));
+                bool successfullyRegistered = await user.Register();
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsBusy));
+                if (successfullyRegistered)
+                    await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            }
         }
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -75,12 +104,13 @@ namespace Tetris.ViewModels
         }
         private void RefreshProperties()
         {
-            IsPassword = true;
+            IsPassword1 = true;
+            IsPassword2 = true;
             SeveralPropertiesChange();
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword) };
+            string[] nameOfs = { nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword1), nameof(IsPassword2) };
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }

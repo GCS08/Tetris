@@ -38,7 +38,7 @@ namespace Tetris.ViewModels
         {
             app = Application.Current as App;
             user = app!.user;
-            LoginCommand = new Command(async () => await Login(), CanLogin);
+            LoginCommand = new Command(async () => await Login());
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
         }
@@ -53,13 +53,16 @@ namespace Tetris.ViewModels
         }
         private async Task Login()
         {
-            IsBusy = true;
-            OnPropertyChanged(nameof(IsBusy));
-            bool successfullyLogged = await user.Login();
-            IsBusy = false;
-            OnPropertyChanged(nameof(IsBusy));
-            if (successfullyLogged)
-                await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            if (CanLogin())
+            {
+                IsBusy = true;
+                OnPropertyChanged(nameof(IsBusy));
+                bool successfullyLogged = await user.Login();
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsBusy));
+                if (successfullyLogged)
+                    await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            }
         }
         private async Task ForgotPassword()
         {
