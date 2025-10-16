@@ -8,7 +8,7 @@ namespace Tetris.ModelsLogic
 {
     public class User : UserModel
     {
-        Strings dynamicStrings = new();
+        readonly Strings dynamicStrings = new();
         public override string IdentifyFireBaseError(Task task)
         {
             Exception? ex = task.Exception?.InnerException;

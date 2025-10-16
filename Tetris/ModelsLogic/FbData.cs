@@ -15,7 +15,6 @@ namespace Tetris.ModelsLogic
             try
             {
                 UserCredential credential = await firebaseTask;
-                Firebase.Auth.User user = credential.User;
 
                 // Immediately sign in the new user so Firestore writes can succeed
                 await facl.SignInWithEmailAndPasswordAsync(email, password);
