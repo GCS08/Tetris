@@ -45,7 +45,7 @@ namespace Tetris.ModelsLogic
             }
             return success;
         }
-        public override async Task<bool> SignInWithEmailAndPWdAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
+        public override async Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
             // Start Firebase sign-in
             Task<Firebase.Auth.UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
@@ -111,5 +111,9 @@ namespace Tetris.ModelsLogic
             return value != null ? value : default!;
         }
 
+        public async Task<bool> SignInWithGoogleAsync(string email, string password, Func<Task, Task<bool>> onCompleteLogin)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

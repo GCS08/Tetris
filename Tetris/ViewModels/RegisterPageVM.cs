@@ -8,6 +8,7 @@ namespace Tetris.ViewModels
     {
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand NavBackHomeCommand => new Command(NavHome);
+        public ICommand RandomUsernameCommand => new Command(GetRandomUsername);
         public ICommand RegisterCommand { get; }
         public ICommand ToggleIsPassword1Command { get; }
         public ICommand ToggleIsPassword2Command { get; }
@@ -96,6 +97,13 @@ namespace Tetris.ViewModels
                     await Shell.Current.GoToAsync("///MainPage?refresh=true");
             }
         }
+        private async void GetRandomUsername(object obj)
+        {
+            // Await the async method to get a random username
+            UserName = await RandomUsername.GetAsync();
+            OnPropertyChanged(nameof(UserName));
+        }
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             app = Application.Current as App;

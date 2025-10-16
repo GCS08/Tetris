@@ -5,7 +5,7 @@
         public const string UserName = "Enter your username:";
         public const string Email = "Enter your email:";
         public const string Password = "Enter your password:";
-        public const string passwordRepeat = "Please repeat your password:";
+        public const string passwordRepeat = "Confirm your password:";
         public const string LoginTitle = "Login to Tetris!";
         public const string RegisterTitle = "Register to Tetris!";
         public const string SubmitLoginButtonText = "Login!";

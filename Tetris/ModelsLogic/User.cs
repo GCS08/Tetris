@@ -60,7 +60,12 @@ namespace Tetris.ModelsLogic
         }
         public override async Task<bool> Login()
         {
-            bool success = await fbd.SignInWithEmailAndPWdAsync(Email, Password, OnCompleteLogin);
+            bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
+            return success;
+        }
+        public async Task<bool> LoginWithGoogle()
+        {
+            bool success = await fbd.SignInWithGoogleAsync(Email, Password, OnCompleteLogin);
             return success;
         }
         private async Task<bool> OnCompleteLogin(Task task)

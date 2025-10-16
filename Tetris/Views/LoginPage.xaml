@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:Tetris.ViewModels"
-             xmlns:m="clr-namespace:Tetris.Models"
-             x:Class="Tetris.Views.LoginPage"
-             x:DataType="vm:LoginPageVM"
-             IsBusy="{Binding IsBusy}">
+<ContentPage
+    x:Class="Tetris.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:m="clr-namespace:Tetris.Models"
+    xmlns:vm="clr-namespace:Tetris.ViewModels"
+    x:DataType="vm:LoginPageVM"
+    IsBusy="{Binding IsBusy}">
 
     <Grid>
-        <!-- Background Image -->
-        <Image Source="background.png"
-               Aspect="AspectFill"
-               Grid.RowSpan="1"
-               Grid.ColumnSpan="1"/>
+        <!--  Background Image  -->
+        <Image
+            Grid.RowSpan="1"
+            Grid.ColumnSpan="1"
+            Aspect="AspectFill"
+            Source="background.png" />
 
-        <!-- Back Arrow Button -->
-        <Button 
-            FontFamily="MaterialSymbols"
-            Text="{StaticResource IconArrow_left_alt}"
-            FontSize="28"
-            TextColor="White"
-            HorizontalOptions="End"
-            VerticalOptions="Start"
+        <!--  Back Arrow Button  -->
+        <Button
             Margin="5"
-            ZIndex="1"
             BackgroundColor="Transparent"
-            Command="{Binding NavBackHomeCommand}"/>
+            Command="{Binding NavBackHomeCommand}"
+            FontFamily="MaterialSymbols"
+            FontSize="28"
+            HorizontalOptions="End"
+            Text="{StaticResource IconArrow_left_alt}"
+            TextColor="White"
+            VerticalOptions="Start"
+            ZIndex="1" />
 
-        <!-- Main Content -->
+        <!--  Main Content  -->
         <ScrollView>
-            <VerticalStackLayout
-                Padding="30,0"
-                Spacing="25">
+            <VerticalStackLayout Padding="30,0" Spacing="25">
                 <Label
+                    Margin="0,70"
+                    CharacterSpacing="1.5"
                     FontAttributes="Bold"
                     FontSize="40"
                     HorizontalOptions="Center"
-                    Margin="0,70"
-                    TextColor="White"
-                    CharacterSpacing="1.5"
-                    Text="{x:Static m:Strings.LoginTitle}"/>
+                    Text="{x:Static m:Strings.LoginTitle}"
+                    TextColor="White" />
 
                 <Border
                     Padding="5"
                     Stroke="Blue"
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="2">
-                    <Entry 
+                    <Entry
                         Margin="5"
-                        Placeholder="{x:Static m:Strings.Email}"
                         ClearButtonVisibility="WhileEditing"
-                        FontSize="20"
-                        TextColor="White"
-                        ReturnType="Go"
                         FlowDirection="LeftToRight"
-                        Text="{Binding Email}"/>
+                        FontSize="20"
+                        Placeholder="{x:Static m:Strings.Email}"
+                        ReturnType="Go"
+                        Text="{Binding Email}"
+                        TextColor="White" />
                 </Border>
 
                 <Border
@@ -62,42 +62,53 @@
                     Stroke="Red"
                     StrokeShape="RoundRectangle 8"
                     StrokeThickness="2">
-                    <Grid ColumnDefinitions="*,Auto"
-                          FlowDirection="LeftToRight">
+                    <Grid ColumnDefinitions="*,Auto" FlowDirection="LeftToRight">
                         <Entry
-                            Placeholder="{x:Static m:Strings.Password}"
+                            Margin="5"
                             ClearButtonVisibility="WhileEditing"
                             FlowDirection="LeftToRight"
-                            TextColor="White"
                             FontSize="20"
+                            IsPassword="{Binding IsPassword}"
+                            Placeholder="{x:Static m:Strings.Password}"
                             ReturnType="Done"
-                            Margin="5"
                             Text="{Binding Password}"
-                            IsPassword="{Binding IsPassword}"/>
+                            TextColor="White" />
                         <Button
-                            BackgroundColor="Transparent"
                             Grid.Column="1"
+                            BackgroundColor="Transparent"
                             Command="{Binding ToggleIsPasswordCommand}"
                             FontFamily="MaterialSymbols"
-                            HorizontalOptions="End"
-                            VerticalOptions="Center"
-                            TextColor="White"
                             FontSize="23"
-                            Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"/>
+                            HorizontalOptions="End"
+                            Text="{Binding IsPassword, Converter={StaticResource passwordIconConvert}}"
+                            TextColor="White"
+                            VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
                 <Button
-                    Text="{x:Static m:Strings.SubmitLoginButtonText}"
-                    HorizontalOptions="Center"
+                    Command="{Binding LoginCommand}"
                     FontSize="20"
-                    Command="{Binding LoginCommand}"/>
+                    HorizontalOptions="Center"
+                    Text="{x:Static m:Strings.SubmitLoginButtonText}" />
 
-                <Label HorizontalOptions="Center" FontSize="17" Margin="0,10,0,0">
+                <Button
+                    Command="{Binding LoginWithGoogleCommand}"
+                    FontSize="20"
+                    HorizontalOptions="Center"
+                    Text="{x:Static m:Strings.LoginWithGoogleButtonText}" />
+
+                <Label
+                    Margin="0,10,0,0"
+                    FontSize="17"
+                    HorizontalOptions="Center">
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="{x:Static m:Strings.DontOwnAccountText}" TextColor="White" />
-                            <Span Text="{x:Static m:Strings.Register}" TextColor="LightBlue" TextDecorations="Underline">
+                            <Span
+                                Text="{x:Static m:Strings.Register}"
+                                TextColor="LightBlue"
+                                TextDecorations="Underline">
                                 <Span.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding NavToRegisterCommand}" />
                                 </Span.GestureRecognizers>
@@ -106,11 +117,17 @@
                     </Label.FormattedText>
                 </Label>
 
-                <Label HorizontalOptions="Center" FontSize="17" Margin="0">
+                <Label
+                    Margin="0"
+                    FontSize="17"
+                    HorizontalOptions="Center">
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="{x:Static m:Strings.ForgotPassword}" TextColor="White" />
-                            <Span Text="{x:Static m:Strings.ClickMe}" TextColor="LightBlue" TextDecorations="Underline">
+                            <Span
+                                Text="{x:Static m:Strings.ClickMe}"
+                                TextColor="LightBlue"
+                                TextDecorations="Underline">
                                 <Span.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                                 </Span.GestureRecognizers>

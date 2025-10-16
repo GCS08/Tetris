@@ -5,12 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Tetris"
     xmlns:v="clr-namespace:Tetris.Views"
-    Shell.FlyoutBehavior="Disabled"
-    Title="Tetris">
+    Title="Tetris"
+    Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent Route="MainPage" ContentTemplate="{DataTemplate v:MainPage}"/>
-    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate v:LoginPage}" />
-    <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate v:RegisterPage}" />
-    
+    <ShellContent ContentTemplate="{DataTemplate v:MainPage}" Route="MainPage" />
+    <ShellContent ContentTemplate="{DataTemplate v:LoginPage}" Route="LoginPage" />
+    <ShellContent ContentTemplate="{DataTemplate v:RegisterPage}" Route="RegisterPage" />
+
 
 </Shell>
