@@ -22,7 +22,6 @@ namespace Tetris.ViewModels
             set
             {
                 user.Email = value;
-                (LoginCommand as Command)?.ChangeCanExecute();
             }
         }
         public string Password
@@ -31,7 +30,6 @@ namespace Tetris.ViewModels
             set
             {
                 user.Password = value;
-                (LoginCommand as Command)?.ChangeCanExecute();
             }
         }
         public bool IsPassword { get; set; } = true;
