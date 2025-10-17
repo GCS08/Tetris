@@ -49,7 +49,7 @@ namespace Tetris.ViewModels
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(WelcomeUserName), nameof(LoginVisibility), nameof(SignOutVisibility) };
+            string[] nameOfs = { nameof(LoginVisibility), nameof(SignOutVisibility) };
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
