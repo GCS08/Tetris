@@ -19,7 +19,6 @@ namespace Tetris.ModelsLogic
             {
                 try
                 {
-                    // Find the "Response:" part
                     int responseIndex = ex.Message.IndexOf("Response:");
                     if (responseIndex >= 0)
                     {
