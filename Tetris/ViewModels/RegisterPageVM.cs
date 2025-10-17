@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
+using CommunityToolkit.Maui.Alerts;
 
 namespace Tetris.ViewModels
 {
@@ -102,6 +103,7 @@ namespace Tetris.ViewModels
             // Await the async method to get a random username
             UserName = await RandomUsername.GetAsync();
             OnPropertyChanged(nameof(UserName));
+
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)

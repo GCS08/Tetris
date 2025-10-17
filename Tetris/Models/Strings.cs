@@ -37,12 +37,8 @@
         public const string LoginErrorTitle = "Error logging in:";
         public const string RegisterFailButton = "Understood!";
         public const string LoginFailButton = "I'll try again!";
-        public const string RegisterSuccessTitle = "Account created successfully:";
-        public const string LoginSuccessTitle = "User logged in successfully:";
-        public const string RegisterSuccess = "Thank you for creating an account!\nEnjoy our Tetris!";
-        public const string LoginSuccess = "Welcome back!\nEnjoy our Tetris!";
-        public const string RegisterSuccessButton = "Hooray!";
-        public const string LoginSuccessButton = "Hayde!";
+        public const string RegisterSuccess = "Thank you for creating an account! Enjoy Tetris!";
+        public const string LoginSuccess = "Welcome back! Enjoy our Tetris!";
         public const string LoginWithGoogleButtonText = "Login with Google!";
         public const string ForgotPassword = "Forgot your password? ";
         public const string ClickMe = "Click me!";

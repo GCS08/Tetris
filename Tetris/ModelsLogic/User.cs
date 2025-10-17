@@ -1,8 +1,9 @@
-﻿using System.Xml.Linq;
-using Tetris.Models;
+﻿using CommunityToolkit.Maui.Alerts;
 using System.Text.Json;
-using static Tetris.Models.ConstData;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Tetris.Models;
+using static Tetris.Models.ConstData;
 
 namespace Tetris.ModelsLogic
 {
@@ -73,7 +74,7 @@ namespace Tetris.ModelsLogic
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
-                await Shell.Current.DisplayAlert(Strings.LoginSuccessTitle, Strings.LoginSuccess, Strings.LoginSuccessButton);
+                await Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
@@ -117,7 +118,7 @@ namespace Tetris.ModelsLogic
             if (task.IsCompletedSuccessfully)
             {
                 RegisterSaveToPreferences();
-                await Shell.Current.DisplayAlert(Strings.RegisterSuccessTitle, Strings.RegisterSuccess, Strings.RegisterSuccessButton);
+                await Toast.Make(Strings.RegisterSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
@@ -158,7 +159,7 @@ namespace Tetris.ModelsLogic
             else
             {
                 string errorMessage = IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorTitle);
+                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
         }
         public override bool CanLogin()
