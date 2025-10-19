@@ -22,7 +22,5 @@ namespace Tetris.Models
             facl = new FirebaseAuthClient(fac);
             fdb = CrossCloudFirestore.Current.Instance;
         }
-
-
     }
 }

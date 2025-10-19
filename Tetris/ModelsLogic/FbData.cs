@@ -2,6 +2,7 @@
 using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
 using Tetris.Models;
+using System.Net.Http.Json;
 
 namespace Tetris.ModelsLogic
 {
@@ -32,6 +33,28 @@ namespace Tetris.ModelsLogic
                     settings2 = true,
                     totalLinesCleared = 0,
                 });
+
+
+
+                // ... inside your try block, after the user signs in
+                string idToken = await facl.User.GetIdTokenAsync(); // the user’s token
+
+                using HttpClient http = new();
+                var payload = new
+                {
+                    requestType = "VERIFY_EMAIL",
+                    idToken = idToken
+                };
+
+                HttpResponseMessage res = await http.PostAsJsonAsync(
+                    $"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={Keys.FbApiKey}",
+                    payload);
+
+                if (res.IsSuccessStatusCode)
+                    System.Diagnostics.Debug.WriteLine($"Verification email sent to {email}");
+                else
+                    System.Diagnostics.Debug.WriteLine($"Failed to send verification: {await res.Content.ReadAsStringAsync()}");
+
             }
             catch (Exception ex)
             {
@@ -73,6 +96,8 @@ namespace Tetris.ModelsLogic
         }
         public override void SignOut()
         {
+            bool hey = facl.User.Info.IsEmailVerified;
+            System.Diagnostics.Debug.WriteLine(hey);
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }

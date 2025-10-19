@@ -1,25 +1,26 @@
 ﻿using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    public class RandomUsername
+    public class RandomUsername : RandomUsernameModel
     {
         // Static method to get a random username
-        public static async Task<string> GetAsync()
+        public override async Task<string> GetAsync()
         {
-            using (HttpClient client = new HttpClient())
+            using (client)
             {
                 try
                 {
-                    string url = "https://randomuser.me/api/?results=1";
-                    var response = await client.GetAsync(url);
+                    // Fix: Use RandomUsernameModel.apiUrl if apiUrl is static, otherwise make it static
+                    response = await client.GetAsync(apiUrl);
 
                     if (!response.IsSuccessStatusCode)
                         return "UnknownUser"; // fallback
-
-                    string json = await response.Content.ReadAsStringAsync();
+                    
+                    json = await response.Content.ReadAsStringAsync();
 
                     using (JsonDocument doc = JsonDocument.Parse(json))
                     {

@@ -49,7 +49,7 @@ namespace Tetris.ViewModels
                 }
             }
         }
-        private string passwordRepeat = "";
+        private string passwordRepeat;
         public string PasswordRepeat
         {
             get => passwordRepeat;
@@ -67,6 +67,7 @@ namespace Tetris.ViewModels
         {
             app = Application.Current as App;
             user = app!.user;
+            passwordRepeat = string.Empty;
             RegisterCommand = new Command(async () => await Register());
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);
             ToggleIsPassword2Command = new Command(ToggleIsPassword2);
@@ -100,8 +101,9 @@ namespace Tetris.ViewModels
         }
         private async void GetRandomUsername(object obj)
         {
-            // Await the async method to get a random username
-            UserName = await RandomUsername.GetAsync();
+            // Create an instance of RandomUsername to call the instance method GetAsync
+            RandomUsername randomUsername = new();
+            UserName = await randomUsername.GetAsync();
             OnPropertyChanged(nameof(UserName));
 
         }
