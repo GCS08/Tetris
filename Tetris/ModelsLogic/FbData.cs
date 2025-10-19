@@ -76,6 +76,13 @@ namespace Tetris.ModelsLogic
 
             try
             {
+                if (facl.User != null)
+                {
+                    if (!facl.User.Info.IsEmailVerified)
+                    {
+                        throw new Exception("Email not verified. Please verify your email before logging in.");
+                    }
+                }
                 // Await Firebase sign-in
                 await firebaseTask;
             }
@@ -96,8 +103,6 @@ namespace Tetris.ModelsLogic
         }
         public override void SignOut()
         {
-            bool hey = facl.User.Info.IsEmailVerified;
-            System.Diagnostics.Debug.WriteLine(hey);
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }
