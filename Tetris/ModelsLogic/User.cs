@@ -13,7 +13,7 @@ namespace Tetris.ModelsLogic
         public override string IdentifyFireBaseError(Task task)
         {
             Exception? ex = task.Exception?.InnerException;
-            string errorMessage = string.Empty;
+            string errorMessage = ex!.Message;
 
             if (ex != null)
             {
@@ -47,7 +47,7 @@ namespace Tetris.ModelsLogic
                             Keys.InvalidCredentialsErrorKey => Strings.InvalidCredentialsError,
                             Keys.UserDisabledErrorKey => Strings.UserDisabledError,
                             Keys.ManyAttemptsErrorKey => Strings.ManyAttemptsError,
-                            _ => Strings.DefaultRegisterError,
+                            _ => Strings.DefaultError,
                         };
                     }
                 }

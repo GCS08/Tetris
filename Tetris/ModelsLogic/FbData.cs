@@ -70,37 +70,37 @@ namespace Tetris.ModelsLogic
         }
         public override async Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
-            // Start Firebase sign-in
-            Task<Firebase.Auth.UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
+            Task<UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
             bool success = false;
 
             try
             {
-                if (facl.User != null)
+                // Await the Firebase sign-in
+                UserCredential credential = await firebaseTask;
+
+                if (!credential.User.Info.IsEmailVerified)
                 {
-                    if (!facl.User.Info.IsEmailVerified)
-                    {
-                        throw new Exception("Email not verified. Please verify your email before logging in.");
-                    }
+                    // Immediately sign out the unverified user
+                    facl.SignOut();
+                    throw new Exception(Strings.EmailVerificationError);
                 }
-                // Await Firebase sign-in
-                await firebaseTask;
+
+                // optional: continue if verified
             }
             catch (Exception ex)
             {
-                // Wrap the exception in a Task to pass to the callback
-                TaskCompletionSource<Firebase.Auth.UserCredential> tcs = new();
+                TaskCompletionSource<UserCredential> tcs = new();
                 tcs.SetException(ex);
                 firebaseTask = tcs.Task;
             }
             finally
             {
-                // Always invoke the callback, even if the sign-in failed
                 success = await OnCompleteLogin(firebaseTask);
             }
 
             return success;
         }
+
         public override void SignOut()
         {
             if (facl != null && facl.User != null)

@@ -29,7 +29,7 @@
             "Contact our team at 'shaysol1233@gmail.com' for more details.";
         public const string ManyAttemptsError = "There have been too many failed attempts, and your account has been temporarily disabled.\n" +
             "Please try again later.";
-        public const string DefaultRegisterError = "Something went wrong, please try again later.\n" +
+        public const string DefaultError = "Something went wrong, please try again later.\n" +
             "If the error persists, contact our developer team at 'shaysol1233@gmail.com'.";
         public const string FailedJsonError = "Something went wrong.\nThe system couldn't identify the error.\n" +
             "Please try again";
@@ -83,5 +83,6 @@
         public const string UserNameNumberErrorMessage = "Your username must contain at least one number.\n" +
             "Please add one (or any other number) and try again.";
         public const string UserNameNumberErrorButton = "0kay!";
+        public const string EmailVerificationError = "Email not verified.\nPlease verify your email before logging in.";
     }
 }
