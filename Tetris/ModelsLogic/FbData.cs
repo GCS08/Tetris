@@ -1,8 +1,8 @@
 ﻿using Firebase.Auth;
-using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
-using Tetris.Models;
 using System.Net.Http.Json;
+using System.Text.Json;
+using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
@@ -11,8 +11,7 @@ namespace Tetris.ModelsLogic
         public override async Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, Task<bool>> OnCompleteRegister)
         {
             Task<Firebase.Auth.UserCredential> firebaseTask = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
-            bool success = false;
-
+            bool success;
             try
             {
                 UserCredential credential = await firebaseTask;
@@ -34,27 +33,19 @@ namespace Tetris.ModelsLogic
                     totalLinesCleared = 0,
                 });
 
-
-
                 // ... inside your try block, after the user signs in
                 string idToken = await facl.User.GetIdTokenAsync(); // the user’s token
 
                 using HttpClient http = new();
-                var payload = new
+                object payload = new
                 {
-                    requestType = "VERIFY_EMAIL",
+                    requestType = Keys.VerifyEmailKey,
                     idToken = idToken
                 };
 
                 HttpResponseMessage res = await http.PostAsJsonAsync(
-                    $"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={Keys.FbApiKey}",
+                    Keys.FbPostRequest + Keys.FbApiKey,
                     payload);
-
-                if (res.IsSuccessStatusCode)
-                    System.Diagnostics.Debug.WriteLine($"Verification email sent to {email}");
-                else
-                    System.Diagnostics.Debug.WriteLine($"Failed to send verification: {await res.Content.ReadAsStringAsync()}");
-
             }
             catch (Exception ex)
             {
@@ -100,7 +91,6 @@ namespace Tetris.ModelsLogic
 
             return success;
         }
-
         public override void SignOut()
         {
             if (facl != null && facl.User != null)
@@ -140,7 +130,54 @@ namespace Tetris.ModelsLogic
             T? value = snapshot.Get<T>(key);
             return value != null ? value : default!;
         }
+        public override string IdentifyFireBaseError(Task task)
+        {
+            Exception? ex = task.Exception?.InnerException;
+            string errorMessage = ex!.Message;
 
+            if (ex != null)
+            {
+                try
+                {
+                    int responseIndex = ex.Message.IndexOf("Response:");
+                    if (responseIndex >= 0)
+                    {
+                        // Take everything after "Response:"
+                        string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
+
+                        // Some Firebase responses might have extra closing braces, remove trailing stuff
+                        int lastBrace = jsonPart.LastIndexOf('}');
+                        if (lastBrace >= 0)
+                            jsonPart = jsonPart.Substring(0, lastBrace + 1);
+
+                        // Parse JSON
+                        JsonDocument json = JsonDocument.Parse(jsonPart);
+
+                        JsonElement errorElem = json.RootElement.GetProperty("error");
+                        string firebaseMessage = errorElem.GetProperty("message").ToString();
+
+                        errorMessage = firebaseMessage switch
+                        {
+                            Keys.EmailExistsErrorKey => Strings.EmailExistsError,
+                            Keys.OperationNotAllowedErrorKey => Strings.OperationNotAllowedError,
+                            Keys.WeakPasswordErrorKey => Strings.WeakPasswordError,
+                            Keys.MissingEmailErrorKey => Strings.MissingEmailError,
+                            Keys.MissingPasswordErrorKey => Strings.MissingPasswordError,
+                            Keys.InvalidEmailErrorKey => Strings.InvalidEmailError,
+                            Keys.InvalidCredentialsErrorKey => Strings.InvalidCredentialsError,
+                            Keys.UserDisabledErrorKey => Strings.UserDisabledError,
+                            Keys.ManyAttemptsErrorKey => Strings.ManyAttemptsError,
+                            _ => Strings.DefaultError,
+                        };
+                    }
+                }
+                catch
+                {
+                    errorMessage = Strings.FailedJsonError;
+                }
+            }
+            return errorMessage;
+        }
         public async Task<bool> SignInWithGoogleAsync(string email, string password, Func<Task, Task<bool>> onCompleteLogin)
         {
             throw new NotImplementedException();

@@ -10,54 +10,7 @@ namespace Tetris.ModelsLogic
     public class User : UserModel
     {
         readonly Strings dynamicStrings = new();
-        public override string IdentifyFireBaseError(Task task)
-        {
-            Exception? ex = task.Exception?.InnerException;
-            string errorMessage = ex!.Message;
-
-            if (ex != null)
-            {
-                try
-                {
-                    int responseIndex = ex.Message.IndexOf("Response:");
-                    if (responseIndex >= 0)
-                    {
-                        // Take everything after "Response:"
-                        string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
-
-                        // Some Firebase responses might have extra closing braces, remove trailing stuff
-                        int lastBrace = jsonPart.LastIndexOf('}');
-                        if (lastBrace >= 0)
-                            jsonPart = jsonPart.Substring(0, lastBrace + 1);
-
-                        // Parse JSON
-                        JsonDocument json = JsonDocument.Parse(jsonPart);
-
-                        JsonElement errorElem = json.RootElement.GetProperty("error");
-                        string firebaseMessage = errorElem.GetProperty("message").ToString();
-
-                        errorMessage = firebaseMessage switch
-                        {
-                            Keys.EmailExistsErrorKey => Strings.EmailExistsError,
-                            Keys.OperationNotAllowedErrorKey => Strings.OperationNotAllowedError,
-                            Keys.WeakPasswordErrorKey => Strings.WeakPasswordError,
-                            Keys.MissingEmailErrorKey => Strings.MissingEmailError,
-                            Keys.MissingPasswordErrorKey => Strings.MissingPasswordError,
-                            Keys.InvalidEmailErrorKey => Strings.InvalidEmailError,
-                            Keys.InvalidCredentialsErrorKey => Strings.InvalidCredentialsError,
-                            Keys.UserDisabledErrorKey => Strings.UserDisabledError,
-                            Keys.ManyAttemptsErrorKey => Strings.ManyAttemptsError,
-                            _ => Strings.DefaultError,
-                        };
-                    }
-                }
-                catch
-                {
-                    errorMessage = Strings.FailedJsonError;
-                }
-            }
-            return errorMessage;
-        }
+        
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
@@ -78,7 +31,7 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                string errorMessage = IdentifyFireBaseError(task);
+                string errorMessage = fbd.IdentifyFireBaseError(task);
                 await Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
                 return false;
             }

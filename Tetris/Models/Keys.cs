@@ -24,5 +24,7 @@
         public const string InvalidCredentialsErrorKey = "INVALID_LOGIN_CREDENTIALS";
         public const string UserDisabledErrorKey = "USER_DISABLED";
         public const string ManyAttemptsErrorKey = "TOO_MANY_ATTEMPTS_TRY_LATER";
+        public const string VerifyEmailKey = "VERIFY_EMAIL";
+        public const string FbPostRequest = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=";
     }
 }
