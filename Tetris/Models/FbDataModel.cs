@@ -18,10 +18,15 @@ namespace Tetris.Models
             {
                 ApiKey = Keys.FbApiKey,
                 AuthDomain = Keys.FbAppDomainKey,
-                Providers = [new EmailProvider()]
+                Providers = new FirebaseAuthProvider[]
+                {
+            new EmailProvider(),
+            new GoogleProvider() // Add this
+                }
             };
             facl = new FirebaseAuthClient(fac);
             fdb = CrossCloudFirestore.Current.Instance;
         }
+
     }
 }

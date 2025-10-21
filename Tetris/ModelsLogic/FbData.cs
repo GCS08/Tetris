@@ -1,4 +1,5 @@
 ﻿using Firebase.Auth;
+using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -178,9 +179,24 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        public async Task<bool> SignInWithGoogleAsync(string email, string password, Func<Task, Task<bool>> onCompleteLogin)
+        public async Task<bool> SignInWithGoogleAsync(string idToken, Func<Task, Task<bool>> onCompleteLogin)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var credential = GoogleProvider.GetCredential(idToken);
+                var userCredential = await facl.SignInWithCredentialAsync(credential);
+                if (userCredential != null)
+                {
+                    return await onCompleteLogin(Task.CompletedTask);
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Google Sign-In failed: {ex.Message}");
+                return false;
+            }
         }
+
     }
 }

@@ -18,7 +18,7 @@ namespace Tetris.ModelsLogic
         }
         public async Task<bool> LoginWithGoogle()
         {
-            bool success = await fbd.SignInWithGoogleAsync(Email, Password, OnCompleteLogin);
+            bool success = await fbd.SignInWithGoogleAsync(OnCompleteLogin);
             return success;
         }
         private async Task<bool> OnCompleteLogin(Task task)
@@ -75,7 +75,7 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                string errorMessage = IdentifyFireBaseError(task);
+                string errorMessage = fbd.IdentifyFireBaseError(task);
                 await Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
                 return false;
             }
@@ -110,7 +110,7 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                string errorMessage = IdentifyFireBaseError(task);
+                string errorMessage = fbd.IdentifyFireBaseError(task);
                 await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
         }
