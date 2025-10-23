@@ -92,12 +92,6 @@
                     HorizontalOptions="Center"
                     Text="{x:Static m:Strings.SubmitLoginButtonText}" />
 
-                <Button
-                    Command="{Binding LoginWithGoogleCommand}"
-                    FontSize="20"
-                    HorizontalOptions="Center"
-                    Text="{x:Static m:Strings.LoginWithGoogleButtonText}" />
-
                 <Label
                     Margin="0,10,0,0"
                     FontSize="17"

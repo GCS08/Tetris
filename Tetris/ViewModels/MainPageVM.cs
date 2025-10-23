@@ -7,6 +7,7 @@ namespace Tetris.ViewModels
     internal class MainPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
+        public ICommand NavToPlayCommand { get => new Command(NavToPlay); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
         private readonly App? app;
         private User user;
@@ -24,6 +25,7 @@ namespace Tetris.ViewModels
             }
         }
         public bool SignOutVisibility => IsLogged;
+        public bool PlayVisibility => IsLogged;
         public bool LoginVisibility => !IsLogged;
         private string? welcomeUserName;
         public string? WelcomeUserName
@@ -49,7 +51,7 @@ namespace Tetris.ViewModels
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(LoginVisibility), nameof(SignOutVisibility) };
+            string[] nameOfs = { nameof(LoginVisibility), nameof(SignOutVisibility), nameof(PlayVisibility) };
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
@@ -64,10 +66,13 @@ namespace Tetris.ViewModels
             // This will be triggered every time the page is navigated to
             RefreshProperties();
         }
-
         private async void NavToLogin()
         {
             await Shell.Current.GoToAsync("///LoginPage?refresh=true");
+        }
+        private async void NavToPlay()
+        {
+            await Shell.Current.GoToAsync("///PlayPage");
         }
         private  void SignOut()
         {

@@ -84,5 +84,6 @@
             "Please add one (or any other number) and try again.";
         public const string UserNameNumberErrorButton = "0kay!";
         public const string EmailVerificationError = "Email not verified.\nPlease verify your email before logging in.";
+        public const string PlayButtonText = "Play!";
     }
 }
