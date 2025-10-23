@@ -85,5 +85,8 @@
         public const string UserNameNumberErrorButton = "0kay!";
         public const string EmailVerificationError = "Email not verified.\nPlease verify your email before logging in.";
         public const string PlayButtonText = "Play!";
+        public const string PlaySoloButtonText = "Play solo";
+        public const string CreateNewRoomButtonText = "Create new\n" +
+            "private room";
     }
 }

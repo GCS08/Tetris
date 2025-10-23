@@ -3,6 +3,49 @@
     x:Class="Tetris.Views.PlayPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="PlayPage">
-    <VerticalStackLayout />
+    xmlns:m="clr-namespace:Tetris.Models"
+    xmlns:vm="clr-namespace:Tetris.ViewModels"
+    x:DataType="vm:PlayPageVM">
+    <Grid>
+        <!--  Background Image  -->
+        <Image
+            Grid.RowSpan="1"
+            Grid.ColumnSpan="1"
+            Aspect="AspectFill"
+            Source="background.png" />
+
+        <!--  Back Arrow Button  -->
+        <Button
+            Margin="5"
+            BackgroundColor="Transparent"
+            Command="{Binding NavBackHomeCommand}"
+            FontFamily="MaterialSymbols"
+            FontSize="28"
+            HorizontalOptions="End"
+            Text="{StaticResource IconArrow_left_alt}"
+            TextColor="White"
+            VerticalOptions="Start"
+            ZIndex="1" />
+
+        <ScrollView>
+            <VerticalStackLayout>
+                <Button
+                    Margin="0,100,0,20"
+                    Command="{Binding NavToGameCommand}"
+                    FontSize="30"
+                    HorizontalOptions="Center"
+                    Text="{x:Static m:Strings.PlaySoloButtonText}" />
+                <Button
+                    Margin="10"
+                    Command="{Binding NavToNewGameConfigCommand}"
+                    FontSize="30"
+                    HorizontalOptions="Center"
+                    LineBreakMode="WordWrap"
+                    Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
+                <Grid>
+                    <Label />
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
