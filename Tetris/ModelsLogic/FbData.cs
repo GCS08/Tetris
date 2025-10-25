@@ -187,7 +187,7 @@ namespace Tetris.ModelsLogic
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
                 {
-                    JoinableGame joinableGame = new JoinableGame(document.Get<string>("CubeColor")!, document.Get<string>("CreatorsName")!,
+                    JoinableGame joinableGame = new(document.Get<string>("CubeColor")!, document.Get<string>("CreatorsName")!,
                         document.Get<int>("CurrentPlayersCount"), document.Get<int>("MaxPlayersCount"), document.Id);
                     joinableGames.Add(joinableGame);
                 }

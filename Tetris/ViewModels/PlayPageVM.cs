@@ -3,16 +3,16 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class PlayPageVM
+    public class PlayPageVM
     {
-        public List<JoinableGame> Games;
+        public List<JoinableGame> Games { get; set; } = new();
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
-        public PlayPageVM()
+        public async Task InitializeAsync()
         {
             JoinableGamesList gamesList = new();
-            Games = gamesList.games;
+            Games = await gamesList.GetJoinableGamesAsync();
         }
         private async void NavHome()
         {

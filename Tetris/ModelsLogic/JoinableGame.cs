@@ -11,7 +11,12 @@ namespace Tetris.ModelsLogic
             this.CreatorName = CreatorName;
             this.CurrentPlayersCount = CurrentPlayersCount;
             this.MaxPlayersCount = MaxPlayersCount;
-            this.GameID = GameID;
+            this.GameID = GameID; 
+            JoinGameCommand = new Command(NavToGame);
+        }
+        public override async void NavToGame()
+        {
+            await Shell.Current.GoToAsync("///MainPage?refresh=true");
         }
     }
 }

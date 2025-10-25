@@ -21,8 +21,7 @@ namespace Tetris.Models
                 AuthDomain = Keys.FbAppDomainKey,
                 Providers = new FirebaseAuthProvider[]
                 {
-            new EmailProvider(),
-            new GoogleProvider() // Add this
+            new EmailProvider()
                 }
             };
             facl = new FirebaseAuthClient(fac);

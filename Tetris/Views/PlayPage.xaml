@@ -44,7 +44,7 @@
                     Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
                 <CollectionView ItemsSource="{Binding Games}">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="m:JoinableGameModel">
                             <Frame Margin="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -57,7 +57,7 @@
                                         BackgroundColor="{Binding CubeColor}"
                                         BorderColor="Black"
                                         WidthRequest="20"
-                                        HeightRequest="20"/>
+                                        HeightRequest="20"/> 
                                     <Label
                                         Grid.Column="1"
                                         FontSize="20"
@@ -65,7 +65,7 @@
                                     <Label
                                         Grid.Column="2"
                                         FontSize="20"
-                                        Text="{Binding UsersInGame}" />
+                                        Text="{Binding CurrentPlayersCount}" />
                                     <Button
                                         Grid.Column="3"
                                         FontSize="20"
