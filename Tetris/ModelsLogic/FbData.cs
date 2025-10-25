@@ -97,7 +97,7 @@ namespace Tetris.ModelsLogic
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }
-        public async Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail)
+        public override async Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail)
         {
             // Start Firebase sign-in
             Task firebaseTask = facl.ResetEmailPasswordAsync(email);
@@ -179,6 +179,20 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-
+        public async Task<List<JoinableGame>> GetJoinableGamesAsync()
+        {
+            List<JoinableGame> joinableGames = [];
+            IQuerySnapshot collection = await fdb.Collection("games").GetAsync();
+            if (collection != null)
+            {
+                foreach (IDocumentSnapshot document in collection.Documents)
+                {
+                    JoinableGame joinableGame = new JoinableGame(document.Get<string>("CubeColor")!, document.Get<string>("CreatorsName")!,
+                        document.Get<int>("CurrentPlayersCount"), document.Get<int>("MaxPlayersCount"), document.Id);
+                    joinableGames.Add(joinableGame);
+                }
+            }
+            return joinableGames;
+        }
     }
 }

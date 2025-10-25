@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
     internal class PlayPageVM
     {
+        public List<JoinableGame> Games;
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
+        public PlayPageVM()
+        {
+            JoinableGamesList gamesList = new();
+            Games = gamesList.games;
+        }
         private async void NavHome()
         {
             await Shell.Current.GoToAsync("///MainPage?refresh=true");

@@ -42,9 +42,41 @@
                     HorizontalOptions="Center"
                     LineBreakMode="WordWrap"
                     Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
-                <Grid>
-                    <Label />
-                </Grid>
+                <CollectionView ItemsSource="{Binding Games}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Margin="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Frame
+                                        BackgroundColor="{Binding CubeColor}"
+                                        BorderColor="Black"
+                                        WidthRequest="20"
+                                        HeightRequest="20"/>
+                                    <Label
+                                        Grid.Column="1"
+                                        FontSize="20"
+                                        Text="{Binding CreatorName}" />
+                                    <Label
+                                        Grid.Column="2"
+                                        FontSize="20"
+                                        Text="{Binding UsersInGame}" />
+                                    <Button
+                                        Grid.Column="3"
+                                        FontSize="20"
+                                        Command="{Binding JoinGameCommand}"
+                                        Text="Join Game!" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
