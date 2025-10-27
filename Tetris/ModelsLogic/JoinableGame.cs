@@ -2,21 +2,11 @@
 
 namespace Tetris.ModelsLogic
 {
-    public class JoinableGame : JoinableGameModel
+    public class JoinableGame(string CubeColor, string CreatorName, int CurrentPlayersCount, int MaxPlayersCount, string GameID) : JoinableGameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount, GameID)
     {
-        public JoinableGame(string CubeColor,string CreatorName, int CurrentPlayersCount,
-            int MaxPlayersCount, string GameID)
-        {
-            this.CubeColor = CubeColor;
-            this.CreatorName = CreatorName;
-            this.CurrentPlayersCount = CurrentPlayersCount;
-            this.MaxPlayersCount = MaxPlayersCount;
-            this.GameID = GameID; 
-            JoinGameCommand = new Command(NavToGame);
-        }
         public override async void NavToGame()
         {
-            await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
         }
     }
 }

@@ -21,11 +21,11 @@ namespace Tetris.ModelsLogic
                 await facl.SignInWithEmailAndPasswordAsync(email, password);
 
                 string userId = facl.User.Uid;
-                await fdb.Collection("users").Document(userId).SetAsync(new
+                await fdb.Collection(Keys.UsersCollectionName).Document(userId).SetAsync(new
                 {
                     userName,
                     email,
-                    dateJoined = DateTime.Now.ToString("dd/MM/yy"),
+                    dateJoined = DateTime.Now.ToString(TechnicalConsts.DateFormat),
                     gamesPlayed = 0,
                     highestScore = 0,
                     settings0 = true,
@@ -123,7 +123,7 @@ namespace Tetris.ModelsLogic
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))
                 return default!;
-            IDocumentSnapshot snapshot = await fdb.Collection("users").Document(facl.User.Uid).GetAsync();
+            IDocumentSnapshot snapshot = await fdb.Collection(Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
             if (!snapshot.Exists)
                 return default!;
 
@@ -140,22 +140,22 @@ namespace Tetris.ModelsLogic
             {
                 try
                 {
-                    int responseIndex = ex.Message.IndexOf("Response:");
+                    int responseIndex = ex.Message.IndexOf(TechnicalConsts.ResponseText);
                     if (responseIndex >= 0)
                     {
                         // Take everything after "Response:"
-                        string jsonPart = ex.Message.Substring(responseIndex + "Response:".Length).Trim();
+                        string jsonPart = ex.Message.Substring(responseIndex + TechnicalConsts.ResponseText.Length).Trim();
 
                         // Some Firebase responses might have extra closing braces, remove trailing stuff
-                        int lastBrace = jsonPart.LastIndexOf('}');
+                        int lastBrace = jsonPart.LastIndexOf(TechnicalConsts.ClosingBraceSign);
                         if (lastBrace >= 0)
                             jsonPart = jsonPart.Substring(0, lastBrace + 1);
 
                         // Parse JSON
                         JsonDocument json = JsonDocument.Parse(jsonPart);
 
-                        JsonElement errorElem = json.RootElement.GetProperty("error");
-                        string firebaseMessage = errorElem.GetProperty("message").ToString();
+                        JsonElement errorElem = json.RootElement.GetProperty(TechnicalConsts.ErrorJson);
+                        string firebaseMessage = errorElem.GetProperty(TechnicalConsts.MessageJson).ToString();
 
                         errorMessage = firebaseMessage switch
                         {
@@ -182,13 +182,18 @@ namespace Tetris.ModelsLogic
         public async Task<List<JoinableGame>> GetJoinableGamesAsync()
         {
             List<JoinableGame> joinableGames = [];
-            IQuerySnapshot collection = await fdb.Collection("games").GetAsync();
+            IQuerySnapshot collection = await fdb.Collection(Keys.GamesCollectionName).GetAsync();
             if (collection != null)
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
                 {
-                    JoinableGame joinableGame = new(document.Get<string>("CubeColor")!, document.Get<string>("CreatorsName")!,
-                        document.Get<int>("CurrentPlayersCount"), document.Get<int>("MaxPlayersCount"), document.Id);
+                    string CubeColor = document.Get<string>(Keys.CubeColorVar)!;
+                    string CreatorName = document.Get<string>(Keys.CreatorNameVar)!;
+                    int CurrentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountVar);
+                    int MaxPlayersCount = document.Get<int>(Keys.MaxPlayersCountVar);
+                    string GameID = document.Id;
+                    JoinableGame joinableGame = new(CubeColor,CreatorName,
+                        CurrentPlayersCount,MaxPlayersCount,GameID);
                     joinableGames.Add(joinableGame);
                 }
             }

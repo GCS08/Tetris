@@ -37,7 +37,7 @@
         public const string LoginErrorTitle = "Error logging in:";
         public const string RegisterFailButton = "Understood!";
         public const string LoginFailButton = "I'll try again!";
-        public const string RegisterSuccess = "Thank you for creating an account! Enjoy Tetris!";
+        public const string RegisterSuccess = "Thank you for creating an account! Enjoy Tetris!\nA verification email was sent.";
         public const string LoginSuccess = "Welcome back! Enjoy our Tetris!";
         public const string LoginWithGoogleButtonText = "Login with Google!";
         public const string ForgotPassword = "Forgot your password? ";
@@ -88,5 +88,8 @@
         public const string PlaySoloButtonText = "Play solo";
         public const string CreateNewRoomButtonText = "Create new\n" +
             "private room";
+        public const string AvailableGamesTitle = "Available Games:";
+        public const string JoinGameButtonText = "Join Game!";
+        public const string FailedRandomApiUN = "UnknownUser";
     }
 }

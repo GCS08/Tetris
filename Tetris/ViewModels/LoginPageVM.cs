@@ -60,7 +60,7 @@ namespace Tetris.ViewModels
                 IsBusy = false;
                 OnPropertyChanged(nameof(IsBusy));
                 if (successfullyLogged)
-                    await Shell.Current.GoToAsync("///MainPage?refresh=true");
+                    await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
             }
         }
         private async Task ForgotPassword()
@@ -90,11 +90,11 @@ namespace Tetris.ViewModels
         }
         private async void NavToRegister()
         {
-            await Shell.Current.GoToAsync("///RegisterPage?refresh=true");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectRegisterPageRefresh);
         }
         private async void NavHome()
         {
-            await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Tetris.Models;
 
 namespace Tetris
 {
@@ -13,9 +14,9 @@ namespace Tetris
                 .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("MaterialSymbolsOutlined.ttf", "MaterialSymbols");
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont(TechnicalConsts.MaterialSymbolsFontPath, Keys.MaterialSymbolsFontName);
+                    fonts.AddFont(TechnicalConsts.OpenSansRegular, Keys.OpenSansRegularFontName);
+                    fonts.AddFont(TechnicalConsts.OpenSansSemiBold, Keys.OpenSansSemiboldFontName);
                 });
 
 #if DEBUG

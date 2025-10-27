@@ -18,22 +18,22 @@ namespace Tetris.ModelsLogic
                     response = await client.GetAsync(apiUrl);
 
                     if (!response.IsSuccessStatusCode)
-                        return "UnknownUser"; // fallback
+                        return Strings.FailedRandomApiUN; // fallback
                     
                     json = await response.Content.ReadAsStringAsync();
 
                     using (JsonDocument doc = JsonDocument.Parse(json))
                     {
                         return doc.RootElement
-                                  .GetProperty("results")[0]
-                                  .GetProperty("login")
-                                  .GetProperty("username")
+                                  .GetProperty(TechnicalConsts.ResultsJson)[0]
+                                  .GetProperty(TechnicalConsts.LoginJson)
+                                  .GetProperty(TechnicalConsts.UsernameJson)
                                   .GetString()!;
                     }
                 }
                 catch
                 {
-                    return "UnknownUser"; // fallback on exception
+                    return Strings.FailedRandomApiUN; // fallback on exception
                 }
             }
         }

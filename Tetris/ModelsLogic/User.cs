@@ -86,7 +86,7 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.Settings0Key, true);
             Preferences.Set(Keys.Settings1Key, true);
             Preferences.Set(Keys.Settings2Key, true);
-            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString("dd/MM/yy"));
+            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString(TechnicalConsts.DateFormat));
         }
         public override void SignOut()
         {
@@ -172,35 +172,35 @@ namespace Tetris.ModelsLogic
         private static bool HasAtSign(string str)
         {
             for (int i = 0; i < str.Length; i++)
-                if (str[i] == '@')
+                if (str[i] == TechnicalConsts.AtSign)
                     return true;
             return false;
         }
         private static bool HasDot(string str)
         {
             for (int i = 0; i < str.Length; i++)
-                if (str[i] == '.')
+                if (str[i] == TechnicalConsts.DotSign)
                     return true;
             return false;
         }
         private static bool HasNumber(string str)
         {
             for (int i = 0; i < str.Length; i++)
-                if (str[i] >= '0' && str[i] <= '9')
+                if (str[i] >= TechnicalConsts.ZeroSign && str[i] <= TechnicalConsts.NineSign)
                     return true;
             return false;
         }
         private static bool HasLowerCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
-                if (str[i] >= 'a' && str[i] <= 'z')
+                if (str[i] >= TechnicalConsts.ASign && str[i] <= TechnicalConsts.ZSign)
                     return true;
             return false;
         }
         private static bool HasUpperCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
-                if (str[i] >= 'A' && str[i] <= 'Z')
+                if (str[i] >= TechnicalConsts.CapitalASign && str[i] <= TechnicalConsts.CapitalZSign)
                     return true;
             return false;
         }

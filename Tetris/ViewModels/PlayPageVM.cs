@@ -1,30 +1,33 @@
-﻿using System.Windows.Input;
+﻿using Firebase.Auth;
+using System.Windows.Input;
+using Tetris.Models;
 using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    public class PlayPageVM
+    internal class PlayPageVM : ObservableObject, IQueryAttributable
     {
         public List<JoinableGame> Games { get; set; } = new();
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
-        public async Task InitializeAsync()
+        public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             JoinableGamesList gamesList = new();
             Games = await gamesList.GetJoinableGamesAsync();
+            OnPropertyChanged(nameof(Games));
         }
         private async void NavHome()
         {
-            await Shell.Current.GoToAsync("///MainPage?refresh=true");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
         }
         private async void NavToGame()
         {
-            await Shell.Current.GoToAsync("///GamePage");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGamePage);
         }
         private async void NavToNewGameConfigGame()
         {
-            await Shell.Current.GoToAsync("///NewGameConfigPage");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectNewGameConfigPage);
         }
     }
 }

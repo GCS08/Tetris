@@ -57,7 +57,7 @@ namespace Tetris.ViewModels
         }
         private void RefreshProperties()
         {
-            WelcomeUserName = $"{Strings.Welcome} {Preferences.Get(Keys.UserNameKey, "Guest")}!";
+            WelcomeUserName = $"{Strings.Welcome} {Preferences.Get(Keys.UserNameKey, TechnicalConsts.DefaultUserName)}{TechnicalConsts.ExclamationSign}";
             IsLogged = Preferences.Get(Keys.EmailKey, string.Empty) != string.Empty;
         }
 
@@ -68,13 +68,13 @@ namespace Tetris.ViewModels
         }
         private async void NavToLogin()
         {
-            await Shell.Current.GoToAsync("///LoginPage?refresh=true");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectLoginPageRefresh);
         }
         private async void NavToPlay()
         {
-            await Shell.Current.GoToAsync("///PlayPage");
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectPlayPageRefresh);
         }
-        private  void SignOut()
+        private void SignOut()
         {
             user.SignOut();
             app!.user = new();
