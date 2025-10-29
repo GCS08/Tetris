@@ -91,5 +91,6 @@
         public const string AvailableGamesTitle = "Available Games:";
         public const string JoinGameButtonText = "Join Game!";
         public const string FailedRandomApiUN = "UnknownUser";
+        public const string CreateNewGameTitle = "Create new game:";
     }
 }
