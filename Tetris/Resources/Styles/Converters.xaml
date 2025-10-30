@@ -5,4 +5,5 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:cnv="clr-namespace:Tetris.Converters">
     <cnv:BoolToIconConverter x:Key="passwordIconConvert" />
+    <cnv:ColorNameToColorConverter x:Key="ColorNameToColorConverter" />
 </ResourceDictionary>
