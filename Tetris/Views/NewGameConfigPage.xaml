@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:DataType="vm:NewGameConfigPageVM">
     <Grid>
         <!--  Background Image  -->
@@ -34,7 +35,48 @@
                     HorizontalTextAlignment="Center"
                     Text="{x:Static m:Strings.CreateNewGameTitle}"
                     TextColor="White" />
-                <Picker></Picker>
+                
+                <Border
+                     Padding="5"
+                     Stroke="Blue"
+                     StrokeShape="RoundRectangle 8"
+                     StrokeThickness="2">
+                    <Picker TitleColor="{Binding PickerTitleColor}"
+                            TextColor="white"
+                            Margin="5"
+                            FontSize="20"
+                            HorizontalTextAlignment="End"
+                            Title="Hey there">
+                        <Picker.Items>
+                            <x:String>Yes</x:String>
+                            <x:String>No</x:String>
+                            <x:String>Maybe</x:String>
+                        </Picker.Items>
+                        <Picker.Behaviors>
+                            <toolkit:EventToCommandBehavior 
+                                EventName="Focused"
+                                Command="{Binding PickerFocusedCommand}" />
+                            <toolkit:EventToCommandBehavior 
+                                EventName="Unfocused"
+                                Command="{Binding PickerUnfocusedCommand}" />
+                        </Picker.Behaviors>
+                    </Picker>
+                </Border>
+
+                <Border
+                 Padding="5"
+                 Stroke="Blue"
+                 StrokeShape="RoundRectangle 8"
+                 StrokeThickness="2">
+                                <Entry
+                     Margin="5"
+                     ClearButtonVisibility="WhileEditing"
+                     FlowDirection="LeftToRight"
+                     FontSize="20"
+                     Placeholder="{x:Static m:Strings.Email}"
+                     ReturnType="Go"
+         TextColor="White" />
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
