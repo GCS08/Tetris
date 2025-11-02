@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
@@ -12,6 +13,7 @@ namespace Tetris.Models
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; }
         public ICommand JoinGameCommand { get; set; }
+        protected FbData fbd = new();
         public abstract void NavToGame();
         public JoinableGameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
             int MaxPlayersCount, bool IsPublicGame, string GameID)

@@ -11,7 +11,7 @@
     <ShellContent ContentTemplate="{DataTemplate v:MainPage}" Route="MainPage" />
     <ShellContent ContentTemplate="{DataTemplate v:LoginPage}" Route="LoginPage" />
     <ShellContent ContentTemplate="{DataTemplate v:RegisterPage}" Route="RegisterPage" />
-    <ShellContent ContentTemplate="{DataTemplate v:PlayPage}" Route="PlayPage" />
+    <ShellContent ContentTemplate="{DataTemplate v:GameLobbyPage}" Route="GameLobbyPage" />
     <ShellContent ContentTemplate="{DataTemplate v:GamePage}" Route="GamePage" />
     <ShellContent ContentTemplate="{DataTemplate v:NewGameConfigPage}" Route="NewGameConfigPage" />
 </Shell>

@@ -7,6 +7,6 @@ public partial class PlayPage : ContentPage
 	public PlayPage()
 	{
 		InitializeComponent();
-        BindingContext = new PlayPageVM();
+        BindingContext = new GameLobbyPageVM();
     }
 }

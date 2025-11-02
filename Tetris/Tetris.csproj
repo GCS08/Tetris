@@ -112,6 +112,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\GameLobbyPage.xaml.cs">
+	    <DependentUpon>GameLobbyPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Resources\Styles\Converters.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -127,7 +133,7 @@
 	  <MauiXaml Update="Views\NewGameConfigPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\PlayPage.xaml">
+	  <MauiXaml Update="Views\GameLobbyPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\RegisterPage.xaml">

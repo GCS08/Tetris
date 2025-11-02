@@ -15,7 +15,7 @@
         <Button
             Margin="5"
             BackgroundColor="Transparent"
-            Command="{Binding NavBackHomeCommand}"
+            Command="{Binding NavGameLobbyCommand}"
             FontFamily="MaterialSymbols"
             FontSize="28"
             HorizontalOptions="End"

@@ -1,5 +1,6 @@
 ﻿using Firebase.Auth;
 using Firebase.Auth.Providers;
+using Microsoft.Maui.ApplicationModel.Communication;
 using Plugin.CloudFirestore;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -199,6 +200,24 @@ namespace Tetris.ModelsLogic
                 }
             }
             return joinableGames;
+        }
+        public async Task<string> AddGameToDB(string cubeColor, string userName,
+            int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
+        {
+            // Create a new document reference with an auto-generated ID
+            IDocumentReference docRef = fdb.Collection(Keys.GamesCollectionName).Document();
+
+            await docRef.SetAsync(new
+            {
+                CreatorName = userName,
+                CubeColor = cubeColor,
+                CurrentPlayersCount = currentPlayersCount,
+                IsPublicGame = isPublicGame,
+                MaxPlayersCount = maxPlayersCount
+            });
+
+            // Return the auto-generated document ID
+            return docRef.Id;
         }
     }
 }

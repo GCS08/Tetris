@@ -5,7 +5,7 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class PlayPageVM : ObservableObject, IQueryAttributable
+    internal class GameLobbyPageVM : ObservableObject, IQueryAttributable
     {
         public List<JoinableGame> Games { get; set; } = new();
         public ICommand NavBackHomeCommand => new Command(NavHome);

@@ -11,5 +11,12 @@ namespace Tetris.ModelsLogic
         {
             await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
         }
+
+        public async Task AddGameToDB()
+        {
+            string documentID = await fbd.AddGameToDB(CubeColor, Preferences.Get(Keys.UserNameKey, string.Empty),
+                CurrentPlayersCount, MaxPlayersCount, IsPublicGame);
+            this.GameID = documentID;
+        }
     }
 }

@@ -6,16 +6,12 @@ namespace Tetris.ViewModels
 {
     internal class NewGameConfigPageVM : ObservableObject
     {
-        public ICommand NavBackHomeCommand => new Command(NavHome);
-        public ICommand CreateGameCommand => new Command(CreateGame);
-        private readonly App? app;
-        private User user;
+        public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
+        public ICommand CreateGameCommand { get; }
         private JoinableGame currentNewGame;
         public NewGameConfigPageVM()
         {
-            app = Application.Current as App;
-            user = app!.user;
-
+            CreateGameCommand = new Command(async () => await CreateGame());
             currentNewGame = new("Red", Preferences.Get(Keys.UserNameKey, "Anonymous"), 1, 2, true, string.Empty);
         }
         public string SelectedColor
@@ -45,13 +41,26 @@ namespace Tetris.ViewModels
                 }
             }
         }
-        private void CreateGame()
+        public string SelectedMaxPlayers
         {
-
+            get => currentNewGame.MaxPlayersCount.ToString();
+            set
+            {
+                if (currentNewGame.MaxPlayersCount.ToString() != value)
+                {
+                    currentNewGame.MaxPlayersCount = int.Parse(value);
+                    OnPropertyChanged(nameof(currentNewGame.MaxPlayersCount));
+                    // You can react to selection change here if you want
+                }
+            }
         }
-        private async void NavHome()
+        private async Task CreateGame()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            await currentNewGame.AddGameToDB();
+        }
+        private async void NavGameLobby()
+        {
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPageRefresh);
         }
     }
 }

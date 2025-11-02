@@ -7,7 +7,7 @@ namespace Tetris.ViewModels
     internal class MainPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
-        public ICommand NavToPlayCommand { get => new Command(NavToPlay); }
+        public ICommand NavToPlayCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
         private readonly App? app;
         private User user;
@@ -70,9 +70,9 @@ namespace Tetris.ViewModels
         {
             await Shell.Current.GoToAsync(TechnicalConsts.RedirectLoginPageRefresh);
         }
-        private async void NavToPlay()
+        private async void NavToGameLobby()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectPlayPageRefresh);
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPageRefresh);
         }
         private void SignOut()
         {
