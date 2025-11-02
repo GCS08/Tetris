@@ -13,7 +13,7 @@ namespace Tetris.ViewModels
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand PickerFocusedCommand => new Command(PickerFocused);
         public ICommand PickerUnfocusedCommand => new Command(PickerUnfocused);
-        private Color pickerTitleColor = Colors.White;
+        private Color pickerTitleColor;
         public Color PickerTitleColor
         {
             get => pickerTitleColor;
@@ -26,9 +26,13 @@ namespace Tetris.ViewModels
                 }
             }
         }
+        public NewGameConfigPageVM()
+        {
+            pickerTitleColor = Colors.White;
+        }
         private void PickerFocused()
         {
-            PickerTitleColor = Colors.Red;
+            PickerTitleColor = Colors.Black;
         }
         private void PickerUnfocused()
         {
