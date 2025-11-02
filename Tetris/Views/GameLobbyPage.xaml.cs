@@ -2,9 +2,9 @@ using Tetris.ViewModels;
 
 namespace Tetris.Views;
 
-public partial class PlayPage : ContentPage
+public partial class GameLobbyPage : ContentPage
 {
-	public PlayPage()
+	public GameLobbyPage()
 	{
 		InitializeComponent();
         BindingContext = new GameLobbyPageVM();

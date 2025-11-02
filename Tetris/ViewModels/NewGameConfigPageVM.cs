@@ -9,6 +9,7 @@ namespace Tetris.ViewModels
         public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
         public ICommand CreateGameCommand { get; }
         private JoinableGame currentNewGame;
+        public bool IsBusy { get; set; } = false;
         public NewGameConfigPageVM()
         {
             CreateGameCommand = new Command(async () => await CreateGame());
@@ -56,7 +57,12 @@ namespace Tetris.ViewModels
         }
         private async Task CreateGame()
         {
+            IsBusy = true;
+            OnPropertyChanged(nameof(IsBusy));
             await currentNewGame.AddGameToDB();
+            IsBusy = false;
+            OnPropertyChanged(nameof(IsBusy));
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGamePage);
         }
         private async void NavGameLobby()
         {
