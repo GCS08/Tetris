@@ -27,10 +27,11 @@
         public const string FbPostRequest = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=";
         public const string UsersCollectionName = "users";
         public const string GamesCollectionName = "games";
-        public const string CubeColorVar = "CubeColor";
-        public const string CreatorNameVar = "CreatorName";
-        public const string CurrentPlayersCountVar = "CurrentPlayersCount";
-        public const string MaxPlayersCountVar = "MaxPlayersCount";
+        public const string CubeColorKey = "CubeColor";
+        public const string CreatorNameKey = "CreatorName";
+        public const string CurrentPlayersCountKey = "CurrentPlayersCount";
+        public const string MaxPlayersCountKey = "MaxPlayersCount";
+        public const string IsPublicGameKey = "IsPublicGame";
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";

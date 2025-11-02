@@ -10,7 +10,6 @@ namespace Tetris.ModelsLogic
     public class User : UserModel
     {
         readonly Strings dynamicStrings = new();
-        
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);

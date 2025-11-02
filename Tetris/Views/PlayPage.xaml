@@ -84,7 +84,7 @@
                                     Margin="7"
                                     FontSize="20"
                                     HorizontalTextAlignment="Center"
-                                    Text="{Binding CurrentPlayersCount}"
+                                    Text="{Binding UsersInGameSum}"
                                     TextColor="White"
                                     VerticalTextAlignment="Center" />
                                 <Button

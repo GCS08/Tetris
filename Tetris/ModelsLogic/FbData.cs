@@ -187,13 +187,14 @@ namespace Tetris.ModelsLogic
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
                 {
-                    string CubeColor = document.Get<string>(Keys.CubeColorVar)!;
-                    string CreatorName = document.Get<string>(Keys.CreatorNameVar)!;
-                    int CurrentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountVar);
-                    int MaxPlayersCount = document.Get<int>(Keys.MaxPlayersCountVar);
+                    string CubeColor = document.Get<string>(Keys.CubeColorKey)!;
+                    string CreatorName = document.Get<string>(Keys.CreatorNameKey)!;
+                    int CurrentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountKey);
+                    int MaxPlayersCount = document.Get<int>(Keys.MaxPlayersCountKey);
+                    bool IsPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
                     string GameID = document.Id;
-                    JoinableGame joinableGame = new(CubeColor,CreatorName,
-                        CurrentPlayersCount,MaxPlayersCount,GameID);
+                    JoinableGame joinableGame = new(CubeColor, CreatorName,
+                        CurrentPlayersCount, MaxPlayersCount, IsPublicGame, GameID);
                     joinableGames.Add(joinableGame);
                 }
             }

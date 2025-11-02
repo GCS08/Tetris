@@ -1,38 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
     internal class NewGameConfigPageVM : ObservableObject
     {
         public ICommand NavBackHomeCommand => new Command(NavHome);
-        public ICommand PickerFocusedCommand => new Command(PickerFocused);
-        public ICommand PickerUnfocusedCommand => new Command(PickerUnfocused);
-        private Color pickerTitleColor = Colors.White;
-        public Color PickerTitleColor
+        public ICommand CreateGameCommand => new Command(CreateGame);
+        private readonly App? app;
+        private User user;
+        private JoinableGame currentNewGame;
+        public NewGameConfigPageVM()
         {
-            get => pickerTitleColor;
+            app = Application.Current as App;
+            user = app!.user;
+
+            currentNewGame = new("Red", Preferences.Get(Keys.UserNameKey, "Anonymous"), 1, 2, true, string.Empty);
+        }
+        public string SelectedColor
+        {
+            get => currentNewGame.CubeColor;
             set
             {
-                if (pickerTitleColor != value)
+                if (currentNewGame.CubeColor != value)
                 {
-                    pickerTitleColor = value;
-                    OnPropertyChanged(nameof(PickerTitleColor));
+                    currentNewGame.CubeColor = value;
+                    OnPropertyChanged(nameof(currentNewGame.CubeColor));
+                    // You can react to selection change here if you want
                 }
             }
         }
-        private void PickerFocused()
+        public string SelectedPrivacy
         {
-            PickerTitleColor = Colors.Red;
+            get => !currentNewGame.IsPublicGame ? "Private" : "Public";
+            set
+            {
+                string PublicOrProtected = currentNewGame.IsPublicGame ? "Public" : "Private";
+                if (PublicOrProtected != value)
+                {
+                    currentNewGame.IsPublicGame = (value == "Public");
+                    OnPropertyChanged(nameof(currentNewGame.IsPublicGame));
+                    // You can react to selection change here if you want
+                }
+            }
         }
-        private void PickerUnfocused()
+        private void CreateGame()
         {
-            PickerTitleColor = Colors.White;
+
         }
         private async void NavHome()
         {

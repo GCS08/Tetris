@@ -5,78 +5,217 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     x:DataType="vm:NewGameConfigPageVM">
+
     <Grid>
         <!--  Background Image  -->
-        <Image
-        Grid.RowSpan="1"
-        Grid.ColumnSpan="1"
-        Aspect="AspectFill"
-        Source="background.png" />
+        <Image Aspect="AspectFill" Source="background.png" />
 
         <!--  Back Arrow Button  -->
         <Button
-        Margin="5"
-        BackgroundColor="Transparent"
-        Command="{Binding NavBackHomeCommand}"
-        FontFamily="MaterialSymbols"
-        FontSize="28"
-        HorizontalOptions="End"
-        Text="{StaticResource IconArrow_left_alt}"
-        TextColor="White"
-        VerticalOptions="Start"
-        ZIndex="1" />
+            Margin="5"
+            BackgroundColor="Transparent"
+            Command="{Binding NavBackHomeCommand}"
+            FontFamily="MaterialSymbols"
+            FontSize="28"
+            HorizontalOptions="End"
+            Text="{StaticResource IconArrow_left_alt}"
+            TextColor="White"
+            VerticalOptions="Start"
+            ZIndex="1" />
+
         <ScrollView>
-            <VerticalStackLayout Padding="30,30">
+            <VerticalStackLayout Padding="30,30" Spacing="25">
+
+                <!--  Title  -->
                 <Label
+                    Margin="0,70"
                     FontSize="40"
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center"
                     Text="{x:Static m:Strings.CreateNewGameTitle}"
                     TextColor="White" />
-                
+
                 <Border
-                     Padding="5"
-                     Stroke="Blue"
-                     StrokeShape="RoundRectangle 8"
-                     StrokeThickness="2">
-                    <Picker TitleColor="{Binding PickerTitleColor}"
-                            TextColor="white"
-                            Margin="5"
-                            FontSize="20"
-                            HorizontalTextAlignment="End"
-                            Title="Hey there">
-                        <Picker.Items>
-                            <x:String>Yes</x:String>
-                            <x:String>No</x:String>
-                            <x:String>Maybe</x:String>
-                        </Picker.Items>
-                        <Picker.Behaviors>
-                            <toolkit:EventToCommandBehavior 
-                                EventName="Focused"
-                                Command="{Binding PickerFocusedCommand}" />
-                            <toolkit:EventToCommandBehavior 
-                                EventName="Unfocused"
-                                Command="{Binding PickerUnfocusedCommand}" />
-                        </Picker.Behaviors>
-                    </Picker>
+                    Stroke="Blue"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="2">
+                    <!--  Color Picker (CollectionView)  -->
+                    <CollectionView
+                        FlowDirection="LeftToRight"
+                        SelectedItem="{Binding SelectedColor, Mode=TwoWay}"
+                        SelectionMode="Single">
+
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="2" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Red</x:String>
+                                <x:String>Orange</x:String>
+                                <x:String>Yellow</x:String>
+                                <x:String>Green</x:String>
+                                <x:String>Blue</x:String>
+                                <x:String>Indigo</x:String>
+                                <x:String>Violet</x:String>
+                                <x:String>Light Blue</x:String>
+                            </x:Array>
+                        </CollectionView.ItemsSource>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="5" Stroke="Transparent">
+                                    <Label
+                                        FontSize="20"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding .}"
+                                        TextColor="{Binding ., Converter={StaticResource ColorNameToColorConverter}}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+
+                                    <!--  correct way to declare VisualState groups  -->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <!--  Border.Background is a Brush; using Transparent for Normal  -->
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <!--  light gray selected background  -->
+                                                    <Setter Property="Background" Value="#AAAAAA" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
                 </Border>
 
                 <Border
-                 Padding="5"
-                 Stroke="Blue"
-                 StrokeShape="RoundRectangle 8"
-                 StrokeThickness="2">
-                                <Entry
-                     Margin="5"
-                     ClearButtonVisibility="WhileEditing"
-                     FlowDirection="LeftToRight"
-                     FontSize="20"
-                     Placeholder="{x:Static m:Strings.Email}"
-                     ReturnType="Go"
-         TextColor="White" />
+                    Stroke="Red"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="2">
+                    <!--  Color Picker (CollectionView)  -->
+                    <CollectionView
+                        FlowDirection="RightToLeft"
+                        SelectedItem="{Binding SelectedPrivacy, Mode=TwoWay}"
+                        SelectionMode="Single">
+
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="2" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Private</x:String>
+                                <x:String>Public</x:String>
+                            </x:Array>
+                        </CollectionView.ItemsSource>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="5" Stroke="Transparent">
+                                    <Label
+                                        FontSize="20"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding .}"
+                                        TextColor="White"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+
+                                    <!--  correct way to declare VisualState groups  -->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <!--  Border.Background is a Brush; using Transparent for Normal  -->
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <!--  light gray selected background  -->
+                                                    <Setter Property="Background" Value="#AAAAAA" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
                 </Border>
+
+                <Border
+                    Stroke="Yellow"
+                    StrokeShape="RoundRectangle 8"
+                    StrokeThickness="2">
+                    <!--  Color Picker (CollectionView)  -->
+                    <CollectionView
+                        FlowDirection="LeftToRight"
+                        SelectedItem="{Binding SelectedMaxPlayers, Mode=TwoWay}"
+                        SelectionMode="Single">
+
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="3" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>2</x:String>
+                                <x:String>3</x:String>
+                                <x:String>4</x:String>
+                            </x:Array>
+                        </CollectionView.ItemsSource>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="5" Stroke="Transparent">
+                                    <Label
+                                        FontSize="20"
+                                        HorizontalOptions="Center"
+                                        Text="{Binding .}"
+                                        TextColor="White"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center" />
+
+                                    <!--  correct way to declare VisualState groups  -->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <!--  Border.Background is a Brush; using Transparent for Normal  -->
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <!--  light gray selected background  -->
+                                                    <Setter Property="Background" Value="#AAAAAA" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+                </Border>
+
+                <Button
+                    Command="{Binding CreateGameCommand}"
+                    FontSize="20"
+                    HorizontalOptions="Center"
+                    Text="{x:Static m:Strings.CreateGameButtonText}" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
