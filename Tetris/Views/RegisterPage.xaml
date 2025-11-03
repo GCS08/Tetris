@@ -144,9 +144,11 @@
                 </Border>
                 <Button
                     Command="{Binding RegisterCommand}"
+                    IsEnabled="{Binding RegisterEnable}"
                     FontSize="20"
                     HorizontalOptions="Center"
                     Text="{x:Static m:Strings.SubmitRegisterButtonText}" />
+                
                 <Label
                     Margin="0,25,0,0"
                     FontSize="17"

@@ -8,7 +8,7 @@ namespace Tetris.ViewModels
     {
         public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
         public ICommand CreateGameCommand { get; }
-        private JoinableGame currentNewGame;
+        private readonly JoinableGame currentNewGame;
         public bool IsBusy { get; set; } = false;
         public NewGameConfigPageVM()
         {
@@ -42,14 +42,14 @@ namespace Tetris.ViewModels
                 }
             }
         }
-        public string SelectedMaxPlayers
+        public int SelectedMaxPlayers
         {
-            get => currentNewGame.MaxPlayersCount.ToString();
+            get => currentNewGame.MaxPlayersCount;
             set
             {
-                if (currentNewGame.MaxPlayersCount.ToString() != value)
+                if (currentNewGame.MaxPlayersCount != value)
                 {
-                    currentNewGame.MaxPlayersCount = int.Parse(value);
+                    currentNewGame.MaxPlayersCount = value;
                     OnPropertyChanged(nameof(currentNewGame.MaxPlayersCount));
                     // You can react to selection change here if you want
                 }

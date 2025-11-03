@@ -7,7 +7,7 @@ namespace Tetris.ViewModels
 {
     internal class GameLobbyPageVM : ObservableObject, IQueryAttributable
     {
-        public List<JoinableGame> Games { get; set; } = new();
+        public List<JoinableGame> Games { get; set; } = [];
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);

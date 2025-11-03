@@ -12,6 +12,7 @@ namespace Tetris.ViewModels
         public ICommand LoginCommand { get; }
         public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
+        public bool LoginEnable { get; set; } = true;
         private App? app;
         private User user;
         public bool IsBusy { get; set; } = false;
@@ -56,11 +57,15 @@ namespace Tetris.ViewModels
             {
                 IsBusy = true;
                 OnPropertyChanged(nameof(IsBusy));
+                LoginEnable = false;
+                OnPropertyChanged(nameof(LoginEnable));
                 bool successfullyLogged = await user.Login();
-                IsBusy = false;
-                OnPropertyChanged(nameof(IsBusy));
                 if (successfullyLogged)
                     await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsBusy));
+                LoginEnable = true;
+                OnPropertyChanged(nameof(LoginEnable));
             }
         }
         private async Task ForgotPassword()
@@ -84,7 +89,7 @@ namespace Tetris.ViewModels
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(Email), nameof(Password), nameof(IsPassword) };
+            string[] nameOfs = [nameof(Email), nameof(Password), nameof(IsPassword)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }

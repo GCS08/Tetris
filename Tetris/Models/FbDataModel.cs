@@ -6,7 +6,7 @@ namespace Tetris.Models
     public abstract class FbDataModel
     {
         protected FirebaseAuthClient facl;
-        protected IFirestore fdb;
+        protected IFirestore fs;
         public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, Task<bool>> OnCompleteRegister);
         public abstract Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin);
         public abstract void SignOut();
@@ -22,7 +22,7 @@ namespace Tetris.Models
                 Providers = [new EmailProvider()]
             };
             facl = new FirebaseAuthClient(fac);
-            fdb = CrossCloudFirestore.Current.Instance;
+            fs = CrossCloudFirestore.Current.Instance;
         }
 
     }

@@ -13,6 +13,7 @@ namespace Tetris.ViewModels
         public ICommand RegisterCommand { get; }
         public ICommand ToggleIsPassword1Command { get; }
         public ICommand ToggleIsPassword2Command { get; }
+        public bool RegisterEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
         private App? app;
         private User user;
@@ -92,11 +93,15 @@ namespace Tetris.ViewModels
             {
                 IsBusy = true;
                 OnPropertyChanged(nameof(IsBusy));
+                RegisterEnable = false;
+                OnPropertyChanged(nameof(RegisterEnable));
                 bool successfullyRegistered = await user.Register();
-                IsBusy = false;
-                OnPropertyChanged(nameof(IsBusy));
                 if (successfullyRegistered)
                     await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsBusy));
+                RegisterEnable = false;
+                OnPropertyChanged(nameof(RegisterEnable));
             }
         }
         private async void GetRandomUsername(object obj)
@@ -122,7 +127,7 @@ namespace Tetris.ViewModels
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword1), nameof(IsPassword2) };
+            string[] nameOfs = [nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword1), nameof(IsPassword2)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }

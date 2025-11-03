@@ -14,6 +14,19 @@
         Grid.ColumnSpan="1"
         Aspect="AspectFill"
         Source="background.png" />
+
+        <!--  Back Arrow Button  -->
+        <Button
+            Margin="5"
+            BackgroundColor="Transparent"
+            Command="{Binding NavBackHomeCommand}"
+            FontFamily="MaterialSymbols"
+            FontSize="28"
+            HorizontalOptions="End"
+            Text="{StaticResource IconArrow_left_alt}"
+            TextColor="White"
+            VerticalOptions="Start"
+            ZIndex="1" />
         
         <!--  Main Content  -->
         <ScrollView>

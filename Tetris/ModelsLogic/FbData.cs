@@ -22,7 +22,7 @@ namespace Tetris.ModelsLogic
                 await facl.SignInWithEmailAndPasswordAsync(email, password);
 
                 string userId = facl.User.Uid;
-                await fdb.Collection(Keys.UsersCollectionName).Document(userId).SetAsync(new
+                await fs.Collection(Keys.UsersCollectionName).Document(userId).SetAsync(new
                 {
                     userName,
                     email,
@@ -42,7 +42,7 @@ namespace Tetris.ModelsLogic
                 object payload = new
                 {
                     requestType = Keys.VerifyEmailKey,
-                    idToken = idToken
+                    idToken
                 };
 
                 HttpResponseMessage res = await http.PostAsJsonAsync(
@@ -124,7 +124,7 @@ namespace Tetris.ModelsLogic
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))
                 return default!;
-            IDocumentSnapshot snapshot = await fdb.Collection(Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
+            IDocumentSnapshot snapshot = await fs.Collection(Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
             if (!snapshot.Exists)
                 return default!;
 
@@ -145,12 +145,12 @@ namespace Tetris.ModelsLogic
                     if (responseIndex >= 0)
                     {
                         // Take everything after "Response:"
-                        string jsonPart = ex.Message.Substring(responseIndex + TechnicalConsts.ResponseText.Length).Trim();
+                        string jsonPart = ex.Message[(responseIndex + TechnicalConsts.ResponseText.Length)..].Trim();
 
                         // Some Firebase responses might have extra closing braces, remove trailing stuff
                         int lastBrace = jsonPart.LastIndexOf(TechnicalConsts.ClosingBraceSign);
                         if (lastBrace >= 0)
-                            jsonPart = jsonPart.Substring(0, lastBrace + 1);
+                            jsonPart = jsonPart[..(lastBrace + 1)];
 
                         // Parse JSON
                         JsonDocument json = JsonDocument.Parse(jsonPart);
@@ -183,7 +183,7 @@ namespace Tetris.ModelsLogic
         public async Task<List<JoinableGame>> GetJoinableGamesAsync()
         {
             List<JoinableGame> joinableGames = [];
-            IQuerySnapshot collection = await fdb.Collection(Keys.GamesCollectionName).GetAsync();
+            IQuerySnapshot collection = await fs.Collection(Keys.GamesCollectionName).GetAsync();
             if (collection != null)
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
@@ -205,7 +205,7 @@ namespace Tetris.ModelsLogic
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
-            IDocumentReference docRef = fdb.Collection(Keys.GamesCollectionName).Document();
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
 
             await docRef.SetAsync(new
             {

@@ -9,4 +9,12 @@ public partial class GameLobbyPage : ContentPage
 		InitializeComponent();
         BindingContext = new GameLobbyPageVM();
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+    }
 }

@@ -10,7 +10,7 @@ namespace Tetris.ViewModels
         public ICommand NavToPlayCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
         private readonly App? app;
-        private User user;
+        private readonly User user;
         private bool isLogged;
         private bool IsLogged
         {
@@ -51,7 +51,7 @@ namespace Tetris.ViewModels
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = { nameof(LoginVisibility), nameof(SignOutVisibility), nameof(PlayVisibility) };
+            string[] nameOfs = [nameof(LoginVisibility), nameof(SignOutVisibility), nameof(PlayVisibility)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }

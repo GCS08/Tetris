@@ -88,6 +88,7 @@
 
                 <Button
                     Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding LoginEnable}"
                     FontSize="20"
                     HorizontalOptions="Center"
                     Text="{x:Static m:Strings.SubmitLoginButtonText}" />
