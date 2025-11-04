@@ -42,14 +42,14 @@ namespace Tetris.ViewModels
                 }
             }
         }
-        public int SelectedMaxPlayers
+        public string SelectedMaxPlayers
         {
-            get => currentNewGame.MaxPlayersCount;
+            get => currentNewGame.MaxPlayersCount.ToString();
             set
             {
-                if (currentNewGame.MaxPlayersCount != value)
+                if (currentNewGame.MaxPlayersCount.ToString() != value)
                 {
-                    currentNewGame.MaxPlayersCount = value;
+                    currentNewGame.MaxPlayersCount = int.Parse(value);
                     OnPropertyChanged(nameof(currentNewGame.MaxPlayersCount));
                     // You can react to selection change here if you want
                 }
