@@ -7,7 +7,7 @@ namespace Tetris.ViewModels
     internal class MainPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
-        public ICommand NavToPlayCommand { get => new Command(NavToGameLobby); }
+        public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
         private readonly App? app;
         private readonly User user;

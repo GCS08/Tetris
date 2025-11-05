@@ -12,6 +12,14 @@ namespace Tetris.ViewModels
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
+        public GameLobbyPageVM()
+        {
+            joinableGamesList.OnGamesChanged += OnGamesChanged;
+        }
+        private void OnGamesChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Games));
+        }
         public void AddSnapshotListener()
         {
             joinableGamesList.AddSnapshotListener();

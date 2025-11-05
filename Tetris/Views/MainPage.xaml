@@ -35,7 +35,7 @@
                 <Button
                     BorderColor="Blue"
                     BorderWidth="2"
-                    Command="{Binding NavToPlayCommand}"
+                    Command="{Binding NavToGameLobbyCommand}"
                     FontSize="40"
                     HorizontalOptions="Center"
                     IsVisible="{Binding PlayVisibility}"

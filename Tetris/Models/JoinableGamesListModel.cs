@@ -8,6 +8,7 @@ namespace Tetris.Models
         protected readonly FbData fbd = new();
         public List<JoinableGame>? list;
         protected IListenerRegistration? ilr;
+        public EventHandler? OnGamesChanged;
         public abstract void AddSnapshotListener();
         public abstract void RemoveSnapshotListener();
     }

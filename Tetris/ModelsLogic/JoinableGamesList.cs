@@ -9,33 +9,24 @@ namespace Tetris.ModelsLogic
         {
             list = fbd.GetJoinableGames();
         }
-
         public override void AddSnapshotListener()
         {
-            ilr = fbd.AddSnapshotListener(Keys.GamesCollectionName, OnChange);
+            ilr = fbd.AddSnapshotListener(Keys.GamesCollectionName, OnChange!);
         }
-        private override void OnChange(IQuerySnapshot snapshot, Exception error)
+        private void OnChange(IQuerySnapshot snapshot, Exception error)
         {
             fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
                 Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey, OnComplete);
         }
-        private void OnComplete(IQuerySnapshot qs)
+        private void OnComplete(List<JoinableGame> newList)
         {
             list!.Clear();
-            foreach (IDocumentSnapshot ds in qs.Documents)
-            {
-                JoinableGame? game = ds.ToObject<JoinableGame>();
-                if (game != null)
-                {
-                    game.GameID = ds.Id;
-                    list.Add(game);
-                }
-            }
+            foreach (JoinableGame game in newList) { list.Add(game); }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
         public override void RemoveSnapshotListener()
         {
-            throw new NotImplementedException();
+            ilr?.Remove();
         }
     }
 }

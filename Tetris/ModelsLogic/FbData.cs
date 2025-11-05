@@ -213,7 +213,6 @@ namespace Tetris.ModelsLogic
 
             return joinableGames;
         }
-
         public async Task<string> AddGameToDB(string cubeColor, string userName,
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
@@ -232,40 +231,35 @@ namespace Tetris.ModelsLogic
             // Return the auto-generated document ID
             return docRef.Id;
         }
-
         public override IListenerRegistration AddSnapshotListener(string collectionName,
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange)
         {
             ICollectionReference cr = fs.Collection(collectionName);
             return cr.AddSnapshotListener(OnChange);
         }
-
         public override async void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<IQuerySnapshot> onComplete)
+            string key1, string key2, Action<List<JoinableGame>> onComplete)
         {
             ICollectionReference collectionRef = fs.Collection(collectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
+            List<JoinableGame> newList = [];
 
-            // Firestore doesn't support comparing two fields in a query,
-            // so we manually filter the documents after retrieving them.
-            var filteredDocs = snapshot.Documents
-                .Where(doc =>
+            foreach (IDocumentSnapshot doc in snapshot.Documents)
+            {
+                if (doc.Get<object>(key1) != doc.Get<object>(key2))
                 {
-                    var val1 = doc.Get<object>(key1);
-                    var val2 = doc.Get<object>(key2);
-                    return val1 != null && val2 != null && !val1.Equals(val2);
-                })
-                .ToList();
-
-            // Create a mock IQuerySnapshot-like object (in-memory) if you want to pass it on
-            // but since Firestore SDK doesn’t let you construct one manually,
-            // you can just pass the filtered list to the callback in your own wrapper.
-            // For now, just invoke the callback with all docs (if you really need IQuerySnapshot).
-            // If your callback can handle the list directly, change the Action type instead.
-
-            // Since OnComplete expects IQuerySnapshot, we’ll be "honest" and send the original snapshot.
-            // The caller can still use filteredDocs if you adapt OnComplete.
-            onComplete(snapshot);
+                    JoinableGame game = new(
+                        doc.Get<string>(Keys.CubeColorKey)!,
+                        doc.Get<string>(Keys.CreatorNameKey)!,
+                        doc.Get<int>(Keys.CurrentPlayersCountKey),
+                        doc.Get<int>(Keys.MaxPlayersCountKey),
+                        doc.Get<bool>(Keys.IsPublicGameKey),
+                        doc.Id
+                    );
+                    newList.Add(game);
+                }
+            }
+            onComplete(newList);
         }
 
     }
