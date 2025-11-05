@@ -5,17 +5,20 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class GameLobbyPageVM : ObservableObject, IQueryAttributable
+    internal class GameLobbyPageVM : ObservableObject
     {
-        public List<JoinableGame> Games { get; set; } = [];
+        private readonly JoinableGamesList joinableGamesList = new();
+        public List<JoinableGame> Games => joinableGamesList.list!;
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
-        public async void ApplyQueryAttributes(IDictionary<string, object> query)
+        public void AddSnapshotListener()
         {
-            JoinableGamesList gamesList = new();
-            Games = await gamesList.GetJoinableGamesAsync();
-            OnPropertyChanged(nameof(Games));
+            joinableGamesList.AddSnapshotListener();
+        }
+        public void RemoveSnapshotListener()
+        {
+            joinableGamesList.RemoveSnapshotListener();
         }
         private async void NavHome()
         {

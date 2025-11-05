@@ -66,7 +66,7 @@ namespace Tetris.ViewModels
         }
         private async void NavGameLobby()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPageRefresh);
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPage);
         }
     }
 }

@@ -11,7 +11,7 @@
         public const string RedirectNewGameConfigPage = "///NewGameConfigPage";
         public const string RedirectRegisterPageRefresh = "///RegisterPage?refresh=true";
         public const string RedirectLoginPageRefresh = "///LoginPage?refresh=true";
-        public const string RedirectGameLobbyPageRefresh = "///GameLobbyPage?refresh=true";
+        public const string RedirectGameLobbyPage = "///GameLobbyPage";
         public const string MaterialSymbolsFontPath = "MaterialSymbolsOutlined.ttf";
         public const string OpenSansRegular = "OpenSans-Regular.ttf";
         public const string OpenSansSemiBold = "OpenSans-Semibold.ttf";

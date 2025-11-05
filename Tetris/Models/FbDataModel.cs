@@ -13,6 +13,10 @@ namespace Tetris.Models
         public abstract Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail);
         public abstract Task<T> GetUserDataAsync<T>(string key);
         public abstract string IdentifyFireBaseError(Task task);
+        public abstract IListenerRegistration AddSnapshotListener(string collectionName,
+            Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
+        public abstract void GetDocumentsWhereDiffValue(string collectionName,
+            string key1, string key2, Action<IQuerySnapshot> onComplete);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

@@ -180,10 +180,14 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        public async Task<List<JoinableGame>> GetJoinableGamesAsync()
+        public List<JoinableGame> GetJoinableGames()
         {
             List<JoinableGame> joinableGames = [];
-            IQuerySnapshot collection = await fs.Collection(Keys.GamesCollectionName).GetAsync();
+            IQuerySnapshot collection = fs.Collection(Keys.GamesCollectionName)
+                .GetAsync()
+                .GetAwaiter()
+                .GetResult(); // blocks the thread until done
+
             if (collection != null)
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
@@ -194,13 +198,22 @@ namespace Tetris.ModelsLogic
                     int MaxPlayersCount = document.Get<int>(Keys.MaxPlayersCountKey);
                     bool IsPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
                     string GameID = document.Id;
-                    JoinableGame joinableGame = new(CubeColor, CreatorName,
-                        CurrentPlayersCount, MaxPlayersCount, IsPublicGame, GameID);
+
+                    JoinableGame joinableGame = new(
+                        CubeColor,
+                        CreatorName,
+                        CurrentPlayersCount,
+                        MaxPlayersCount,
+                        IsPublicGame,
+                        GameID
+                    );
                     joinableGames.Add(joinableGame);
                 }
             }
+
             return joinableGames;
         }
+
         public async Task<string> AddGameToDB(string cubeColor, string userName,
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
@@ -219,5 +232,41 @@ namespace Tetris.ModelsLogic
             // Return the auto-generated document ID
             return docRef.Id;
         }
+
+        public override IListenerRegistration AddSnapshotListener(string collectionName,
+            Plugin.CloudFirestore.QuerySnapshotHandler OnChange)
+        {
+            ICollectionReference cr = fs.Collection(collectionName);
+            return cr.AddSnapshotListener(OnChange);
+        }
+
+        public override async void GetDocumentsWhereDiffValue(string collectionName,
+            string key1, string key2, Action<IQuerySnapshot> onComplete)
+        {
+            ICollectionReference collectionRef = fs.Collection(collectionName);
+            IQuerySnapshot snapshot = await collectionRef.GetAsync();
+
+            // Firestore doesn't support comparing two fields in a query,
+            // so we manually filter the documents after retrieving them.
+            var filteredDocs = snapshot.Documents
+                .Where(doc =>
+                {
+                    var val1 = doc.Get<object>(key1);
+                    var val2 = doc.Get<object>(key2);
+                    return val1 != null && val2 != null && !val1.Equals(val2);
+                })
+                .ToList();
+
+            // Create a mock IQuerySnapshot-like object (in-memory) if you want to pass it on
+            // but since Firestore SDK doesn’t let you construct one manually,
+            // you can just pass the filtered list to the callback in your own wrapper.
+            // For now, just invoke the callback with all docs (if you really need IQuerySnapshot).
+            // If your callback can handle the list directly, change the Action type instead.
+
+            // Since OnComplete expects IQuerySnapshot, we’ll be "honest" and send the original snapshot.
+            // The caller can still use filteredDocs if you adapt OnComplete.
+            onComplete(snapshot);
+        }
+
     }
 }

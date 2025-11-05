@@ -72,7 +72,7 @@ namespace Tetris.ViewModels
         }
         private async void NavToGameLobby()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPageRefresh);
+            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPage);
         }
         private void SignOut()
         {
