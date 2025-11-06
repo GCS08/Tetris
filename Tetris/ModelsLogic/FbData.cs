@@ -180,39 +180,38 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        public List<JoinableGame> GetJoinableGames()
+
+        public async Task<List<JoinableGame>> GetJoinableGamesAsync()
         {
-            List<JoinableGame> joinableGames = [];
-            IQuerySnapshot collection = fs.Collection(Keys.GamesCollectionName)
-                .GetAsync()
-                .GetAwaiter()
-                .GetResult(); // blocks the thread until done
+            List<JoinableGame> joinableGames = new();
+            IQuerySnapshot collection = await fs
+                .Collection(Keys.GamesCollectionName)
+                .GetAsync();
 
             if (collection != null)
             {
                 foreach (IDocumentSnapshot document in collection.Documents)
                 {
-                    string CubeColor = document.Get<string>(Keys.CubeColorKey)!;
-                    string CreatorName = document.Get<string>(Keys.CreatorNameKey)!;
-                    int CurrentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountKey);
-                    int MaxPlayersCount = document.Get<int>(Keys.MaxPlayersCountKey);
-                    bool IsPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
-                    string GameID = document.Id;
+                    string cubeColor = document.Get<string>(Keys.CubeColorKey)!;
+                    string creatorName = document.Get<string>(Keys.CreatorNameKey)!;
+                    int currentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountKey);
+                    int maxPlayersCount = document.Get<int>(Keys.MaxPlayersCountKey);
+                    bool isPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
+                    string gameId = document.Id;
 
-                    JoinableGame joinableGame = new(
-                        CubeColor,
-                        CreatorName,
-                        CurrentPlayersCount,
-                        MaxPlayersCount,
-                        IsPublicGame,
-                        GameID
-                    );
-                    joinableGames.Add(joinableGame);
+                    joinableGames.Add(new JoinableGame(
+                        cubeColor,
+                        creatorName,
+                        currentPlayersCount,
+                        maxPlayersCount,
+                        isPublicGame,
+                        gameId));
                 }
             }
 
             return joinableGames;
         }
+
         public async Task<string> AddGameToDB(string cubeColor, string userName,
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
@@ -261,6 +260,5 @@ namespace Tetris.ModelsLogic
             }
             onComplete(newList);
         }
-
     }
 }
