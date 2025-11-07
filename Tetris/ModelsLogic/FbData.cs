@@ -176,9 +176,9 @@ namespace Tetris.ModelsLogic
             return errorMessage;
         }
 
-        public async Task<ObservableCollection<JoinableGame>> GetJoinableGamesAsync()
+        public async Task<ObservableCollection<Game>> GetJoinableGamesAsync()
         {
-            ObservableCollection<JoinableGame> joinableGames = [];
+            ObservableCollection<Game> joinableGames = [];
             IQuerySnapshot collection = await fs
                 .Collection(Keys.GamesCollectionName)
                 .GetAsync();
@@ -194,7 +194,7 @@ namespace Tetris.ModelsLogic
                     bool isPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
                     string gameId = document.Id;
 
-                    joinableGames.Add(new JoinableGame(
+                    joinableGames.Add(new Game(
                         cubeColor,
                         creatorName,
                         currentPlayersCount,
@@ -232,17 +232,19 @@ namespace Tetris.ModelsLogic
             return cr.AddSnapshotListener(OnChange);
         }
         public override async void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<ObservableCollection<JoinableGame>> onCompleteChange)
+            string key1, string key2, Action<ObservableCollection<Game>> onCompleteChange)
         {
             ICollectionReference collectionRef = fs.Collection(collectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
-            ObservableCollection<JoinableGame> newList = [];
+            ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                if (doc.Get<object>(key1) != doc.Get<object>(key2))
+                string value1 = doc.Get<object>(key1)!.ToString()!;
+                string value2 = doc.Get<object>(key2)!.ToString()!;
+                if (value1 != value2)
                 {
-                    JoinableGame game = new(
+                    Game game = new(
                         doc.Get<string>(Keys.CubeColorKey)!,
                         doc.Get<string>(Keys.CreatorNameKey)!,
                         doc.Get<int>(Keys.CurrentPlayersCountKey),
@@ -255,19 +257,21 @@ namespace Tetris.ModelsLogic
             }
             onCompleteChange(newList);
         }
-        public async Task<ObservableCollection<JoinableGame>>
+        public async Task<ObservableCollection<Game>>
             GetDocumentsWhereDiffValue(string collectionName,
             string key1, string key2)
         {
             ICollectionReference collectionRef = fs.Collection(collectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
-            ObservableCollection<JoinableGame> newList = [];
+            ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                if (doc.Get<object>(key1) != doc.Get<object>(key2))
+                string value1 = doc.Get<object>(key1)!.ToString()!;
+                string value2 = doc.Get<object>(key2)!.ToString()!;
+                if (value1 != value2)
                 {
-                    JoinableGame game = new(
+                    Game game = new(
                         doc.Get<string>(Keys.CubeColorKey)!,
                         doc.Get<string>(Keys.CreatorNameKey)!,
                         doc.Get<int>(Keys.CurrentPlayersCountKey),

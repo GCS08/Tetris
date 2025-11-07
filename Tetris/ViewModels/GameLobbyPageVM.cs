@@ -9,7 +9,7 @@ namespace Tetris.ViewModels
     public partial class GameLobbyPageVM : ObservableObject
     {
         private JoinableGamesList? JoinableGamesList { get; set; }
-        public ObservableCollection<JoinableGame>? Games { get; private set; }
+        public ObservableCollection<Game>? Games { get; private set; }
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavToGame);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);

@@ -6,7 +6,7 @@ namespace Tetris.ModelsLogic
 {
     public class JoinableGamesList : JoinableGamesListModel
     {
-        public JoinableGamesList(ObservableCollection<JoinableGame> list)
+        public JoinableGamesList(ObservableCollection<Game> list)
         {
             this.gamesObsCollection = list;
         }
@@ -27,10 +27,10 @@ namespace Tetris.ModelsLogic
             fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
                 Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey, OnCompleteChange);
         }
-        private void OnCompleteChange(ObservableCollection<JoinableGame> newList)
+        private void OnCompleteChange(ObservableCollection<Game> newList)
         {
             gamesObsCollection!.Clear();
-            foreach (JoinableGame game in newList) { gamesObsCollection.Add(game); }
+            foreach (Game game in newList) { gamesObsCollection.Add(game); }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
         public override void RemoveSnapshotListener()
@@ -38,7 +38,7 @@ namespace Tetris.ModelsLogic
             ilr?.Remove();
         }
 
-        public async Task AddGameToDB(JoinableGame currentNewGame)
+        public async Task AddGameToDB(Game currentNewGame)
         {
             currentNewGame.GameID = await fbd.AddGameToDB(
                 currentNewGame.CubeColor,

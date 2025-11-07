@@ -2,9 +2,9 @@
 
 namespace Tetris.ModelsLogic
 {
-    public class JoinableGame(string CubeColor, string CreatorName, int CurrentPlayersCount,
+    public class Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, string GameID) :
-        JoinableGameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount,
+        GameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount,
             IsPublicGame, GameID)
     {
         public override async void NavToGame()

@@ -19,7 +19,7 @@ namespace Tetris.Models
         public abstract IListenerRegistration AddSnapshotListener(string collectionName,
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public abstract void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<ObservableCollection<JoinableGame>> onComplete);
+            string key1, string key2, Action<ObservableCollection<Game>> onComplete);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

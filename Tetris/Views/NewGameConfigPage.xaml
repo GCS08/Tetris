@@ -6,7 +6,8 @@
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
     x:DataType="vm:NewGameConfigPageVM"
-    IsBusy="{Binding IsBusy}">
+    IsBusy="{Binding IsBusy}"
+    Shell.NavBarIsVisible="False">
 
     <Grid>
         <!--  Background Image  -->
@@ -214,9 +215,9 @@
 
                 <Button
                     Command="{Binding CreateGameCommand}"
-                    IsEnabled="{Binding IsCreateEnabled}"
                     FontSize="20"
                     HorizontalOptions="Center"
+                    IsEnabled="{Binding IsCreateEnabled}"
                     Text="{x:Static m:Strings.CreateGameButtonText}" />
             </VerticalStackLayout>
         </ScrollView>

@@ -7,7 +7,7 @@ namespace Tetris.Models
     public abstract class JoinableGamesListModel
     {
         protected readonly FbData fbd = new();
-        public ObservableCollection<JoinableGame>? gamesObsCollection;
+        public ObservableCollection<Game>? gamesObsCollection;
         protected IListenerRegistration? ilr;
         public EventHandler? OnGamesChanged;
         public abstract void AddSnapshotListener();

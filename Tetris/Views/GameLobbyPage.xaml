@@ -52,7 +52,7 @@
                             TextColor="White" />
                     </CollectionView.Header>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="m:JoinableGameModel">
+                        <DataTemplate x:DataType="m:GameModel">
                             <Grid Margin="10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1.5*" />

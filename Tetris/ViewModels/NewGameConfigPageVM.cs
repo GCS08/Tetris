@@ -9,7 +9,7 @@ namespace Tetris.ViewModels
     {
         public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
         public ICommand CreateGameCommand { get; }
-        private readonly JoinableGame currentNewGame;
+        private readonly Game currentNewGame;
         private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
         public bool IsCreateEnabled { get; set; } = true;

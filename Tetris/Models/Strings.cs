@@ -93,5 +93,6 @@
         public const string FailedRandomApiUN = "UnknownUser";
         public const string CreateNewGameTitle = "Create new game:";
         public const string CreateGameButtonText = "Create game!";
+        public const string WaitingRoomTitle = "Waiting Room:";
     }
 }

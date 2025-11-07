@@ -3,7 +3,7 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
-    public abstract class JoinableGameModel
+    public abstract class GameModel
     {
         public string CubeColor { get; set; }
         public string CreatorName { get; set; }
@@ -15,7 +15,7 @@ namespace Tetris.Models
         public ICommand JoinGameCommand { get; set; }
         protected FbData fbd = new();
         public abstract void NavToGame();
-        public JoinableGameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
+        public GameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
             int MaxPlayersCount, bool IsPublicGame, string GameID)
         {
             this.CubeColor = CubeColor;

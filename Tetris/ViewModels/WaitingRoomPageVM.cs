@@ -7,7 +7,7 @@ namespace Tetris.ViewModels
     public class WaitingRoomPageVM
     {
         public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
-        public WaitingRoomPageVM(JoinableGame game)
+        public WaitingRoomPageVM(Game game)
         {
         }
         private async void NavToGameLobby(object obj)
