@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Models
 {
-    internal static class Keys
+    public static class Keys
     {
         public const string UserNameKey = "userName";
         public const string PasswordKey = "password";

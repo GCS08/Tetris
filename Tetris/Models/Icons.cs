@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Models
 {
-    internal static class Icons
+    public static class Icons
     {
         public const string Delete = "\ue872";
         public const string Restore_from_trash = "\ue938";

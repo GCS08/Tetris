@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Models
 {
-    internal class TechnicalConsts
+    public class TechnicalConsts
     {
         public const string DefaultUserName = "Guest";
         public const string ResponseText = "Response:";

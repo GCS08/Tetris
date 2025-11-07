@@ -5,7 +5,7 @@ using CommunityToolkit.Maui.Alerts;
 
 namespace Tetris.ViewModels
 {
-    internal class RegisterPageVM : ObservableObject, IQueryAttributable
+    public class RegisterPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand NavBackHomeCommand => new Command(NavHome);

@@ -22,14 +22,12 @@ namespace Tetris.ModelsLogic
                     
                     json = await response.Content.ReadAsStringAsync();
 
-                    using (JsonDocument doc = JsonDocument.Parse(json))
-                    {
-                        return doc.RootElement
-                                  .GetProperty(TechnicalConsts.ResultsJson)[0]
-                                  .GetProperty(TechnicalConsts.LoginJson)
-                                  .GetProperty(TechnicalConsts.UsernameJson)
-                                  .GetString()!;
-                    }
+                    using JsonDocument doc = JsonDocument.Parse(json);
+                    return doc.RootElement
+                              .GetProperty(TechnicalConsts.ResultsJson)[0]
+                              .GetProperty(TechnicalConsts.LoginJson)
+                              .GetProperty(TechnicalConsts.UsernameJson)
+                              .GetString()!;
                 }
                 catch
                 {

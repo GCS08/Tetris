@@ -1,6 +1,7 @@
 ﻿using Firebase.Auth;
 using Firebase.Auth.Providers;
 using Plugin.CloudFirestore;
+using System.Collections.ObjectModel;
 using Tetris.ModelsLogic;
 
 namespace Tetris.Models
@@ -18,7 +19,7 @@ namespace Tetris.Models
         public abstract IListenerRegistration AddSnapshotListener(string collectionName,
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public abstract void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<List<JoinableGame>> onComplete);
+            string key1, string key2, Action<ObservableCollection<JoinableGame>> onComplete);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

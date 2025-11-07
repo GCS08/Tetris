@@ -1,12 +1,13 @@
 ﻿using Plugin.CloudFirestore;
+using System.Collections.ObjectModel;
 using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
-    abstract class JoinableGamesListModel
+    public abstract class JoinableGamesListModel
     {
         protected readonly FbData fbd = new();
-        public List<JoinableGame>? list;
+        public ObservableCollection<JoinableGame>? gamesObsCollection;
         protected IListenerRegistration? ilr;
         public EventHandler? OnGamesChanged;
         public abstract void AddSnapshotListener();

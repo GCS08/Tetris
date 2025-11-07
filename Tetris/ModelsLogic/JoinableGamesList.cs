@@ -1,19 +1,21 @@
 ﻿using Plugin.CloudFirestore;
+using System.Collections.ObjectModel;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    internal class JoinableGamesList : JoinableGamesListModel
+    public class JoinableGamesList : JoinableGamesListModel
     {
-        public JoinableGamesList(List<JoinableGame> list)
+        public JoinableGamesList(ObservableCollection<JoinableGame> list)
         {
-            this.list = list;
+            this.gamesObsCollection = list;
         }
         public static async Task<JoinableGamesList> CreateAsync()
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
-            innerObject.list = await innerObject.fbd.GetJoinableGamesAsync();
+            innerObject.gamesObsCollection = await innerObject.fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
+                Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey);
             return innerObject;
         }
         public override void AddSnapshotListener()
@@ -23,17 +25,27 @@ namespace Tetris.ModelsLogic
         private void OnChange(IQuerySnapshot snapshot, Exception error)
         {
             fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
-                Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey, OnComplete);
+                Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey, OnCompleteChange);
         }
-        private void OnComplete(List<JoinableGame> newList)
+        private void OnCompleteChange(ObservableCollection<JoinableGame> newList)
         {
-            list!.Clear();
-            foreach (JoinableGame game in newList) { list.Add(game); }
+            gamesObsCollection!.Clear();
+            foreach (JoinableGame game in newList) { gamesObsCollection.Add(game); }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
         public override void RemoveSnapshotListener()
         {
             ilr?.Remove();
+        }
+
+        public async Task AddGameToDB(JoinableGame currentNewGame)
+        {
+            currentNewGame.GameID = await fbd.AddGameToDB(
+                currentNewGame.CubeColor,
+                Preferences.Get(Keys.UserNameKey, string.Empty),
+                currentNewGame.CurrentPlayersCount,
+                currentNewGame.MaxPlayersCount,
+                currentNewGame.IsPublicGame);
         }
     }
 }

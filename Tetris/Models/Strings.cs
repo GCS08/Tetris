@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Models
 {
-    internal class Strings
+    public class Strings
     {
         public const string UserName = "Enter your username:";
         public const string Email = "Enter your email:";

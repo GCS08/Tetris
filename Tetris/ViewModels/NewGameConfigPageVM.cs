@@ -1,19 +1,23 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
+using Tetris.Views;
 using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    internal class NewGameConfigPageVM : ObservableObject
+    public partial class NewGameConfigPageVM : ObservableObject
     {
         public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
         public ICommand CreateGameCommand { get; }
         private readonly JoinableGame currentNewGame;
+        private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
-        public NewGameConfigPageVM()
+        public bool IsCreateEnabled { get; set; } = true;
+        public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
             CreateGameCommand = new Command(async () => await CreateGame());
             currentNewGame = new("Red", Preferences.Get(Keys.UserNameKey, "Anonymous"), 1, 2, true, string.Empty);
+            gamesList = joinableGamesList;
         }
         public string SelectedColor
         {
@@ -57,12 +61,18 @@ namespace Tetris.ViewModels
         }
         private async Task CreateGame()
         {
-            IsBusy = true;
+            UpdatePropertiesByBusy(true);
+            await gamesList.AddGameToDB(currentNewGame);
+            UpdatePropertiesByBusy(false);
+            await Shell.Current.Navigation.PushAsync(
+                new WaitingRoomPage(currentNewGame));
+        }
+        private void UpdatePropertiesByBusy(bool value)
+        {
+            IsBusy = value;
             OnPropertyChanged(nameof(IsBusy));
-            await currentNewGame.AddGameToDB();
-            IsBusy = false;
-            OnPropertyChanged(nameof(IsBusy));
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGamePage);
+            IsCreateEnabled = !value;
+            OnPropertyChanged(nameof(IsCreateEnabled));
         }
         private async void NavGameLobby()
         {

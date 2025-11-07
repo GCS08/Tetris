@@ -1,6 +1,6 @@
 ﻿namespace Tetris.Models
 {
-    internal static class ConstData
+    public static class ConstData
     {
         public const int MinCharacterInUN = 5;
         public const int MinCharacterInPW = 8;

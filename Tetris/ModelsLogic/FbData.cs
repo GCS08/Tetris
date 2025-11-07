@@ -2,6 +2,7 @@
 using Firebase.Auth.Providers;
 using Microsoft.Maui.ApplicationModel.Communication;
 using Plugin.CloudFirestore;
+using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Tetris.Models;
@@ -64,7 +65,6 @@ namespace Tetris.ModelsLogic
         public override async Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
             Task<UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
-            bool success = false;
 
             try
             {
@@ -86,12 +86,7 @@ namespace Tetris.ModelsLogic
                 tcs.SetException(ex);
                 firebaseTask = tcs.Task;
             }
-            finally
-            {
-                success = await OnCompleteLogin(firebaseTask);
-            }
-
-            return success;
+            return await OnCompleteLogin(firebaseTask);
         }
         public override void SignOut()
         {
@@ -181,9 +176,9 @@ namespace Tetris.ModelsLogic
             return errorMessage;
         }
 
-        public async Task<List<JoinableGame>> GetJoinableGamesAsync()
+        public async Task<ObservableCollection<JoinableGame>> GetJoinableGamesAsync()
         {
-            List<JoinableGame> joinableGames = new();
+            ObservableCollection<JoinableGame> joinableGames = [];
             IQuerySnapshot collection = await fs
                 .Collection(Keys.GamesCollectionName)
                 .GetAsync();
@@ -237,11 +232,11 @@ namespace Tetris.ModelsLogic
             return cr.AddSnapshotListener(OnChange);
         }
         public override async void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<List<JoinableGame>> onComplete)
+            string key1, string key2, Action<ObservableCollection<JoinableGame>> onCompleteChange)
         {
             ICollectionReference collectionRef = fs.Collection(collectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
-            List<JoinableGame> newList = [];
+            ObservableCollection<JoinableGame> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
@@ -258,7 +253,32 @@ namespace Tetris.ModelsLogic
                     newList.Add(game);
                 }
             }
-            onComplete(newList);
+            onCompleteChange(newList);
+        }
+        public async Task<ObservableCollection<JoinableGame>>
+            GetDocumentsWhereDiffValue(string collectionName,
+            string key1, string key2)
+        {
+            ICollectionReference collectionRef = fs.Collection(collectionName);
+            IQuerySnapshot snapshot = await collectionRef.GetAsync();
+            ObservableCollection<JoinableGame> newList = [];
+
+            foreach (IDocumentSnapshot doc in snapshot.Documents)
+            {
+                if (doc.Get<object>(key1) != doc.Get<object>(key2))
+                {
+                    JoinableGame game = new(
+                        doc.Get<string>(Keys.CubeColorKey)!,
+                        doc.Get<string>(Keys.CreatorNameKey)!,
+                        doc.Get<int>(Keys.CurrentPlayersCountKey),
+                        doc.Get<int>(Keys.MaxPlayersCountKey),
+                        doc.Get<bool>(Keys.IsPublicGameKey),
+                        doc.Id
+                    );
+                    newList.Add(game);
+                }
+            }
+            return newList;
         }
     }
 }

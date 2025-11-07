@@ -214,6 +214,7 @@
 
                 <Button
                     Command="{Binding CreateGameCommand}"
+                    IsEnabled="{Binding IsCreateEnabled}"
                     FontSize="20"
                     HorizontalOptions="Center"
                     Text="{x:Static m:Strings.CreateGameButtonText}" />

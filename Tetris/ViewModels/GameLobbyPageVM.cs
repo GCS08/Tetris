@@ -1,12 +1,12 @@
-﻿using Firebase.Auth;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
+using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
-    public class GameLobbyPageVM : ObservableObject
+    public partial class GameLobbyPageVM : ObservableObject
     {
         private JoinableGamesList? JoinableGamesList { get; set; }
         public ObservableCollection<JoinableGame>? Games { get; private set; }
@@ -15,11 +15,7 @@ namespace Tetris.ViewModels
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
         private void OnGamesChanged(object? sender, EventArgs e)
         {
-            Games!.Clear();
-            foreach (var game in JoinableGamesList!.list!)
-            {
-                Games.Add(game);
-            }
+            OnPropertyChanged(nameof(Games));
         }
         public void AddSnapshotListener()
         {
@@ -39,24 +35,15 @@ namespace Tetris.ViewModels
         }
         private async void NavToNewGameConfigGame()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectNewGameConfigPage);
+            await Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList!));
         }
 
         public async Task LoadGamesList()
         {
-            // Initialize the joinable games list
             JoinableGamesList = await JoinableGamesList.CreateAsync();
-
-            // Subscribe to changes
             JoinableGamesList!.OnGamesChanged += OnGamesChanged;
-
-            // Populate the ObservableCollection
-            Games!.Clear(); // clear any existing items
-            foreach (var game in JoinableGamesList.list!)
-            {
-                Games.Add(game);
-            }
+            Games = JoinableGamesList.gamesObsCollection;
+            OnPropertyChanged(nameof(Games));
         }
-
     }
 }
