@@ -10,7 +10,7 @@ namespace Tetris.Models
         public ObservableCollection<Game>? gamesObsCollection;
         protected IListenerRegistration? ilr;
         public EventHandler? OnGamesChanged;
-        public abstract void AddSnapshotListener();
-        public abstract void RemoveSnapshotListener();
+        public abstract void AddGamesCollectionListener();
+        public abstract void RemoveGamesCollectionListener();
     }
 }

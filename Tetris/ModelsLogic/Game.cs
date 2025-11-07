@@ -1,4 +1,5 @@
-﻿using Tetris.Models;
+﻿using Plugin.CloudFirestore;
+using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
@@ -9,7 +10,34 @@ namespace Tetris.ModelsLogic
     {
         public async Task OnPlayerLeaveWR()
         {
-            await fbd.OnPlayerLeaveWR(GameID);
+            if (CurrentPlayersCount <= 1)
+                await fbd.DeleteGameFromDB(GameID);
+            else
+            {
+                await fbd.OnPlayerLeaveWR(GameID);
+                CurrentPlayersCount -= 1;
+                UsersInGame.Remove(User);
+            }            
+        }
+
+        public void AddGameListener()
+        {
+            ilr = fbd.AddGameListener(GameID, OnChange!);
+        }
+        private void OnChange(IDocumentSnapshot snapshot, Exception error)
+        {
+            if (error != null)
+            {
+                // handle the error
+                return;
+            }
+            Game updatedGame = snapshot.ConvertTo<Game>()!;
+            CurrentPlayersCount = updatedGame.CurrentPlayersCount;
+            UsersInGame = updatedGame.UsersInGame;
+        }
+        public void RemoveGameListener()
+        {
+            throw new NotImplementedException();
         }
     }
 }

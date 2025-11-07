@@ -5,7 +5,7 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
-    public class LoginPageVM : ObservableObject, IQueryAttributable
+    public partial class LoginPageVM : ObservableObject, IQueryAttributable
     {
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);

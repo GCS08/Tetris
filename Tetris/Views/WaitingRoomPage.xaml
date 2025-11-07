@@ -38,8 +38,47 @@
                     HorizontalTextAlignment="Center"
                     Text="{x:Static m:Strings.WaitingRoomTitle}"
                     TextColor="White" />
-                <CollectionView>
-                    
+                <CollectionView
+                    SelectionMode="None"
+                    Margin="20"
+                    ItemsSource="{Binding PlayersInGame}">
+                    <CollectionView.Header>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="23"
+                            HorizontalOptions="End"
+                            Text="{x:Static m:Strings.PlayersInRoomTitle}"
+                            TextColor="White" />
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:UserModel">
+                            <Grid Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label
+                                    FontSize="20"
+                                    Grid.Column="0"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding UserName}"
+                                    TextColor="White" />
+                                <Label
+                                    FontSize="20"
+                                    Grid.Column="1"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding TotalLinesDisplay}"
+                                    TextColor="White" />
+                                <Label
+                                    FontSize="20"
+                                    Grid.Column="1"
+                                    HorizontalOptions="Center"
+                                    Text="{Binding HighestScoreDisplay}"
+                                    TextColor="White" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
                 </CollectionView>
             </VerticalStackLayout>
         </ScrollView>

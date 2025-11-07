@@ -8,8 +8,7 @@ using static Tetris.Models.ConstData;
 namespace Tetris.ModelsLogic
 {
     public class User : UserModel
-    {
-        readonly Strings dynamicStrings = new();
+    {        
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
@@ -33,26 +32,16 @@ namespace Tetris.ModelsLogic
         private async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
-            string userName = await fbd.GetUserDataAsync<string>(Keys.UserNameKey);
-            int totalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
-            int gamesPlayed = await fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey);
-            int highestScore = await fbd.GetUserDataAsync<int>(Keys.HighestScoreKey);
-            bool settings0 = await fbd.GetUserDataAsync<bool>(Keys.Settings0Key);
-            bool settings1 = await fbd.GetUserDataAsync<bool>(Keys.Settings1Key);
-            bool settings2 = await fbd.GetUserDataAsync<bool>(Keys.Settings2Key);
-            string dateJoined = await fbd.GetUserDataAsync<string>(Keys.DateJoinedKey);
+            UserName = await fbd.GetUserDataAsync<string>(Keys.UserNameKey);
+            TotalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
+            GamesPlayed = await fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey);
+            HighestScore = await fbd.GetUserDataAsync<int>(Keys.HighestScoreKey);
+            Settings0 = await fbd.GetUserDataAsync<bool>(Keys.Settings0Key);
+            Settings1 = await fbd.GetUserDataAsync<bool>(Keys.Settings1Key);
+            Settings2 = await fbd.GetUserDataAsync<bool>(Keys.Settings2Key);
+            DateJoined = await fbd.GetUserDataAsync<string>(Keys.DateJoinedKey);
 
-            // Now store everything in Preferences
-            Preferences.Set(Keys.UserNameKey, userName);
-            Preferences.Set(Keys.EmailKey, Email);
-            Preferences.Set(Keys.PasswordKey, Password);
-            Preferences.Set(Keys.TotalLinesKey, totalLines);
-            Preferences.Set(Keys.GamesPlayedKey, gamesPlayed);
-            Preferences.Set(Keys.HighestScoreKey, highestScore);
-            Preferences.Set(Keys.Settings0Key, settings0);
-            Preferences.Set(Keys.Settings1Key, settings1);
-            Preferences.Set(Keys.Settings2Key, settings2);
-            Preferences.Set(Keys.DateJoinedKey, dateJoined);
+            SaveToPreferences();
         }
         public override async Task<bool> Register()
         {
@@ -63,7 +52,7 @@ namespace Tetris.ModelsLogic
         {
             if (task.IsCompletedSuccessfully)
             {
-                RegisterSaveToPreferences();
+                SaveToPreferences();
                 await Toast.Make(Strings.RegisterSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
@@ -74,18 +63,19 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-        private void RegisterSaveToPreferences()
+        private void SaveToPreferences()
         {
+            // Now store everything in Preferences
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.EmailKey, Email);
             Preferences.Set(Keys.PasswordKey, Password);
-            Preferences.Set(Keys.TotalLinesKey, 0);
-            Preferences.Set(Keys.GamesPlayedKey, 0);
-            Preferences.Set(Keys.HighestScoreKey, 0);
-            Preferences.Set(Keys.Settings0Key, true);
-            Preferences.Set(Keys.Settings1Key, true);
-            Preferences.Set(Keys.Settings2Key, true);
-            Preferences.Set(Keys.DateJoinedKey, DateTime.Now.ToString(TechnicalConsts.DateFormat));
+            Preferences.Set(Keys.TotalLinesKey, TotalLines);
+            Preferences.Set(Keys.GamesPlayedKey, GamesPlayed);
+            Preferences.Set(Keys.HighestScoreKey, HighestScore);
+            Preferences.Set(Keys.Settings0Key, Settings0);
+            Preferences.Set(Keys.Settings1Key, Settings1);
+            Preferences.Set(Keys.Settings2Key, Settings2);
+            Preferences.Set(Keys.DateJoinedKey, DateJoined);
         }
         public override void SignOut()
         {

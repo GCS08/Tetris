@@ -18,9 +18,9 @@ namespace Tetris.ModelsLogic
                 Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey);
             return innerObject;
         }
-        public override void AddSnapshotListener()
+        public override void AddGamesCollectionListener()
         {
-            ilr = fbd.AddSnapshotListener(Keys.GamesCollectionName, OnChange!);
+            ilr = fbd.AddGamesCollectionListener(OnChange!);
         }
         private void OnChange(IQuerySnapshot snapshot, Exception error)
         {
@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
             foreach (Game game in newList) { gamesObsCollection.Add(game); }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
-        public override void RemoveSnapshotListener()
+        public override void RemoveGamesCollectionListener()
         {
             ilr?.Remove();
         }

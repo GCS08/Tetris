@@ -13,11 +13,11 @@ public partial class GameLobbyPage : ContentPage
     {
         base.OnAppearing();
         await glpVM.LoadGamesList();
-        glpVM.AddSnapshotListener();
+        glpVM.AddGamesCollectionListener();
     }
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        glpVM.RemoveSnapshotListener();
+        glpVM.RemoveGamesCollectionListener();
     }
 }

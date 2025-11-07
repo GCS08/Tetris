@@ -94,5 +94,8 @@
         public const string CreateNewGameTitle = "Create new game:";
         public const string CreateGameButtonText = "Create game!";
         public const string WaitingRoomTitle = "Waiting Room:";
+        public const string PlayersInRoomTitle = "Players waiting:";
+        public const string TotalLinesShort = "tlc: ";
+        public const string HighestScoreShort = "hs: ";
     }
 }

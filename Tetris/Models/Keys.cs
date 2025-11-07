@@ -35,5 +35,6 @@
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";
+        public const string PlayerKey = "Player";
     }
 }

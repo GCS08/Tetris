@@ -17,13 +17,13 @@ namespace Tetris.ViewModels
         {
             OnPropertyChanged(nameof(Games));
         }
-        public void AddSnapshotListener()
+        public void AddGamesCollectionListener()
         {
-            JoinableGamesList!.AddSnapshotListener();
+            JoinableGamesList!.AddGamesCollectionListener();
         }
-        public void RemoveSnapshotListener()
+        public void RemoveGamesCollectionListener()
         {
-            JoinableGamesList!.RemoveSnapshotListener();
+            JoinableGamesList!.RemoveGamesCollectionListener();
         }
         private async void NavHome()
         {

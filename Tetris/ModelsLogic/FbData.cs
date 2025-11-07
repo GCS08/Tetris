@@ -215,21 +215,30 @@ namespace Tetris.ModelsLogic
 
             await docRef.SetAsync(new
             {
-                CreatorName = userName,
+                Player0 = userName,
                 CubeColor = cubeColor,
                 CurrentPlayersCount = currentPlayersCount,
                 IsPublicGame = isPublicGame,
                 MaxPlayersCount = maxPlayersCount
             });
 
+            for (int i = 1; i < maxPlayersCount; i++)
+                await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
+
             // Return the auto-generated document ID
             return docRef.Id;
         }
-        public override IListenerRegistration AddSnapshotListener(string collectionName,
+        public override IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange)
         {
-            ICollectionReference cr = fs.Collection(collectionName);
+            ICollectionReference cr = fs.Collection(Keys.GamesCollectionName);
             return cr.AddSnapshotListener(OnChange);
+        }
+        public override IListenerRegistration AddGameListener(
+            string documentId, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(documentId);
+            return dr.AddSnapshotListener(OnChange);
         }
         public override async void GetDocumentsWhereDiffValue(string collectionName,
             string key1, string key2, Action<ObservableCollection<Game>> onCompleteChange)
@@ -288,12 +297,17 @@ namespace Tetris.ModelsLogic
         public async Task OnPlayerLeaveWR(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
-            IDocumentSnapshot docSnap = await docRef.GetAsync();
-            int currentValue = docSnap.Get<int>(Keys.CurrentPlayersCountKey);
-            if (currentValue <= 1)
-                await docRef.DeleteAsync();
-            else
-                await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, currentValue - 1);
+            await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(-1));
+        }
+
+        public async Task DeleteGameFromDB(string id)
+        {
+            await fs.Collection(Keys.GamesCollectionName).Document(id).DeleteAsync();
+        }
+
+        internal IListenerRegistration? AddGameListener(string gameID, object value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

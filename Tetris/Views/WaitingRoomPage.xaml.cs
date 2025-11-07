@@ -4,9 +4,22 @@ namespace Tetris.Views;
 
 public partial class WaitingRoomPage : ContentPage
 {
+	private WaitingRoomPageVM wrpVM;
 	public WaitingRoomPage(Game game)
 	{
 		InitializeComponent();
-		BindingContext = new WaitingRoomPageVM(game);
+		wrpVM = new(game);
+		BindingContext = wrpVM;
+    }
+
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		wrpVM.AddGameListener();
+    }
+    protected override void OnDisappearing()
+	{
+		base.OnDisappearing();
+		wrpVM.RemoveGameListener();
     }
 }
