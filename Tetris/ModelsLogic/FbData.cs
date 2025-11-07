@@ -284,5 +284,16 @@ namespace Tetris.ModelsLogic
             }
             return newList;
         }
+
+        public async Task OnPlayerLeaveWR(string id)
+        {
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            int currentValue = docSnap.Get<int>(Keys.CurrentPlayersCountKey);
+            if (currentValue <= 1)
+                await docRef.DeleteAsync();
+            else
+                await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, currentValue - 1);
+        }
     }
 }

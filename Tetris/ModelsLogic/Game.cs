@@ -7,9 +7,9 @@ namespace Tetris.ModelsLogic
         GameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount,
             IsPublicGame, GameID)
     {
-        public override async void NavToGame()
+        public async Task OnPlayerLeaveWR()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            await fbd.OnPlayerLeaveWR(GameID);
         }
     }
 }

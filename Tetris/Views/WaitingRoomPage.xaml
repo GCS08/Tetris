@@ -38,6 +38,9 @@
                     HorizontalTextAlignment="Center"
                     Text="{x:Static m:Strings.WaitingRoomTitle}"
                     TextColor="White" />
+                <CollectionView>
+                    
+                </CollectionView>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

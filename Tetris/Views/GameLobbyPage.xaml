@@ -89,7 +89,7 @@
                                     VerticalTextAlignment="Center" />
                                 <Button
                                     Grid.Column="0"
-                                    Margin="7"
+                                    Margin="7"                             
                                     Command="{Binding JoinGameCommand}"
                                     FontSize="20"
                                     Text="{x:Static m:Strings.JoinGameButtonText}"

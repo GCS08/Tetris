@@ -11,7 +11,7 @@ namespace Tetris.ViewModels
         private JoinableGamesList? JoinableGamesList { get; set; }
         public ObservableCollection<Game>? Games { get; private set; }
         public ICommand NavBackHomeCommand => new Command(NavHome);
-        public ICommand NavToGameCommand => new Command(NavToGame);
+        public ICommand NavToGameCommand => new Command(NavHome);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
         private void OnGamesChanged(object? sender, EventArgs e)
         {
@@ -28,10 +28,6 @@ namespace Tetris.ViewModels
         private async void NavHome()
         {
             await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
-        }
-        private async void NavToGame()
-        {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGamePage);
         }
         private async void NavToNewGameConfigGame()
         {
