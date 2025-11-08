@@ -310,6 +310,16 @@ namespace Tetris.ModelsLogic
                     await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
         }
 
+        public async Task OnPlayerJoinWR(string id, string leavingUserID)
+        {
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
+            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+                if (docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty)
+                    await docRef.UpdateAsync(Keys.PlayerKey + i, leavingUserID);
+        }
+
         public async Task DeleteGameFromDB(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);

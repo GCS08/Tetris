@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Plugin.CloudFirestore;
 using Tetris.Models;
+using Tetris.Views;
 
 namespace Tetris.ModelsLogic
 {
@@ -21,7 +23,7 @@ namespace Tetris.ModelsLogic
             {
                 await fbd.OnPlayerLeaveWR(GameID,
                     (Application.Current as App)!.user.UserID);
-                CurrentPlayersCount -= 1;
+                CurrentPlayersCount--;
                 UsersInGame.Remove((Application.Current as App)!.user);
             }            
         }
@@ -44,6 +46,15 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
             ilr = null;
+        }
+
+        public override async void NavToWR()
+        {
+            await fbd.OnPlayerJoinWR(GameID,
+                (Application.Current as App)!.user.UserID);
+            CurrentPlayersCount++;
+            UsersInGame.Add((Application.Current as App)!.user);
+            await Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
         }
     }
 }
