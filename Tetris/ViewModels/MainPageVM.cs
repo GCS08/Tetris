@@ -45,8 +45,7 @@ namespace Tetris.ViewModels
         {
             app = Application.Current as App;
             user = app!.user;
-            //Preferences.Clear();
-            //user.SignOut();
+            SignOut();
             RefreshProperties();
         }
         private void SeveralPropertiesChange()
@@ -78,6 +77,7 @@ namespace Tetris.ViewModels
         {
             user.SignOut();
             app!.user = new();
+            Preferences.Clear();
             RefreshProperties();
         }
     }

@@ -38,11 +38,12 @@ namespace Tetris.ModelsLogic
             ilr?.Remove();
         }
 
-        public async Task AddGameToDB(Game currentNewGame)
+        public async Task AddGameToDB(Game currentNewGame, User creator)
         {
             currentNewGame.GameID = await fbd.AddGameToDB(
+                creator.UserID,
+                creator.UserName,
                 currentNewGame.CubeColor,
-                Preferences.Get(Keys.UserNameKey, string.Empty),
                 currentNewGame.CurrentPlayersCount,
                 currentNewGame.MaxPlayersCount,
                 currentNewGame.IsPublicGame);

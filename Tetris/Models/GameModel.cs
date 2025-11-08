@@ -17,8 +17,8 @@ namespace Tetris.Models
         public ObservableCollection<User> UsersInGame { get; set; }
         protected FbData fbd = new();
         public ICommand JoinGameCommand => new Command(NavToHome);
-        public User User { get; set; }
         protected IListenerRegistration? ilr;
+        public EventHandler? OnPlayersChange;
         public GameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, string GameID)
         {
@@ -29,9 +29,7 @@ namespace Tetris.Models
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
             this.UsersInGame = [];
-            App? app = Application.Current as App;
-            User = app!.user;
-            UsersInGame.Add(User);
+            UsersInGame.Add((Application.Current as App)!.user);
         }
         private async void NavToHome()
         {

@@ -86,8 +86,7 @@
         public const string EmailVerificationError = "Email not verified.\nPlease verify your email before logging in.";
         public const string PlayButtonText = "Play!";
         public const string PlaySoloButtonText = "Play solo";
-        public const string CreateNewRoomButtonText = "Create new\n" +
-            "private room";
+        public const string CreateNewRoomButtonText = "Create new room";
         public const string AvailableGamesTitle = "Available Games:";
         public const string JoinGameButtonText = "Join Game!";
         public const string FailedRandomApiUN = "UnknownUser";

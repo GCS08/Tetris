@@ -4,7 +4,7 @@ namespace Tetris.Views;
 
 public partial class WaitingRoomPage : ContentPage
 {
-	private WaitingRoomPageVM wrpVM;
+	private readonly WaitingRoomPageVM wrpVM;
 	public WaitingRoomPage(Game game)
 	{
 		InitializeComponent();

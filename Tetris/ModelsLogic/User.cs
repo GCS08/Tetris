@@ -32,6 +32,7 @@ namespace Tetris.ModelsLogic
         private async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
+            UserID = fbd.GetCurrentUserID();
             UserName = await fbd.GetUserDataAsync<string>(Keys.UserNameKey);
             TotalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
             GamesPlayed = await fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey);
@@ -53,19 +54,23 @@ namespace Tetris.ModelsLogic
             if (task.IsCompletedSuccessfully)
             {
                 SaveToPreferences();
-                await Toast.Make(Strings.RegisterSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
+                await Toast.Make(Strings.RegisterSuccess,
+                    CommunityToolkit.Maui.Core.ToastDuration.Short,
+                    ConstData.ToastFontSize).Show();
                 return true;
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
+                await Shell.Current.DisplayAlert(Strings.RegisterErrorTitle,
+                    errorMessage, Strings.RegisterFailButton);
                 return false;
             }
         }
         private void SaveToPreferences()
         {
             // Now store everything in Preferences
+            Preferences.Set(Keys.UserIDKey, UserID);
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.EmailKey, Email);
             Preferences.Set(Keys.PasswordKey, Password);

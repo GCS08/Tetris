@@ -13,8 +13,11 @@ namespace Tetris.ViewModels
         private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
         public bool IsCreateEnabled { get; set; } = true;
+        private readonly User user;
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
+            App? app = Application.Current as App;
+            user = app!.user;
             CreateGameCommand = new Command(async () => await CreateGame());
             currentNewGame = new("Red", Preferences.Get(Keys.UserNameKey, "Anonymous"), 1, 2, true, string.Empty);
             gamesList = joinableGamesList;
@@ -62,7 +65,8 @@ namespace Tetris.ViewModels
         private async Task CreateGame()
         {
             UpdatePropertiesByBusy(true);
-            await gamesList.AddGameToDB(currentNewGame);
+            await gamesList.AddGameToDB(currentNewGame,
+                (Application.Current as App)!.user);
             UpdatePropertiesByBusy(false);
             await Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));

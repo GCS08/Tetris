@@ -6,11 +6,22 @@ using System.Collections.ObjectModel;
 
 namespace Tetris.ViewModels
 {
-    public class WaitingRoomPageVM(Game game)
+    public partial class WaitingRoomPageVM : ObservableObject
     {
-        Game CurrentGame { get; set; } = game;
+        private Game CurrentGame { get; set; }
         public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
-        public ObservableCollection<User> UsersInGame => CurrentGame.UsersInGame;
+        public ObservableCollection<User> PlayersInGame => CurrentGame.UsersInGame;
+        public WaitingRoomPageVM(Game game)
+        {
+            this.CurrentGame = game;
+            CurrentGame.OnPlayersChange += OnPlayersChange;
+        }
+
+        private void OnPlayersChange(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(PlayersInGame));
+        }
+
         private async void NavToGameLobby()
         {
             await CurrentGame.OnPlayerLeaveWR();

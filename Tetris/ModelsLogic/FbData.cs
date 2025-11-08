@@ -1,10 +1,11 @@
-﻿using Firebase.Auth;
-using Firebase.Auth.Providers;
-using Microsoft.Maui.ApplicationModel.Communication;
-using Plugin.CloudFirestore;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Firebase.Auth;
+using Firebase.Auth.Providers;
+using Microsoft.Maui.ApplicationModel.Communication;
+using Plugin.CloudFirestore;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -115,6 +116,10 @@ namespace Tetris.ModelsLogic
                 await OnCompleteSendEmail(firebaseTask);
             }
         }
+        public string GetCurrentUserID()
+        {
+            return facl.User?.Uid ?? string.Empty;
+        }
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))
@@ -207,7 +212,7 @@ namespace Tetris.ModelsLogic
             return joinableGames;
         }
 
-        public async Task<string> AddGameToDB(string cubeColor, string userName,
+        public async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
@@ -215,7 +220,8 @@ namespace Tetris.ModelsLogic
 
             await docRef.SetAsync(new
             {
-                Player0 = userName,
+                Player0 = userID,
+                CreatorName = creatorName,
                 CubeColor = cubeColor,
                 CurrentPlayersCount = currentPlayersCount,
                 IsPublicGame = isPublicGame,
@@ -294,18 +300,59 @@ namespace Tetris.ModelsLogic
             return newList;
         }
 
-        public async Task OnPlayerLeaveWR(string id)
+        public async Task OnPlayerLeaveWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(-1));
+            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+                if (docSnap.Get<string>(Keys.PlayerKey + i) == leavingUserID)
+                    await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
         }
 
         public async Task DeleteGameFromDB(string id)
         {
-            await fs.Collection(Keys.GamesCollectionName).Document(id).DeleteAsync();
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
+            await docRef.DeleteAsync();
+        }
+        private async Task<User> UserIDToObject(string id)
+        {
+            IDocumentSnapshot docSnap = await fs.Collection(Keys.UsersCollectionName).Document(id).GetAsync();
+            User user = new()
+            {
+                UserID = id,
+                UserName = docSnap.Get<string>(Keys.UserNameKey)!,
+                Email = docSnap.Get<string>(Keys.EmailKey)!,
+                DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
+                GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
+                HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
+                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey),
+                Settings0 = docSnap.Get<bool>(Keys.Settings0Key),
+                Settings1 = docSnap.Get<bool>(Keys.Settings1Key),
+                Settings2 = docSnap.Get<bool>(Keys.Settings2Key)
+            };
+            return user;
+        }
+        public async void GetPlayersFromDocument(string gameID,
+            Action<ObservableCollection<User>> onCompleteChange)
+        {
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            ObservableCollection<User> newList = [];
+
+            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+            {
+                if (!(docSnap.Get<string>(Keys.PlayerKey + i) == null ||
+                    docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty))
+                {
+                    User tempUser = await UserIDToObject(docSnap.Get<string>(Keys.PlayerKey + i)!);
+                    newList.Add(tempUser);
+                }
+            }
+            onCompleteChange(newList);
         }
 
-        internal IListenerRegistration? AddGameListener(string gameID, object value)
+        internal void GetPlayersFromDocument(string gameID, object value)
         {
             throw new NotImplementedException();
         }

@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
+    Shell.NavBarIsVisible="False"
     x:DataType="vm:GameLobbyPageVM">
     <Grid>
         <!--  Background Image  -->
