@@ -53,6 +53,7 @@ namespace Tetris.ModelsLogic
         {
             if (task.IsCompletedSuccessfully)
             {
+                UserID = fbd.GetCurrentUserID();
                 SaveToPreferences();
                 await Toast.Make(Strings.RegisterSuccess,
                     CommunityToolkit.Maui.Core.ToastDuration.Short,

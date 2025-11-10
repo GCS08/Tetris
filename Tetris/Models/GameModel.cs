@@ -11,6 +11,7 @@ namespace Tetris.Models
         public string CreatorName { get; set; }
         public int CurrentPlayersCount { get; set; }
         public int MaxPlayersCount { get; set; }
+        public bool IsFull => CurrentPlayersCount == MaxPlayersCount;
         public string UsersInGameSum => $"{MaxPlayersCount} / {CurrentPlayersCount}";
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; }
@@ -19,6 +20,7 @@ namespace Tetris.Models
         public ICommand JoinGameCommand => new Command(NavToWR);
         protected IListenerRegistration? ilr;
         public EventHandler? OnPlayersChange;
+        public EventHandler? OnGameFull;
         public GameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, string GameID)
         {

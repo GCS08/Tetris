@@ -1,15 +1,15 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels
 {
     public class GamePageVM
     {
-        public ICommand NavBackHomeCommand => new Command(NavHome);
-
-        private async void NavHome(object obj)
+        public Game CurrentGame { get; set; }
+        public GamePageVM(Game game)
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            CurrentGame = game;
         }
     }
 }

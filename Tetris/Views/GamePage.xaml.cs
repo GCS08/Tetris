@@ -1,12 +1,13 @@
+using Tetris.ModelsLogic;
 using Tetris.ViewModels;
 
 namespace Tetris.Views;
 
 public partial class GamePage : ContentPage
 {
-	public GamePage()
+	public GamePage(Game game)
 	{
 		InitializeComponent();
-        BindingContext = new GamePageVM();
+        BindingContext = new GamePageVM(game);
     }
 }

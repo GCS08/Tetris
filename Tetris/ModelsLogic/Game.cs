@@ -32,9 +32,12 @@ namespace Tetris.ModelsLogic
         {
             ilr = fbd.AddGameListener(GameID, OnChange!);
         }
-        private void OnChange(IDocumentSnapshot snapshot, Exception error)
+        private async void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
+            CurrentPlayersCount = await fbd.GetCurrentPlayersCount(GameID);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
+            if (IsFull)
+                OnGameFull?.Invoke(this, null!);
         }
         private void OnCompleteChange(ObservableCollection<User> users)
         {

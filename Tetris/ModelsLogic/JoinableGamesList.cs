@@ -14,8 +14,7 @@ namespace Tetris.ModelsLogic
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
-            innerObject.gamesObsCollection = await innerObject.fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
-                Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey);
+            innerObject.gamesObsCollection = await innerObject.fbd.GetAvailGames();
             return innerObject;
         }
         public override void AddGamesCollectionListener()
@@ -24,8 +23,7 @@ namespace Tetris.ModelsLogic
         }
         private void OnChange(IQuerySnapshot snapshot, Exception error)
         {
-            fbd.GetDocumentsWhereDiffValue(Keys.GamesCollectionName,
-                Keys.CurrentPlayersCountKey, Keys.MaxPlayersCountKey, OnCompleteChange);
+            fbd.GetAvailGames(OnCompleteChange);
         }
         private void OnCompleteChange(ObservableCollection<Game> newList)
         {

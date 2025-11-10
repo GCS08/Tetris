@@ -180,7 +180,6 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-
         public async Task<ObservableCollection<Game>> GetJoinableGamesAsync()
         {
             ObservableCollection<Game> joinableGames = [];
@@ -211,7 +210,6 @@ namespace Tetris.ModelsLogic
 
             return joinableGames;
         }
-
         public async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
         {
@@ -246,18 +244,18 @@ namespace Tetris.ModelsLogic
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(documentId);
             return dr.AddSnapshotListener(OnChange);
         }
-        public override async void GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2, Action<ObservableCollection<Game>> onCompleteChange)
+        public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
-            ICollectionReference collectionRef = fs.Collection(collectionName);
+            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
             ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                string value1 = doc.Get<object>(key1)!.ToString()!;
-                string value2 = doc.Get<object>(key2)!.ToString()!;
-                if (value1 != value2)
+                int value1 = doc.Get<int>(Keys.CurrentPlayersCountKey)!;
+                int value2 = doc.Get<int>(Keys.MaxPlayersCountKey)!;
+                bool IsPublic = doc.Get<bool>(Keys.IsPublicGameKey);
+                if (value1 != value2 && IsPublic)
                 {
                     Game game = new(
                         doc.Get<string>(Keys.CubeColorKey)!,
@@ -272,19 +270,18 @@ namespace Tetris.ModelsLogic
             }
             onCompleteChange(newList);
         }
-        public async Task<ObservableCollection<Game>>
-            GetDocumentsWhereDiffValue(string collectionName,
-            string key1, string key2)
+        public async Task<ObservableCollection<Game>> GetAvailGames()
         {
-            ICollectionReference collectionRef = fs.Collection(collectionName);
+            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
             IQuerySnapshot snapshot = await collectionRef.GetAsync();
             ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                string value1 = doc.Get<object>(key1)!.ToString()!;
-                string value2 = doc.Get<object>(key2)!.ToString()!;
-                if (value1 != value2)
+                int value1 = doc.Get<int>(Keys.CurrentPlayersCountKey)!;
+                int value2 = doc.Get<int>(Keys.MaxPlayersCountKey)!;
+                bool IsPublic = doc.Get<bool>(Keys.IsPublicGameKey);
+                if (value1 != value2 && IsPublic)
                 {
                     Game game = new(
                         doc.Get<string>(Keys.CubeColorKey)!,
@@ -299,7 +296,6 @@ namespace Tetris.ModelsLogic
             }
             return newList;
         }
-
         public async Task OnPlayerLeaveWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
@@ -309,17 +305,19 @@ namespace Tetris.ModelsLogic
                 if (docSnap.Get<string>(Keys.PlayerKey + i) == leavingUserID)
                     await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
         }
-
         public async Task OnPlayerJoinWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
-            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+            bool addedOnce = false;
+            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey) && !addedOnce; i++)
                 if (docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty)
+                {
+                    addedOnce = true;
                     await docRef.UpdateAsync(Keys.PlayerKey + i, leavingUserID);
+                }
         }
-
         public async Task DeleteGameFromDB(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
@@ -349,7 +347,7 @@ namespace Tetris.ModelsLogic
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             ObservableCollection<User> newList = [];
-
+            
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
             {
                 if (!(docSnap.Get<string>(Keys.PlayerKey + i) == null ||
@@ -362,9 +360,11 @@ namespace Tetris.ModelsLogic
             onCompleteChange(newList);
         }
 
-        internal void GetPlayersFromDocument(string gameID, object value)
+        public async Task<int> GetCurrentPlayersCount(string gameID)
         {
-            throw new NotImplementedException();
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
         }
     }
 }

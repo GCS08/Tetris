@@ -3,6 +3,7 @@ using Tetris.ModelsLogic;
 using Tetris.Views;
 using Tetris.Models;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Tetris.ViewModels
 {
@@ -15,6 +16,12 @@ namespace Tetris.ViewModels
         {
             this.CurrentGame = game;
             CurrentGame.OnPlayersChange += OnPlayersChange;
+            CurrentGame.OnGameFull += OnGameFull;
+        }
+
+        private async void OnGameFull(object? sender, EventArgs e)
+        {
+            await Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
         }
 
         private void OnPlayersChange(object? sender, EventArgs e)
