@@ -633,7 +633,7 @@
     <x:String x:Key="IconTable_chart_view">&#xf6ef;</x:String>
     <x:String x:Key="IconData_table">&#xe99c;</x:String>
     <x:String x:Key="IconDynamic_form">&#xf1bf;</x:String>
-    <x:String x:Key="IconBroken_image">&#xe3ad;</x:String>
+    <x:String x:Key="IconBroken_               ">&#xe3ad;</x:String>
     <x:String x:Key="IconRipples">&#xe9db;</x:String>
     <x:String x:Key="IconSide_navigation">&#xe9e2;</x:String>
     <x:String x:Key="IconAd">&#xe65a;</x:String>

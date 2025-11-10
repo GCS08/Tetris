@@ -39,13 +39,13 @@
                     Text="{x:Static m:Strings.WaitingRoomTitle}"
                     TextColor="White" />
                 <CollectionView
-                    SelectionMode="None"
                     Margin="20"
-                    ItemsSource="{Binding PlayersInGame}">
+                    ItemsSource="{Binding PlayersInGame}"
+                    SelectionMode="None">
                     <CollectionView.Header>
                         <Label
                             FontAttributes="Bold"
-                            FontSize="23"                          
+                            FontSize="23"
                             HorizontalOptions="End"
                             Text="{x:Static m:Strings.PlayersInRoomTitle}"
                             TextColor="White" />
@@ -59,20 +59,20 @@
                                     <ColumnDefinition Width="2.5*" />
                                 </Grid.ColumnDefinitions>
                                 <Label
-                                    FontSize="20"
                                     Grid.Column="2"
+                                    FontSize="20"
                                     HorizontalOptions="Center"
                                     Text="{Binding UserName}"
                                     TextColor="White" />
                                 <Label
-                                    FontSize="20"
                                     Grid.Column="1"
+                                    FontSize="20"
                                     HorizontalOptions="Center"
                                     Text="{Binding TotalLinesDisplay}"
                                     TextColor="White" />
                                 <Label
-                                    FontSize="20"
                                     Grid.Column="0"
+                                    FontSize="20"
                                     HorizontalOptions="Center"
                                     Text="{Binding HighestScoreDisplay}"
                                     TextColor="White" />

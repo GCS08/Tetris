@@ -10,11 +10,7 @@
 
     <Grid>
         <!--  Background Image  -->
-        <Image
-            Grid.RowSpan="1"
-            Grid.ColumnSpan="1"
-            Aspect="AspectFill"
-            Source="background.png" />
+        <Image Aspect="AspectFill" Source="background.png" />
 
         <!--  Back Arrow Button  -->
         <Button
@@ -88,9 +84,9 @@
 
                 <Button
                     Command="{Binding LoginCommand}"
-                    IsEnabled="{Binding LoginEnable}"
                     FontSize="20"
                     HorizontalOptions="Center"
+                    IsEnabled="{Binding LoginEnable}"
                     Text="{x:Static m:Strings.SubmitLoginButtonText}" />
 
                 <Label

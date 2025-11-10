@@ -10,11 +10,7 @@
 
     <Grid>
         <!--  Background Image  -->
-        <Image
-            Grid.RowSpan="1"
-            Grid.ColumnSpan="1"
-            Aspect="AspectFill"
-            Source="background.png" />
+        <Image Aspect="AspectFill" Source="background.png" />
 
         <!--  Back Arrow Button  -->
         <Button
@@ -144,11 +140,11 @@
                 </Border>
                 <Button
                     Command="{Binding RegisterCommand}"
-                    IsEnabled="{Binding RegisterEnable}"
                     FontSize="20"
                     HorizontalOptions="Center"
+                    IsEnabled="{Binding RegisterEnable}"
                     Text="{x:Static m:Strings.SubmitRegisterButtonText}" />
-                
+
                 <Label
                     Margin="0,25,0,0"
                     FontSize="17"

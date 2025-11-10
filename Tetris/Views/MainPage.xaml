@@ -9,11 +9,7 @@
 
     <Grid>
         <!--  Background Image  -->
-        <Image
-            Grid.RowSpan="1"
-            Grid.ColumnSpan="1"
-            Aspect="AspectFill"
-            Source="background.png" />
+        <Image Aspect="AspectFill" Source="background.png" />
 
         <!--  Main Content  -->
         <ScrollView>

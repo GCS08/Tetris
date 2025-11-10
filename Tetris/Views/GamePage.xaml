@@ -10,15 +10,30 @@
 
     <Grid>
         <!--  Background Image  -->
-        <Image
-            Grid.RowSpan="1"
-            Grid.ColumnSpan="1"
-            Aspect="AspectFill"
-            Source="background.png" />
+        <Image Aspect="AspectFill" Source="gameBackground.png" />
 
         <!--  Main Content  -->
-        <ScrollView>
-            <VerticalStackLayout Padding="30,0" Spacing="25" />
-        </ScrollView>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="{Binding UserScreenHeight}" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <BoxView
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                BackgroundColor="White"
+                HeightRequest="1" />
+            <Grid
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                BackgroundColor="Black"
+                ColumnDefinitions="{Binding ColumnDefinitions}">
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>
