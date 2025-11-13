@@ -1,7 +1,4 @@
 ﻿using CommunityToolkit.Maui.Alerts;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Tetris.Models;
 using static Tetris.Models.ConstData;
 
