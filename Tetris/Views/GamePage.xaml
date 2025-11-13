@@ -21,7 +21,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <BoxView
                 Grid.Row="1"
@@ -29,11 +29,14 @@
                 BackgroundColor="White"
                 HeightRequest="1" />
             <Grid
+                xmlns:local="clr-namespace:Tetris.ModelsLogic"
                 Grid.Row="2"
                 Grid.ColumnSpan="2"
+                Margin="20"
+                local:GridExtensions.ChildrenSource="{Binding BoxViews}"
                 BackgroundColor="Black"
-                ColumnDefinitions="{Binding ColumnDefinitions}">
-            </Grid>
+                ColumnDefinitions="{Binding ColumnDefinitions}"
+                RowDefinitions="{Binding RowDefinitions}" />
         </Grid>
     </Grid>
 </ContentPage>

@@ -8,5 +8,8 @@
         public const int ToastFontSize = 14;
         public static GridLength UserScreenHeight = new(1.8, GridUnitType.Star);
         public const int GameGridColumnCount = 10;
+        public const int GameGridRowCount = 20;
+        public const double GameGridColumnWidth = 40;
+        public const double GameGridRowHeight = 40;
     }
 }
