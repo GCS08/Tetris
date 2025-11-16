@@ -29,11 +29,10 @@
                 BackgroundColor="White"
                 HeightRequest="1" />
             <Grid
-                xmlns:local="clr-namespace:Tetris.ModelsLogic"
+                x:Name="GameBoardYes"
                 Grid.Row="2"
                 Grid.ColumnSpan="2"
                 Margin="20"
-                local:GridExtensions.ChildrenSource="{Binding BoxViews}"
                 BackgroundColor="Black"
                 ColumnDefinitions="{Binding ColumnDefinitions}"
                 RowDefinitions="{Binding RowDefinitions}" />

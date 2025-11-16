@@ -12,7 +12,7 @@
         public const string Settings1Key = "settings1";
         public const string Settings2Key = "settings2";
         public const string DateJoinedKey = "dateJoined";
-        public const string FbApiKey = "AIzaSyBJMACGbBPQwxUUiOmHZZcxvamwodqG8hQ";
+        public const string FbApiKey = "AIzaSyA7bPSAvpotJs-gSNvMTmwitXrjD-yed_I";
         public const string FbAppDomainKey = "com.meitar.tetris";
         public const string EmailExistsErrorKey = "EMAIL_EXISTS";
         public const string OperationNotAllowedErrorKey = "OPERATION_NOT_ALLOWED";

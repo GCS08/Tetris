@@ -5,9 +5,12 @@ namespace Tetris.Views;
 
 public partial class GamePage : ContentPage
 {
-	public GamePage(Game game)
+    private readonly GamePageVM gpVM;
+    public GamePage(Game game)
 	{
 		InitializeComponent();
-        BindingContext = new GamePageVM(game);
+        gpVM = new GamePageVM(game);
+        BindingContext = gpVM;
+        gpVM.GameBoardGrid = GameBoardYes;
     }
 }
