@@ -1,30 +1,58 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 
-namespace Tetris.ViewModels
+namespace Tetris.ViewModels;
+
+public partial class GamePageVM(Game game) : ObservableObject
 {
-    public partial class GamePageVM : ObservableObject
+    public GridLength UserScreenHeight => ConstData.UserScreenHeight;
+
+    public Game CurrentGame { get; } = game;
+    public GameBoard GameBoard { get; } = new();
+    public Grid? GameBoardGrid { get; set; }
+    public void InitializeGrid()
     {
-        public GridLength UserScreenHeight => ConstData.UserScreenHeight;
+        // Create RowDefinitions and ColumnDefinitions
+        for (int r = 0; r < ConstData.GameGridRowCount; r++)
+            GameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = ConstData.GameGridRowHeight });
 
-        public ObservableCollection<ColumnDefinition> ColumnDefinitions { get; } = [];
-        public ObservableCollection<RowDefinition> RowDefinitions { get; } = [];
+        for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+            GameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = ConstData.GameGridColumnWidth });
 
-        public Game CurrentGame { get; }
-        public GameBoard GameBoard { get; }
-        public Grid? GameBoardGrid { get; set; }
-        public GamePageVM(Game game)
+        // Add BoxViews and bind BackgroundColor to CubeModel.Color
+        for (int r = 0; r < ConstData.GameGridRowCount; r++)
         {
-            CurrentGame = game;
-            GameBoard = new();
-
-            // Build grid definitions from the cube sizes
             for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(GameBoard.Board![0, c].Width) });
+            {
+                Cube cube = GameBoard.Board![r, c];
 
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                RowDefinitions.Add(new RowDefinition { Height = new GridLength(GameBoard.Board![r, 0].Height) });
+                BoxView boxView = new()
+                {
+                    WidthRequest = cube.Width,
+                    HeightRequest = cube.Height,
+                    BackgroundColor = cube.Color
+                };
+
+                // Listen for color changes
+                cube.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(cube.Color))
+                        boxView.BackgroundColor = cube.Color;
+                };
+
+                // Wrap in a Border
+                Border border = new()
+                {
+                    Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                    Stroke = Colors.Gray,
+                    StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                    Background = Colors.Transparent,
+                    Content = boxView
+                };
+
+                GameBoardGrid.Add(border, c, r);
+            }
         }
     }
 }

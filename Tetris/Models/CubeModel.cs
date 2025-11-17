@@ -1,9 +1,16 @@
-﻿namespace Tetris.Models
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace Tetris.Models;
+
+public partial class CubeModel(double width, double height,
+    Color? color) : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
-    public class CubeModel
+    public double Width { get; } = width;
+    public double Height { get; } = height;
+    private Color? color = color;
+    public Color? Color
     {
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public Color? Color { get; set; }
+        get => color;
+        set => SetProperty(ref color, value);
     }
 }

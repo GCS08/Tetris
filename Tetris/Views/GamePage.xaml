@@ -21,21 +21,66 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+
             <BoxView
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
                 BackgroundColor="White"
                 HeightRequest="1" />
-            <Grid
-                x:Name="GameBoardYes"
+
+            <!--  Game Board Grid  -->
+            <Frame
                 Grid.Row="2"
+                Grid.Column="0"
                 Grid.ColumnSpan="2"
-                Margin="20"
-                BackgroundColor="Black"
-                ColumnDefinitions="{Binding ColumnDefinitions}"
-                RowDefinitions="{Binding RowDefinitions}" />
+                BackgroundColor="Transparent"
+                BorderColor="Transparent">
+                <Grid BackgroundColor="Black" HorizontalOptions="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid
+                        x:Name="GameBoardGrid"
+                        Grid.Row="0"
+                        BackgroundColor="Navy"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Start" />
+                    <Grid HeightRequest="100" Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Grid.Column="0"
+                            Margin="5"
+                            Text="right" />
+                        <Button
+                            Grid.Column="1"
+                            Margin="5"
+                            Text="rotate" />
+                        <Button
+                            Grid.Column="2"
+                            Margin="5"
+                            Text="left" />
+                        <Button
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="5"
+                            Text="down" />
+                    </Grid>
+                </Grid>
+            </Frame>
         </Grid>
     </Grid>
 </ContentPage>

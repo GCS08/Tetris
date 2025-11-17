@@ -2,13 +2,9 @@
 
 namespace Tetris.ModelsLogic
 {
-    public class Cube : CubeModel
+    public partial class Cube (double width, double height,
+        Color color) : CubeModel(width, height, color)
     {
-        public Cube(double width, double height, Color color)
-        {
-            Width = width;
-            Height = height;
-            Color = color;
-        }
+        
     }
 }

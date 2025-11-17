@@ -1,5 +1,6 @@
 using Tetris.ModelsLogic;
 using Tetris.ViewModels;
+using Tetris.Models;
 
 namespace Tetris.Views;
 
@@ -9,8 +10,9 @@ public partial class GamePage : ContentPage
     public GamePage(Game game)
 	{
 		InitializeComponent();
-        gpVM = new GamePageVM(game);
+        gpVM = new GamePageVM(game)
+        { GameBoardGrid = GameBoardGrid };
         BindingContext = gpVM;
-        gpVM.GameBoardGrid = GameBoardYes;
+        gpVM.InitializeGrid();
     }
 }
