@@ -12,5 +12,6 @@
         public const double GameGridColumnWidth = 20;
         public const double GameGridRowHeight = 20;
         public const double BetweenCubesBorderWidth = 1;
+        public const int ShapesCount = 1;
     }
 }

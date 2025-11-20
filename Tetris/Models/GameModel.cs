@@ -15,6 +15,7 @@ namespace Tetris.Models
         public string UsersInGameSum => $"{MaxPlayersCount} / {CurrentPlayersCount}";
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; }
+        public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; }
         public ObservableCollection<User> UsersInGame { get; set; }
         protected FbData fbd = new();
         public ICommand JoinGameCommand => new Command(NavToWR);
@@ -22,7 +23,7 @@ namespace Tetris.Models
         public EventHandler? OnPlayersChange;
         public EventHandler? OnGameFull;
         public GameModel(string CubeColor, string CreatorName, int CurrentPlayersCount,
-        int MaxPlayersCount, bool IsPublicGame, string GameID)
+        int MaxPlayersCount, bool IsPublicGame, int FirstShapeID, string GameID)
         {
             this.CubeColor = CubeColor;
             this.CreatorName = CreatorName;
@@ -31,6 +32,8 @@ namespace Tetris.Models
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
             this.UsersInGame = [];
+            ShapesQueue = new();
+            ShapesQueue.Insert(new Shape());
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public abstract void NavToWR();

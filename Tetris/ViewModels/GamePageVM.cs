@@ -1,16 +1,20 @@
-﻿using System.Windows.Input;
-using Tetris.Models;
+﻿using Tetris.Models;
 using Tetris.ModelsLogic;
 
 namespace Tetris.ViewModels;
 
-public partial class GamePageVM(Game game) : ObservableObject
+public partial class GamePageVM : ObservableObject
 {
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
-    public Game CurrentGame { get; } = game;
+    public Game CurrentGame { get; }
     public GameBoard GameBoard { get; } = new();
     public Grid? GameBoardGrid { get; set; }
+    public GamePageVM(Game game)
+    {
+        CurrentGame = game;
+        
+    }
     public void InitializeGrid()
     {
         // Create RowDefinitions and ColumnDefinitions

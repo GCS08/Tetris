@@ -13,8 +13,6 @@ namespace Tetris.ModelsLogic
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                 {
                     Board[r, c] = new Cube(
-                        r,
-                        c,
                         ConstData.GameGridColumnWidth,
                         ConstData.GameGridRowHeight,
                         Colors.Transparent

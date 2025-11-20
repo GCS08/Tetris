@@ -7,9 +7,9 @@ using Tetris.Views;
 namespace Tetris.ModelsLogic
 {
     public class Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
-        int MaxPlayersCount, bool IsPublicGame, string GameID) :
+        int MaxPlayersCount, bool IsPublicGame, int FirstShapeID, string GameID) :
         GameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount,
-            IsPublicGame, GameID)
+            IsPublicGame, FirstShapeID, GameID)
     {
         public async Task OnPlayerLeaveWR()
         {

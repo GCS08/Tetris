@@ -5,13 +5,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
-    Shell.NavBarIsVisible="False"
-    x:DataType="vm:GameLobbyPageVM">
+    x:DataType="vm:GameLobbyPageVM"
+    Shell.NavBarIsVisible="False">
     <Grid>
         <!--  Background Image  -->
-        <Image
-            Aspect="AspectFill"
-            Source="background.png" />
+        <Image Aspect="AspectFill" Source="background.png" />
 
         <!--  Back Arrow Button  -->
         <Button
@@ -88,7 +86,7 @@
                                     VerticalTextAlignment="Center" />
                                 <Button
                                     Grid.Column="0"
-                                    Margin="7"                             
+                                    Margin="7"
                                     Command="{Binding JoinGameCommand}"
                                     FontSize="20"
                                     Text="{x:Static m:Strings.JoinGameButtonText}"
