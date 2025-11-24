@@ -1,16 +1,25 @@
-﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Plugin.CloudFirestore;
+﻿using Plugin.CloudFirestore;
+using System.Collections.ObjectModel;
 using Tetris.Models;
 using Tetris.Views;
 
 namespace Tetris.ModelsLogic
 {
-    public class Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
-        int MaxPlayersCount, bool IsPublicGame, int FirstShapeID, string GameID) :
-        GameModel(CubeColor, CreatorName, CurrentPlayersCount, MaxPlayersCount,
-            IsPublicGame, FirstShapeID, GameID)
+    public class Game : GameModel
     {
+        public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
+        int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
+        {
+            this.CubeColor = CubeColor;
+            this.CreatorName = CreatorName;
+            this.CurrentPlayersCount = CurrentPlayersCount;
+            this.MaxPlayersCount = MaxPlayersCount;
+            this.CurrentShape = shape;
+            this.IsPublicGame = IsPublicGame;
+            this.GameID = GameID;
+            this.ShapesQueue!.Insert(this.CurrentShape);
+            UsersInGame.Add((Application.Current as App)!.user);
+        }
         public async Task OnPlayerLeaveWR()
         {
             if (CurrentPlayersCount <= 1)

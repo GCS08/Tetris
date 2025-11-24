@@ -32,10 +32,20 @@
         public const string CurrentPlayersCountKey = "CurrentPlayersCount";
         public const string MaxPlayersCountKey = "MaxPlayersCount";
         public const string IsPublicGameKey = "IsPublicGame";
+        public const string CurrentShapeIdKey = "CurrentShapeId";
+        public const string CurrentShapeColorKey = "CurrentShapeColor";
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";
         public const string PlayerKey = "Player";
         public const string UserIDKey = "userID";
+        public const string RedKey = "Red";
+        public const string OrangeKey = "Orange";
+        public const string YellowKey = "Yellow";
+        public const string GreenKey = "Green";
+        public const string BlueKey = "Blue";
+        public const string IndigoKey = "Indigo";
+        public const string VioletKey = "Violet";
+        public const string LightBlueKey = "LightBlue";
     }
 }

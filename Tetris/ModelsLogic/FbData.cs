@@ -180,38 +180,8 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        public async Task<ObservableCollection<Game>> GetJoinableGamesAsync()
-        {
-            ObservableCollection<Game> joinableGames = [];
-            IQuerySnapshot collection = await fs
-                .Collection(Keys.GamesCollectionName)
-                .GetAsync();
-
-            if (collection != null)
-            {
-                foreach (IDocumentSnapshot document in collection.Documents)
-                {
-                    string cubeColor = document.Get<string>(Keys.CubeColorKey)!;
-                    string creatorName = document.Get<string>(Keys.CreatorNameKey)!;
-                    int currentPlayersCount = document.Get<int>(Keys.CurrentPlayersCountKey);
-                    int maxPlayersCount = document.Get<int>(Keys.MaxPlayersCountKey);
-                    bool isPublicGame = document.Get<bool>(Keys.IsPublicGameKey);
-                    string gameId = document.Id;
-
-                    joinableGames.Add(new Game(
-                        cubeColor,
-                        creatorName,
-                        currentPlayersCount,
-                        maxPlayersCount,
-                        isPublicGame,
-                        gameId));
-                }
-            }
-
-            return joinableGames;
-        }
         public async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isPublicGame)
+            int currentPlayersCount, int maxPlayersCount, int currentShapeId, string currentShapeColor, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -222,8 +192,10 @@ namespace Tetris.ModelsLogic
                 CreatorName = creatorName,
                 CubeColor = cubeColor,
                 CurrentPlayersCount = currentPlayersCount,
-                IsPublicGame = isPublicGame,
-                MaxPlayersCount = maxPlayersCount
+                MaxPlayersCount = maxPlayersCount,
+                CurrentShapeId = currentShapeId,
+                CurrentShapeColor = currentShapeColor,
+                IsPublicGame = isPublicGame
             });
 
             for (int i = 1; i < maxPlayersCount; i++)
@@ -263,6 +235,8 @@ namespace Tetris.ModelsLogic
                         doc.Get<int>(Keys.CurrentPlayersCountKey),
                         doc.Get<int>(Keys.MaxPlayersCountKey),
                         doc.Get<bool>(Keys.IsPublicGameKey),
+                        new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
+                            doc.Get<string>(Keys.CurrentShapeColorKey)!),
                         doc.Id
                     );
                     newList.Add(game);
@@ -289,6 +263,8 @@ namespace Tetris.ModelsLogic
                         doc.Get<int>(Keys.CurrentPlayersCountKey),
                         doc.Get<int>(Keys.MaxPlayersCountKey),
                         doc.Get<bool>(Keys.IsPublicGameKey),
+                        new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
+                            doc.Get<string>(Keys.CurrentShapeColorKey)!),
                         doc.Id
                     );
                     newList.Add(game);
@@ -359,7 +335,6 @@ namespace Tetris.ModelsLogic
             }
             onCompleteChange(newList);
         }
-
         public async Task<int> GetCurrentPlayersCount(string gameID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);

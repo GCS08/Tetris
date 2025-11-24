@@ -28,5 +28,21 @@ namespace Tetris.Converters
         {
             throw new NotImplementedException();
         }
+
+        public static Color ConvertColorName(string name)
+        {
+            return name switch
+            {
+                "Red" => Colors.Red,
+                "Orange" => Colors.Orange,
+                "Yellow" => Colors.Yellow,
+                "Green" => Colors.Green,
+                "Blue" => Colors.Blue,
+                "Indigo" => Colors.Indigo,
+                "Violet" => Colors.Violet,
+                "Light Blue" => Colors.LightBlue,
+                _ => Colors.Black
+            };
+        }
     }
 }

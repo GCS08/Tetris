@@ -13,7 +13,7 @@ public partial class GamePageVM : ObservableObject
     public GamePageVM(Game game)
     {
         CurrentGame = game;
-        
+        GameBoard.ShowShape(CurrentGame.ShapesQueue!);
     }
     public void InitializeGrid()
     {

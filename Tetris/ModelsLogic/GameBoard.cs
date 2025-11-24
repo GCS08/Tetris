@@ -20,5 +20,14 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
+        public void ShowShape(Queue<Shape> queue)
+        {
+            Shape currentShape = queue.Remove();
+            for (int i = 0; i < currentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < currentShape.Cells.GetLength(1); j++)
+                    if (currentShape.Cells[i,j])
+                        Board![i + currentShape.TopLeftX, j + currentShape.
+                            TopLeftY].Color = currentShape.Color;
+        }
     }
 }
