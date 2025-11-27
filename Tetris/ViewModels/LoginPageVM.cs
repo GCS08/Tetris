@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 

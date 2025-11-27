@@ -14,10 +14,10 @@ namespace Tetris.ModelsLogic
             this.CreatorName = CreatorName;
             this.CurrentPlayersCount = CurrentPlayersCount;
             this.MaxPlayersCount = MaxPlayersCount;
-            this.CurrentShape = shape;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.ShapesQueue!.Insert(this.CurrentShape);
+            this.GameBoard = new(shape);
+            this.GameBoard.ShapesQueue!.Insert(shape);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
@@ -67,6 +67,11 @@ namespace Tetris.ModelsLogic
             CurrentPlayersCount++;
             UsersInGame.Add((Application.Current as App)!.user);
             await Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
+        }
+
+        public void StartGame()
+        {
+            GameBoard.StartGame();
         }
     }
 }

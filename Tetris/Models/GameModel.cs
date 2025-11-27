@@ -11,18 +11,17 @@ namespace Tetris.Models
         public string CreatorName { get; set; } = string.Empty;
         public int CurrentPlayersCount { get; set; }
         public int MaxPlayersCount { get; set; }
-        public Shape? CurrentShape { get; set; }
         public bool IsFull => CurrentPlayersCount == MaxPlayersCount;
         public string UsersInGameSum => $"{MaxPlayersCount} / {CurrentPlayersCount}";
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; } = string.Empty;
-        public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; } = new();
         public ObservableCollection<User> UsersInGame { get; set; } = [];
-        protected FbData fbd = new();
         public ICommand JoinGameCommand => new Command(NavToWR);
-        protected IListenerRegistration? ilr;
         public EventHandler? OnPlayersChange;
         public EventHandler? OnGameFull;
+        public GameBoard? GameBoard;
+        protected FbData fbd = new();
+        protected IListenerRegistration? ilr;
         public abstract void NavToWR();
     }
 }

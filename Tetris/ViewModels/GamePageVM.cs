@@ -1,19 +1,40 @@
 ﻿using Tetris.Models;
 using Tetris.ModelsLogic;
+using System.Windows.Input;
 
 namespace Tetris.ViewModels;
 
 public partial class GamePageVM : ObservableObject
 {
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
+    public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
+    public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
+    public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
+    public ICommand RotateShapeCommand => new Command(RotateShape);
 
     public Game CurrentGame { get; }
-    public GameBoard GameBoard { get; } = new();
     public Grid? GameBoardGrid { get; set; }
+
     public GamePageVM(Game game)
     {
         CurrentGame = game;
-        GameBoard.ShowShape(CurrentGame.ShapesQueue!);
+        CurrentGame.StartGame();
+    }
+    private void MoveRightShape()
+    {
+        CurrentGame.GameBoard!.MoveRightShape();
+    }
+    private void MoveLeftShape()
+    {
+        CurrentGame.GameBoard!.MoveLeftShape();
+    }
+    private void MoveDownShape()
+    {
+        CurrentGame.GameBoard!.MoveDownShape();
+    }
+    private void RotateShape()
+    {
+        CurrentGame.GameBoard!.RotateShape();
     }
     public void InitializeGrid()
     {
@@ -29,7 +50,7 @@ public partial class GamePageVM : ObservableObject
         {
             for (int c = 0; c < ConstData.GameGridColumnCount; c++)
             {
-                Cube cube = GameBoard.Board![r, c];
+                Cube cube = CurrentGame.GameBoard!.Board![r, c];
 
                 BoxView boxView = new()
                 {
