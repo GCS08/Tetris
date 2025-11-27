@@ -5,10 +5,12 @@ namespace Tetris.ModelsLogic
 {
     public class GameBoard : GameBoardModel
     {
-        public GameBoard(Shape currentShape)
+        public GameBoard(Shape currentShape, string GameID)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
             this.CurrentShape = currentShape;
+            this.GameID = GameID;
+            this.ShapesQueue!.Insert(currentShape);
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
             {
@@ -24,6 +26,7 @@ namespace Tetris.ModelsLogic
         }
         public void StartGame()
         {
+            ShapesQueue!.Remove();
             ShowShape();
             FallTimer.Elapsed += MoveDownShape;
             FallTimer.Start();
@@ -36,9 +39,61 @@ namespace Tetris.ModelsLogic
                         Board![i + CurrentShape.TopLeftY, j + 
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;   
         }
-        private void MoveDownShape(object? sender, ElapsedEventArgs e)
+        private async void ShapeAtBottom()
         {
-            MoveDownShape();
+            int linesCleared = CheckForLines();
+            if (ShapesQueue!.IsEmpty())
+            {
+                ShapesQueue.Insert(new());
+                await fbd.AddShape(CurrentShape!, GameID!);
+            }
+            CurrentShape = ShapesQueue.Remove();
+            ShowShape();
+        }
+        private int CheckForLines()
+        {
+            int linesCleared = 0;
+
+            int writeRow = ConstData.GameGridRowCount - 1;
+
+            for (int readRow = ConstData.GameGridRowCount - 1; readRow >= 0; readRow--)
+            {
+                bool lineFull = true;
+                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                {
+                    if (Board![readRow, col].Color == Colors.Transparent)
+                    {
+                        lineFull = false;
+                        break;
+                    }
+                }
+
+                if (!lineFull)
+                {
+                    if (writeRow != readRow)
+                    {
+                        for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                        {
+                            Board![writeRow, col].Color = Board[readRow, col].Color;
+                        }
+                    }
+                    writeRow--;
+                }
+                else
+                {
+                    linesCleared++;
+                }
+            }
+
+            for (int row = writeRow; row >= 0; row--)
+            {
+                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                {
+                    Board![row, col].Color = Colors.Transparent;
+                }
+            }
+
+            return linesCleared;
         }
         private void EraseShape()
         {
@@ -74,7 +129,7 @@ namespace Tetris.ModelsLogic
 
             if (shapeBottom >= ConstData.GameGridRowCount)
             {
-                ContinueToNextShape();
+                ShapeAtBottom();
                 return;
             }
 
@@ -86,15 +141,15 @@ namespace Tetris.ModelsLogic
             if (belowIsEmpty)
             {
                 EraseShape();
-                CurrentShape.TopLeftY++;  // this is DOWN
+                CurrentShape.TopLeftY++;
                 ShowShape();
             }
             else
-                ContinueToNextShape();
+                ShapeAtBottom();
         }
-        private void ContinueToNextShape()
+        private void MoveDownShape(object? sender, ElapsedEventArgs e)
         {
-            throw new NotImplementedException();
+            MoveDownShape();
         }
         public override void RotateShape()
         {
@@ -124,8 +179,8 @@ namespace Tetris.ModelsLogic
             int w = cells.GetLength(1);
 
             // Prioritized shifts (center first, then small wall kicks)
-            int[] shiftsX = { 0, -1, 1, -2, 2 };
-            int[] shiftsY = { 0, -1, 1 };
+            int[] shiftsX = [0, -1, 1, -2, 2];
+            int[] shiftsY = [0, -1, 1];
 
             foreach (int dx in shiftsX)
             {

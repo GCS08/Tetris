@@ -31,6 +31,7 @@
         public const string CreatorNameKey = "CreatorName";
         public const string CurrentPlayersCountKey = "CurrentPlayersCount";
         public const string MaxPlayersCountKey = "MaxPlayersCount";
+        public const string IsFullKey = "IsFull";
         public const string IsPublicGameKey = "IsPublicGame";
         public const string CurrentShapeIdKey = "CurrentShapeId";
         public const string CurrentShapeColorKey = "CurrentShapeColor";

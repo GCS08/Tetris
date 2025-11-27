@@ -7,6 +7,7 @@ namespace Tetris.ViewModels;
 public partial class GamePageVM : ObservableObject
 {
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
+
     public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
     public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);

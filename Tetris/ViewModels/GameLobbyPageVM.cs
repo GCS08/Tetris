@@ -33,7 +33,6 @@ namespace Tetris.ViewModels
         {
             await Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList!));
         }
-
         public async Task LoadGamesList()
         {
             JoinableGamesList = await JoinableGamesList.CreateAsync();

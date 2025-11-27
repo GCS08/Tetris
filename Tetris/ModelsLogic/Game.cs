@@ -16,8 +16,7 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(shape);
-            this.GameBoard.ShapesQueue!.Insert(shape);
+            this.GameBoard = new(shape, GameID);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
@@ -46,7 +45,10 @@ namespace Tetris.ModelsLogic
             CurrentPlayersCount = await fbd.GetCurrentPlayersCount(GameID);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
             if (IsFull)
+            {
+                fbd.SetGameIsFull(GameID);
                 OnGameFull?.Invoke(this, null!);
+            }
         }
         private void OnCompleteChange(ObservableCollection<User> users)
         {
@@ -71,7 +73,7 @@ namespace Tetris.ModelsLogic
 
         public void StartGame()
         {
-            GameBoard.StartGame();
+            GameBoard!.StartGame();
         }
     }
 }

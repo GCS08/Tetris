@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Firebase.Auth;
 using Firebase.Auth.Providers;
 using Microsoft.Maui.ApplicationModel.Communication;
@@ -116,7 +117,7 @@ namespace Tetris.ModelsLogic
                 await OnCompleteSendEmail(firebaseTask);
             }
         }
-        public string GetCurrentUserID()
+        public override string GetCurrentUserID()
         {
             return facl.User?.Uid ?? string.Empty;
         }
@@ -180,8 +181,9 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
-        public async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, int currentShapeId, string currentShapeColor, bool isPublicGame)
+        public override async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
+            int currentPlayersCount, int maxPlayersCount, bool isFull,
+            int currentShapeId, string currentShapeColor, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -193,6 +195,7 @@ namespace Tetris.ModelsLogic
                 CubeColor = cubeColor,
                 CurrentPlayersCount = currentPlayersCount,
                 MaxPlayersCount = maxPlayersCount,
+                IsFull = isFull,
                 CurrentShapeId = currentShapeId,
                 CurrentShapeColor = currentShapeColor,
                 IsPublicGame = isPublicGame
@@ -219,60 +222,50 @@ namespace Tetris.ModelsLogic
         public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot snapshot = await collectionRef.GetAsync();
+            IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.IsFullKey, false)
+                .WhereEqualsTo(Keys.IsPublicGameKey, true).GetAsync();
             ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                int value1 = doc.Get<int>(Keys.CurrentPlayersCountKey)!;
-                int value2 = doc.Get<int>(Keys.MaxPlayersCountKey)!;
-                bool IsPublic = doc.Get<bool>(Keys.IsPublicGameKey);
-                if (value1 != value2 && IsPublic)
-                {
-                    Game game = new(
-                        doc.Get<string>(Keys.CubeColorKey)!,
-                        doc.Get<string>(Keys.CreatorNameKey)!,
-                        doc.Get<int>(Keys.CurrentPlayersCountKey),
-                        doc.Get<int>(Keys.MaxPlayersCountKey),
-                        doc.Get<bool>(Keys.IsPublicGameKey),
-                        new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
-                            doc.Get<string>(Keys.CurrentShapeColorKey)!),
-                        doc.Id
-                    );
-                    newList.Add(game);
-                }
+                Game game = new(
+                    doc.Get<string>(Keys.CubeColorKey)!,
+                    doc.Get<string>(Keys.CreatorNameKey)!,
+                    doc.Get<int>(Keys.CurrentPlayersCountKey),
+                    doc.Get<int>(Keys.MaxPlayersCountKey),
+                    doc.Get<bool>(Keys.IsPublicGameKey),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
+                        doc.Get<string>(Keys.CurrentShapeColorKey)!),
+                    doc.Id
+                );
+                newList.Add(game);                
             }
             onCompleteChange(newList);
         }
-        public async Task<ObservableCollection<Game>> GetAvailGames()
+        public override async Task<ObservableCollection<Game>> GetAvailGames()
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot snapshot = await collectionRef.GetAsync();
+            IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.IsFullKey, false)
+                .WhereEqualsTo(Keys.IsPublicGameKey, true).GetAsync();
             ObservableCollection<Game> newList = [];
 
             foreach (IDocumentSnapshot doc in snapshot.Documents)
             {
-                int value1 = doc.Get<int>(Keys.CurrentPlayersCountKey)!;
-                int value2 = doc.Get<int>(Keys.MaxPlayersCountKey)!;
-                bool IsPublic = doc.Get<bool>(Keys.IsPublicGameKey);
-                if (value1 != value2 && IsPublic)
-                {
-                    Game game = new(
-                        doc.Get<string>(Keys.CubeColorKey)!,
-                        doc.Get<string>(Keys.CreatorNameKey)!,
-                        doc.Get<int>(Keys.CurrentPlayersCountKey),
-                        doc.Get<int>(Keys.MaxPlayersCountKey),
-                        doc.Get<bool>(Keys.IsPublicGameKey),
-                        new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
-                            doc.Get<string>(Keys.CurrentShapeColorKey)!),
-                        doc.Id
-                    );
-                    newList.Add(game);
-                }
+                Game game = new(
+                    doc.Get<string>(Keys.CubeColorKey)!,
+                    doc.Get<string>(Keys.CreatorNameKey)!,
+                    doc.Get<int>(Keys.CurrentPlayersCountKey),
+                    doc.Get<int>(Keys.MaxPlayersCountKey),
+                    doc.Get<bool>(Keys.IsPublicGameKey),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
+                        doc.Get<string>(Keys.CurrentShapeColorKey)!),
+                    doc.Id
+                );
+                newList.Add(game);
             }
             return newList;
         }
-        public async Task OnPlayerLeaveWR(string id, string leavingUserID)
+        public override async Task OnPlayerLeaveWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
@@ -281,7 +274,7 @@ namespace Tetris.ModelsLogic
                 if (docSnap.Get<string>(Keys.PlayerKey + i) == leavingUserID)
                     await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
         }
-        public async Task OnPlayerJoinWR(string id, string leavingUserID)
+        public override async Task OnPlayerJoinWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
@@ -294,10 +287,34 @@ namespace Tetris.ModelsLogic
                     await docRef.UpdateAsync(Keys.PlayerKey + i, leavingUserID);
                 }
         }
-        public async Task DeleteGameFromDB(string id)
+        public override async Task DeleteGameFromDB(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             await docRef.DeleteAsync();
+        }
+        public override async void GetPlayersFromDocument(string gameID,
+            Action<ObservableCollection<User>> onCompleteChange)
+        {
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            ObservableCollection<User> newList = [];
+            
+            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+            {
+                if (!(docSnap.Get<string>(Keys.PlayerKey + i) == null ||
+                    docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty))
+                {
+                    User tempUser = await UserIDToObject(docSnap.Get<string>(Keys.PlayerKey + i)!);
+                    newList.Add(tempUser);
+                }
+            }
+            onCompleteChange(newList);
+        }
+        public override async Task<int> GetCurrentPlayersCount(string gameID)
+        {
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot docSnap = await docRef.GetAsync();
+            return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
         }
         private async Task<User> UserIDToObject(string id)
         {
@@ -317,29 +334,18 @@ namespace Tetris.ModelsLogic
             };
             return user;
         }
-        public async void GetPlayersFromDocument(string gameID,
-            Action<ObservableCollection<User>> onCompleteChange)
+
+        public async void SetGameIsFull(string gameID)
         {
-            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot docSnap = await docRef.GetAsync();
-            ObservableCollection<User> newList = [];
-            
-            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
-            {
-                if (!(docSnap.Get<string>(Keys.PlayerKey + i) == null ||
-                    docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty))
-                {
-                    User tempUser = await UserIDToObject(docSnap.Get<string>(Keys.PlayerKey + i)!);
-                    newList.Add(tempUser);
-                }
-            }
-            onCompleteChange(newList);
+            IDocumentReference documentReference = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            await documentReference.UpdateAsync(Keys.IsFullKey, true);
         }
-        public async Task<int> GetCurrentPlayersCount(string gameID)
+
+        public override async Task AddShape(Shape currentShape, string gameId)
         {
-            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot docSnap = await docRef.GetAsync();
-            return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
+            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
+            await docRef.UpdateAsync(Keys.CurrentShapeIdKey, currentShape.Id);
+            await docRef.UpdateAsync(Keys.CurrentShapeColorKey, currentShape.Color);
         }
     }
 }
