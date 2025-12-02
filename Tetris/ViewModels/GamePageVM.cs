@@ -81,4 +81,14 @@ public partial class GamePageVM : ObservableObject
             }
         }
     }
+
+    public void AddListener()
+    {
+        CurrentGame.GameBoard!.AddListener();
+    }
+
+    public void RemoveListener()
+    {
+        CurrentGame.GameBoard!.RemoveListener();
+    }
 }

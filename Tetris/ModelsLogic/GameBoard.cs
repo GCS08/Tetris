@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using Plugin.CloudFirestore;
+using System.Timers;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -217,6 +218,21 @@ namespace Tetris.ModelsLogic
             }
 
             return false; // No valid position found
+        }
+
+        public void AddListener()
+        {
+            ilr = fbd.AddGameBoardListener(GameID!, OnChange!);
+        }
+
+        public void RemoveListener()
+        {
+            ilr?.Remove();
+        }
+
+        private void OnChange(IQuerySnapshot snapshot, Exception error)
+        {
+            
         }
     }
 }

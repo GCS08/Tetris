@@ -1,4 +1,5 @@
-﻿using Tetris.ModelsLogic;
+﻿using Plugin.CloudFirestore;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
@@ -10,6 +11,7 @@ namespace Tetris.Models
         public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; } = new();
         protected System.Timers.Timer FallTimer = new(ConstData.SecondsTillShapeFall * 1000);
         protected FbData fbd = new();
+        protected IListenerRegistration? ilr;
         public abstract void ShowShape();
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();

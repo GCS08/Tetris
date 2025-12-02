@@ -15,4 +15,14 @@ public partial class GamePage : ContentPage
         BindingContext = gpVM;
         gpVM.InitializeGrid();
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        gpVM.AddListener();
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        gpVM.RemoveListener();
+    }
 }
