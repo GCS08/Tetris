@@ -17,7 +17,7 @@ namespace Tetris.ModelsLogic
         {
             this.Id = id;
             this.RotationStates = ConstData.ShapeRotationState[this.Id];
-            this.Color = RGBAStringToColorConverter.RGBAStringToColor(color);
+            this.Color = StringAndColorConverter.ColorNameToColor(color);
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }

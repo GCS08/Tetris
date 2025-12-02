@@ -230,7 +230,7 @@ namespace Tetris.ModelsLogic
             ilr?.Remove();
         }
 
-        private void OnChange(IQuerySnapshot snapshot, Exception error)
+        private void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
             
         }

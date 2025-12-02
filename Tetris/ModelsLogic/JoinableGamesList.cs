@@ -46,7 +46,8 @@ namespace Tetris.ModelsLogic
                 currentNewGame.MaxPlayersCount,
                 currentNewGame.IsFull,
                 currentNewGame.GameBoard!.CurrentShape!.Id!,
-                currentNewGame.GameBoard!.CurrentShape!.Color!.ToString(),
+                Converters.StringAndColorConverter.ColorToColorName
+                (currentNewGame.GameBoard!.CurrentShape!.Color!),
                 currentNewGame.IsPublicGame);
         }
     }

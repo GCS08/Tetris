@@ -334,20 +334,17 @@ namespace Tetris.ModelsLogic
             };
             return user;
         }
-
         public async void SetGameIsFull(string gameID)
         {
             IDocumentReference documentReference = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             await documentReference.UpdateAsync(Keys.IsFullKey, true);
         }
-
         public override async Task AddShape(Shape currentShape, string gameId)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
             await docRef.UpdateAsync(Keys.CurrentShapeIdKey, currentShape.Id);
             await docRef.UpdateAsync(Keys.CurrentShapeColorKey, currentShape.Color);
         }
-
         public IListenerRegistration? AddGameBoardListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {

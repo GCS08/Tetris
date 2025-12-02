@@ -48,5 +48,6 @@
         public const string IndigoKey = "Indigo";
         public const string VioletKey = "Violet";
         public const string LightBlueKey = "LightBlue";
+        public const string TransparentKey = "Transparent";
     }
 }
