@@ -6,12 +6,10 @@ namespace Tetris.ModelsLogic
 {
     public class GameBoard : GameBoardModel
     {
-        public GameBoard(Shape currentShape, string GameID)
+        public GameBoard(Shape currentShape)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
             this.CurrentShape = currentShape;
-            this.GameID = GameID;
-            this.ShapesQueue!.Insert(currentShape);
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
             {
@@ -27,8 +25,6 @@ namespace Tetris.ModelsLogic
         }
         public void StartGame()
         {
-            ShapesQueue!.Remove();
-            ShowShape();
             FallTimer.Elapsed += MoveDownShape;
             FallTimer.Start();
         }
@@ -44,12 +40,7 @@ namespace Tetris.ModelsLogic
         {
             int linesCleared = CheckForLines();
             if (ShapesQueue!.IsEmpty())
-            {
-                ShapesQueue.Insert(new());
-                await fbd.AddShape(CurrentShape!, GameID!);
-            }
-            CurrentShape = ShapesQueue.Remove();
-            ShowShape();
+                await fbd.AddShape(new(), GameID!);
         }
         private int CheckForLines()
         {
@@ -125,21 +116,46 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveDownShape()
         {
-            int shapeBottom = CurrentShape!.TopLeftY + CurrentShape.Cells.GetLength(0);
-            bool belowIsEmpty = true;
+            bool canMoveDown = true;
 
-            if (shapeBottom >= ConstData.GameGridRowCount)
+            int shapeHeight = CurrentShape!.Cells.GetLength(0);
+            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+
+            bool[] IsCubesUnderShapeFilled = new bool[shapeWidth];
+
+            // Check collision only if we're not already literally at the last row
+            for (int col = 0; col < shapeWidth && canMoveDown; col++)
             {
-                ShapeAtBottom();
-                return;
+                bool found = false;
+                for (int row = shapeHeight - 1; row >= 0 && !found; row--)
+                {
+                    // Find the lowest filled block in this column
+                    if (CurrentShape.Cells[row, col])
+                    {
+                        int boardY = CurrentShape.TopLeftY + row + 1;
+                        int boardX = CurrentShape.TopLeftX + col;
+
+                        // If stepping down goes outside board -> collision
+                        if (boardY >= ConstData.GameGridRowCount)
+                            IsCubesUnderShapeFilled[col] = true;
+                        else
+                        {
+                            // Check if the cell under it is filled
+                            IsCubesUnderShapeFilled[col] =
+                                Board![boardY, boardX].Color != Colors.Transparent;
+                        }
+
+                        found = true; // stop scanning this column
+                    }
+                }
+
+                // If this column is blocked, no point checking the rest
+                if (IsCubesUnderShapeFilled[col])
+                    canMoveDown = false;
             }
 
-            for (int x = 0; x < CurrentShape.Cells.GetLength(1); x++)
-                if (Board![shapeBottom, CurrentShape.TopLeftX + x]
-                    .Color != Colors.Transparent)
-                    belowIsEmpty = false;
-
-            if (belowIsEmpty)
+            // Move or lock
+            if (canMoveDown)
             {
                 EraseShape();
                 CurrentShape.TopLeftY++;
@@ -219,20 +235,22 @@ namespace Tetris.ModelsLogic
 
             return false; // No valid position found
         }
-
         public void AddListener()
         {
             ilr = fbd.AddGameBoardListener(GameID!, OnChange!);
         }
-
         public void RemoveListener()
         {
             ilr?.Remove();
         }
-
         private void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
-            
+            ShapesQueue!.Insert(new Shape(
+                snapshot.Get<int>(Keys.CurrentShapeIdKey)!,
+                snapshot.Get<string>(Keys.CurrentShapeColorKey)!
+            ));
+            CurrentShape = ShapesQueue.Remove();
+            ShowShape();
         }
     }
 }

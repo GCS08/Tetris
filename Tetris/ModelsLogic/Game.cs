@@ -16,7 +16,7 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(shape, GameID);
+            this.GameBoard = new(shape);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()

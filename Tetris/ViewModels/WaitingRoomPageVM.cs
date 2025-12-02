@@ -15,6 +15,7 @@ namespace Tetris.ViewModels
         public WaitingRoomPageVM(Game game)
         {
             this.CurrentGame = game;
+            CurrentGame.GameBoard!.GameID = game.GameID;
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
         }

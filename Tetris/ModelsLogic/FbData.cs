@@ -343,7 +343,8 @@ namespace Tetris.ModelsLogic
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
             await docRef.UpdateAsync(Keys.CurrentShapeIdKey, currentShape.Id);
-            await docRef.UpdateAsync(Keys.CurrentShapeColorKey, currentShape.Color);
+            await docRef.UpdateAsync(Keys.CurrentShapeColorKey, Converters.
+                StringAndColorConverter.ColorToColorName(currentShape.Color!));
         }
         public IListenerRegistration? AddGameBoardListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
