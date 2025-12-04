@@ -41,6 +41,8 @@ namespace Tetris.ModelsLogic
             int linesCleared = CheckForLines();
             if (ShapesQueue!.IsEmpty())
                 await fbd.AddShape(new(), GameID!);
+            CurrentShape = ShapesQueue.Remove();
+            ShowShape();
         }
         private int CheckForLines()
         {
@@ -249,8 +251,6 @@ namespace Tetris.ModelsLogic
                 snapshot.Get<int>(Keys.CurrentShapeIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeColorKey)!
             ));
-            CurrentShape = ShapesQueue.Remove();
-            ShowShape();
         }
     }
 }

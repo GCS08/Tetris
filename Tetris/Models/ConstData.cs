@@ -13,7 +13,7 @@
         public const double GameGridRowHeight = 20;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
-        public const int SecondsTillShapeFall = 2;
+        public const int SecondsTillShapeFall = 1;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,

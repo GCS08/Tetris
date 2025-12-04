@@ -19,7 +19,6 @@ public partial class GamePageVM : ObservableObject
     public GamePageVM(Game game)
     {
         CurrentGame = game;
-        CurrentGame.StartGame();
     }
     private void MoveRightShape()
     {

@@ -15,10 +15,17 @@ public partial class GamePage : ContentPage
         BindingContext = gpVM;
         gpVM.InitializeGrid();
     }
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
+
         gpVM.AddListener();
+
+        // Give the UI time to actually render
+        await Task.Delay(500);
+
+        // Now start the game
+        gpVM.CurrentGame.StartGame();
     }
     protected override void OnDisappearing()
     {
