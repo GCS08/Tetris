@@ -196,9 +196,18 @@ namespace Tetris.ModelsLogic
                 CurrentPlayersCount = currentPlayersCount,
                 MaxPlayersCount = maxPlayersCount,
                 IsFull = isFull,
-                CurrentShapeId = currentShapeId,
-                CurrentShapeColor = currentShapeColor,
-                IsPublicGame = isPublicGame
+                IsPublicGame = isPublicGame,
+            });
+
+            await docRef.UpdateAsync(new Dictionary<string, object>
+            {
+                {
+                    Keys.CurrentShapeMapKey, new Dictionary<string, object>
+                    {
+                        { Keys.CurrentShapeIdKey, currentShapeId },
+                        { Keys.CurrentShapeColorKey, currentShapeColor }
+                    }
+                }
             });
 
             for (int i = 1; i < maxPlayersCount; i++)
@@ -234,8 +243,8 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.CurrentPlayersCountKey),
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
-                        doc.Get<string>(Keys.CurrentShapeColorKey)!),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey),
+                        doc.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!),
                     doc.Id
                 );
                 newList.Add(game);                
@@ -257,8 +266,8 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.CurrentPlayersCountKey),
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeIdKey),
-                        doc.Get<string>(Keys.CurrentShapeColorKey)!),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey),
+                        doc.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!),
                     doc.Id
                 );
                 newList.Add(game);
@@ -342,15 +351,25 @@ namespace Tetris.ModelsLogic
         public override async Task AddShape(Shape currentShape, string gameId)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
-            await docRef.UpdateAsync(Keys.CurrentShapeIdKey, currentShape.Id);
-            await docRef.UpdateAsync(Keys.CurrentShapeColorKey, Converters.
-                StringAndColorConverter.ColorToColorName(currentShape.Color!));
+            await docRef.UpdateAsync(Keys.CurrentShapeMapKey, new Dictionary<string, object>
+            {
+                { Keys.CurrentShapeIdKey, currentShape.Id },
+                { Keys.CurrentShapeColorKey, Converters.
+                StringAndColorConverter.ColorToColorName(currentShape.Color!) }
+            });
         }
         public IListenerRegistration? AddGameBoardListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             return dr.AddSnapshotListener(OnChange);
+        }
+
+        public static Shape CreateShape(IDocumentSnapshot snapshot)
+        {
+            return new Shape(
+                snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey)!,
+                snapshot.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!);
         }
     }
 }

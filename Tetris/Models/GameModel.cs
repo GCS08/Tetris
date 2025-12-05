@@ -20,6 +20,7 @@ namespace Tetris.Models
         public EventHandler? OnPlayersChange;
         public EventHandler? OnGameFull;
         public GameBoard? GameBoard;
+        public GameBoard? OpGameBoard;
         protected FbData fbd = new();
         protected IListenerRegistration? ilr;
         public abstract void NavToWR();

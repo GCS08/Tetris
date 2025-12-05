@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Tetris.ViewModels;
 
-public partial class GamePageVM : ObservableObject
+public partial class GamePageVM(Game game) : ObservableObject
 {
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
@@ -13,13 +13,10 @@ public partial class GamePageVM : ObservableObject
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
     public ICommand RotateShapeCommand => new Command(RotateShape);
 
-    public Game CurrentGame { get; }
+    public Game CurrentGame { get; } = game;
     public Grid? GameBoardGrid { get; set; }
+    public Grid? OpGameBoardGrid { get; set; }
 
-    public GamePageVM(Game game)
-    {
-        CurrentGame = game;
-    }
     private void MoveRightShape()
     {
         CurrentGame.GameBoard!.MoveRightShape();
@@ -40,10 +37,16 @@ public partial class GamePageVM : ObservableObject
     {
         // Create RowDefinitions and ColumnDefinitions
         for (int r = 0; r < ConstData.GameGridRowCount; r++)
+        {
             GameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = ConstData.GameGridRowHeight });
+            OpGameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = ConstData.GameGridRowHeight });
+        }
 
         for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+        {
             GameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = ConstData.GameGridColumnWidth });
+            OpGameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = ConstData.GameGridColumnWidth });
+        }
 
         // Add BoxViews and bind BackgroundColor to CubeModel.Color
         for (int r = 0; r < ConstData.GameGridRowCount; r++)
@@ -77,6 +80,7 @@ public partial class GamePageVM : ObservableObject
                 };
 
                 GameBoardGrid.Add(border, c, r);
+                OpGameBoardGrid.Add(border, c, r);
             }
         }
     }

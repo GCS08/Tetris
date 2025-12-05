@@ -17,6 +17,7 @@ namespace Tetris.ModelsLogic
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
             this.GameBoard = new(shape);
+            this.OpGameBoard = new(shape);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
@@ -59,7 +60,6 @@ namespace Tetris.ModelsLogic
         public void RemoveGameListener()
         {
             ilr?.Remove();
-            ilr = null;
         }
 
         public override async void NavToWR()

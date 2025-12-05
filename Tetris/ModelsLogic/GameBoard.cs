@@ -26,6 +26,7 @@ namespace Tetris.ModelsLogic
         public void StartGame()
         {
             FallTimer.Elapsed += MoveDownShape;
+            ShapesQueue!.Remove();
             FallTimer.Start();
         }
         public override void ShowShape()
@@ -33,8 +34,9 @@ namespace Tetris.ModelsLogic
             for (int i = 0; i < CurrentShape!.Cells.GetLength(0); i++)
                 for (int j = 0; j < CurrentShape!.Cells.GetLength(1); j++)
                     if (CurrentShape.Cells[i, j])
-                        Board![i + CurrentShape.TopLeftY, j + 
-                            CurrentShape.TopLeftX].Color = CurrentShape.Color;   
+                        Board![i + CurrentShape.TopLeftY, j +
+                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
+
         }
         private async void ShapeAtBottom()
         {
@@ -247,10 +249,7 @@ namespace Tetris.ModelsLogic
         }
         private void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
-            ShapesQueue!.Insert(new Shape(
-                snapshot.Get<int>(Keys.CurrentShapeIdKey)!,
-                snapshot.Get<string>(Keys.CurrentShapeColorKey)!
-            ));
+            ShapesQueue!.Insert(FbData.CreateShape(snapshot));
         }
     }
 }

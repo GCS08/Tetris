@@ -11,7 +11,10 @@ public partial class GamePage : ContentPage
 	{
 		InitializeComponent();
         gpVM = new GamePageVM(game)
-        { GameBoardGrid = GameBoardGrid };
+        {
+            GameBoardGrid = GameBoardGrid,
+            OpGameBoardGrid = OpGameBoardGrid
+        };
         BindingContext = gpVM;
         gpVM.InitializeGrid();
     }
@@ -22,7 +25,7 @@ public partial class GamePage : ContentPage
         gpVM.AddListener();
 
         // Give the UI time to actually render
-        await Task.Delay(500);
+        await Task.Delay(1000);
 
         // Now start the game
         gpVM.CurrentGame.StartGame();
