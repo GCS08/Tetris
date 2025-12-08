@@ -18,14 +18,14 @@ namespace Tetris.Models
         public abstract Task<T> GetUserDataAsync<T>(string key);
         public abstract string IdentifyFireBaseError(Task task);
         public abstract Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isFull,
-            int currentShapeId, string currentShapeColor, bool isPublicGame);
+            int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
+            int currentShapeInGameId, string currentShapeColor, bool isPublicGame);
         public abstract IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public abstract IListenerRegistration AddGameListener(
             string documentId, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void GetAvailGames(Action<ObservableCollection<Game>> onComplete);
-        public abstract Task<ObservableCollection<Game>> GetAvailGames();
+        public abstract Task<ObservableCollection<Game>> GetAvailGamesList();
         public abstract Task OnPlayerLeaveWR(string id, string leavingUserID);
         public abstract Task OnPlayerJoinWR(string id, string leavingUserID);
         public abstract Task DeleteGameFromDB(string id);

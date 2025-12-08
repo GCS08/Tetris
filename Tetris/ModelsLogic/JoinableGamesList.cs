@@ -14,7 +14,7 @@ namespace Tetris.ModelsLogic
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
-            innerObject.gamesObsCollection = await innerObject.fbd.GetAvailGames();
+            innerObject.gamesObsCollection = await innerObject.fbd.GetAvailGamesList();
             return innerObject;
         }
         public override void AddGamesCollectionListener()
@@ -46,6 +46,7 @@ namespace Tetris.ModelsLogic
                 currentNewGame.MaxPlayersCount,
                 currentNewGame.IsFull,
                 currentNewGame.GameBoard!.CurrentShape!.Id!,
+                currentNewGame.GameBoard!.CurrentShape!.InGameId!,
                 Converters.StringAndColorConverter.ColorToColorName
                 (currentNewGame.GameBoard!.CurrentShape!.Color!),
                 currentNewGame.IsPublicGame);

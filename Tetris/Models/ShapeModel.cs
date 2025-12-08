@@ -3,6 +3,7 @@
     public class ShapeModel
     {
         public int Id { get; set; }
+        public int InGameId { get; set; }
         public List<bool[,]>? RotationStates { get; set; }
         public int RotationIndex { get; set; } = 0;
         public bool[,] Cells => RotationStates![RotationIndex];

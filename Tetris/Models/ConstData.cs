@@ -11,9 +11,12 @@
         public const int GameGridRowCount = 20;
         public const double GameGridColumnWidth = 20;
         public const double GameGridRowHeight = 20;
+        public const double OpGameGridColumnWidth = 15;
+        public const double OpGameGridRowHeight = 15;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int SecondsTillShapeFall = 1;
+        public const int SecondsTillGameStart = 1;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,
@@ -38,6 +41,7 @@
                 Colors.Violet,
                 Colors.LightBlue
             ];
+
         public static class ShapeRotationStates
         {
             public static readonly List<bool[,]> IShape =

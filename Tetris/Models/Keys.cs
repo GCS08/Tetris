@@ -34,8 +34,10 @@
         public const string IsFullKey = "IsFull";
         public const string IsPublicGameKey = "IsPublicGame";
         public const string CurrentShapeIdKey = "CurrentShapeId";
+        public const string CurrentShapeInGameIdKey = "CurrentShapeInGameId";
         public const string CurrentShapeColorKey = "CurrentShapeColor";
         public const string CurrentShapeMapKey = "CurrentShapeMap";
+        public const string PlayerActionMapKey = "PlayerActionMap";
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";
@@ -50,5 +52,10 @@
         public const string VioletKey = "Violet";
         public const string LightBlueKey = "LightBlue";
         public const string TransparentKey = "Transparent";
+        public const string RightKey = "right";
+        public const string LeftKey = "left";
+        public const string DownKey = "down";
+        public const string RotateKey = "rotate";
+        public const string PlayerActionKey = "PlayerAction";
     }
 }

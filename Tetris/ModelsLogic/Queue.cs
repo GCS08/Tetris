@@ -28,6 +28,16 @@ namespace Tetris.ModelsLogic
                 oldLast.SetNext(last);
             }
         }
+        public T GetTail()
+        {
+            if (IsEmpty())
+            {
+                Console.WriteLine("Queue is empty, returning default value");
+                return default!;
+            }
+
+            return last!.GetValue();
+        }
 
         public T Remove()
         {

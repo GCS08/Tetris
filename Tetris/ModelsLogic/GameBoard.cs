@@ -6,7 +6,7 @@ namespace Tetris.ModelsLogic
 {
     public class GameBoard : GameBoardModel
     {
-        public GameBoard(Shape currentShape)
+        public GameBoard(Shape currentShape, double cubeWidth, double cubeHeight)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
             this.CurrentShape = currentShape;
@@ -16,8 +16,8 @@ namespace Tetris.ModelsLogic
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                 {
                     Board[r, c] = new Cube(
-                        ConstData.GameGridColumnWidth,
-                        ConstData.GameGridRowHeight,
+                        cubeWidth,
+                        cubeHeight,
                         Colors.Transparent
                     );
                 }
@@ -27,7 +27,7 @@ namespace Tetris.ModelsLogic
         {
             FallTimer.Elapsed += MoveDownShape;
             ShapesQueue!.Remove();
-            FallTimer.Start();
+            //FallTimer.Start();
         }
         public override void ShowShape()
         {
@@ -42,7 +42,7 @@ namespace Tetris.ModelsLogic
         {
             int linesCleared = CheckForLines();
             if (ShapesQueue!.IsEmpty())
-                await fbd.AddShape(new(), GameID!);
+                await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
             CurrentShape = ShapesQueue.Remove();
             ShowShape();
         }
@@ -249,7 +249,72 @@ namespace Tetris.ModelsLogic
         }
         private void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
-            ShapesQueue!.Insert(FbData.CreateShape(snapshot));
+
+            if (ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey) != ShapesQueue.GetTail().InGameId) //Shape has changed
+            {
+                ShapesQueue.Insert(FbData.CreateShape(snapshot));
+            }
+            else if (snapshot.Get<string>(Keys.PlayerActionMapKey+ "." + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
+            {
+                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.PlayerActionKey))
+                {
+                    case Keys.LeftKey:
+                        MoveLeftShape();
+                        break;
+                    case Keys.RightKey:
+                        MoveRightShape();
+                        break;
+                    case Keys.DownKey:
+                        MoveDownShape();
+                        break;
+                    case Keys.RotateKey:
+                        RotateShape();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
+        {
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                gameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
+
+            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                gameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+            {
+                for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                {
+                    Cube cube = Board![r, c];
+
+                    BoxView boxView = new()
+                    {
+                        WidthRequest = cube.Width,
+                        HeightRequest = cube.Height,
+                        BackgroundColor = cube.Color
+                    };
+
+                    cube.PropertyChanged += (s, e) =>
+                    {
+                        if (e.PropertyName == nameof(cube.Color))
+                            boxView.BackgroundColor = cube.Color;
+                    };
+
+                    Border border = new()
+                    {
+                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                        Stroke = Colors.Gray,
+                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                        Background = Colors.Transparent,
+                        Content = boxView
+                    };
+
+                    gameBoardGrid.Add(border, c, r);
+                }
+            }
         }
     }
 }

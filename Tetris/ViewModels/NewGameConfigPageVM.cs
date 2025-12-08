@@ -19,7 +19,7 @@ namespace Tetris.ViewModels
             App? app = Application.Current as App;
             user = app!.user;
             CreateGameCommand = new Command(async () => await CreateGame());
-            currentNewGame = new("Red", user.UserName, 1, 2, true, new(), string.Empty);
+            currentNewGame = new("Red", user.UserName, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
         public string SelectedColor

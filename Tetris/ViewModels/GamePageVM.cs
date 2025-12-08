@@ -19,70 +19,24 @@ public partial class GamePageVM(Game game) : ObservableObject
 
     private void MoveRightShape()
     {
-        CurrentGame.GameBoard!.MoveRightShape();
+        CurrentGame.MoveRightShape();
     }
     private void MoveLeftShape()
     {
-        CurrentGame.GameBoard!.MoveLeftShape();
+        CurrentGame.MoveLeftShape();
     }
     private void MoveDownShape()
     {
-        CurrentGame.GameBoard!.MoveDownShape();
+        CurrentGame.MoveDownShape();
     }
     private void RotateShape()
     {
-        CurrentGame.GameBoard!.RotateShape();
+        CurrentGame.RotateShape();
     }
     public void InitializeGrid()
     {
-        // Create RowDefinitions and ColumnDefinitions
-        for (int r = 0; r < ConstData.GameGridRowCount; r++)
-        {
-            GameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = ConstData.GameGridRowHeight });
-            OpGameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = ConstData.GameGridRowHeight });
-        }
-
-        for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-        {
-            GameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = ConstData.GameGridColumnWidth });
-            OpGameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = ConstData.GameGridColumnWidth });
-        }
-
-        // Add BoxViews and bind BackgroundColor to CubeModel.Color
-        for (int r = 0; r < ConstData.GameGridRowCount; r++)
-        {
-            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-            {
-                Cube cube = CurrentGame.GameBoard!.Board![r, c];
-
-                BoxView boxView = new()
-                {
-                    WidthRequest = cube.Width,
-                    HeightRequest = cube.Height,
-                    BackgroundColor = cube.Color
-                };
-
-                // Listen for color changes
-                cube.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName == nameof(cube.Color))
-                        boxView.BackgroundColor = cube.Color;
-                };
-
-                // Wrap in a Border
-                Border border = new()
-                {
-                    Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
-                    Stroke = Colors.Gray,
-                    StrokeThickness = ConstData.BetweenCubesBorderWidth,
-                    Background = Colors.Transparent,
-                    Content = boxView
-                };
-
-                GameBoardGrid.Add(border, c, r);
-                OpGameBoardGrid.Add(border, c, r);
-            }
-        }
+        CurrentGame.GameBoard!.InitializeGrid(GameBoardGrid, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
+        CurrentGame.OpGameBoard!.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
 
     public void AddListener()

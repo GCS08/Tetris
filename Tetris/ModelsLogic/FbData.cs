@@ -182,8 +182,8 @@ namespace Tetris.ModelsLogic
             return errorMessage;
         }
         public override async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isFull,
-            int currentShapeId, string currentShapeColor, bool isPublicGame)
+            int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId, 
+            int currentShapeInGameId, string currentShapeColor, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -205,6 +205,7 @@ namespace Tetris.ModelsLogic
                     Keys.CurrentShapeMapKey, new Dictionary<string, object>
                     {
                         { Keys.CurrentShapeIdKey, currentShapeId },
+                        { Keys.CurrentShapeInGameIdKey, currentShapeInGameId },
                         { Keys.CurrentShapeColorKey, currentShapeColor }
                     }
                 }
@@ -230,28 +231,10 @@ namespace Tetris.ModelsLogic
         }
         public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
-            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.IsFullKey, false)
-                .WhereEqualsTo(Keys.IsPublicGameKey, true).GetAsync();
-            ObservableCollection<Game> newList = [];
-
-            foreach (IDocumentSnapshot doc in snapshot.Documents)
-            {
-                Game game = new(
-                    doc.Get<string>(Keys.CubeColorKey)!,
-                    doc.Get<string>(Keys.CreatorNameKey)!,
-                    doc.Get<int>(Keys.CurrentPlayersCountKey),
-                    doc.Get<int>(Keys.MaxPlayersCountKey),
-                    doc.Get<bool>(Keys.IsPublicGameKey),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey),
-                        doc.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!),
-                    doc.Id
-                );
-                newList.Add(game);                
-            }
+            ObservableCollection<Game> newList = await GetAvailGamesList();
             onCompleteChange(newList);
         }
-        public override async Task<ObservableCollection<Game>> GetAvailGames()
+        public override async Task<ObservableCollection<Game>> GetAvailGamesList()
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
             IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.IsFullKey, false)
@@ -267,6 +250,7 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
                     new Shape(doc.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey),
+                        doc.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey),
                         doc.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!),
                     doc.Id
                 );
@@ -354,6 +338,7 @@ namespace Tetris.ModelsLogic
             await docRef.UpdateAsync(Keys.CurrentShapeMapKey, new Dictionary<string, object>
             {
                 { Keys.CurrentShapeIdKey, currentShape.Id },
+                { Keys.CurrentShapeInGameIdKey, currentShape.InGameId },
                 { Keys.CurrentShapeColorKey, Converters.
                 StringAndColorConverter.ColorToColorName(currentShape.Color!) }
             });
@@ -369,7 +354,18 @@ namespace Tetris.ModelsLogic
         {
             return new Shape(
                 snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey)!,
+                snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!);
+        }
+
+        public void PlayerAction(string gameID, string userID, string action)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            dr.UpdateAsync(Keys.PlayerActionMapKey, new Dictionary<string, object>
+            {
+                { Keys.UserIDKey, userID },
+                { Keys.PlayerActionKey, action }
+            });
         }
     }
 }

@@ -16,8 +16,8 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(shape);
-            this.OpGameBoard = new(shape);
+            this.GameBoard = new(shape, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
+            this.OpGameBoard = new(shape, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
@@ -74,6 +74,31 @@ namespace Tetris.ModelsLogic
         public void StartGame()
         {
             GameBoard!.StartGame();
+            OpGameBoard!.StartGame();
+        }
+
+        public void MoveRightShape()
+        {
+            GameBoard!.MoveRightShape();
+            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RightKey);
+        }
+
+        public void MoveLeftShape()
+        {
+            GameBoard!.MoveLeftShape();
+            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.LeftKey);
+        }
+
+        public void MoveDownShape()
+        {
+            GameBoard!.MoveDownShape();
+            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
+        }
+
+        public void RotateShape()
+        {
+            GameBoard!.RotateShape();
+            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RotateKey);
         }
     }
 }

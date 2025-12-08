@@ -5,29 +5,23 @@ namespace Tetris.ModelsLogic
 {
     public class Shape : ShapeModel
     {
-        public Shape()
+        public Shape(int inGameId)
         {
             this.Id = rnd.Next(ConstData.ShapesCount);
+            this.InGameId = inGameId;
             this.RotationStates = ConstData.ShapeRotationState[this.Id];
             this.Color = ConstData.colors[rnd.Next(ConstData.colors.Length)];
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }
-        public Shape(int id, string color)
+        public Shape(int id, int inGameId, string color)
         {
             this.Id = id;
+            this.InGameId = inGameId;
             this.RotationStates = ConstData.ShapeRotationState[this.Id];
             this.Color = StringAndColorConverter.ColorNameToColor(color);
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
-        }
-        public Shape(int Id, List<bool[,]>? RotationStates, int TopLeftX, int TopLeftY, Color color)
-        {
-            this.Id = Id;
-            this.RotationStates = RotationStates;
-            this.TopLeftX = TopLeftX;
-            this.TopLeftY = TopLeftY;
-            this.Color = color;
         }
     }
 }

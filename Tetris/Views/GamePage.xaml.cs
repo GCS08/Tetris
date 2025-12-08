@@ -21,13 +21,8 @@ public partial class GamePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-
         gpVM.AddListener();
-
-        // Give the UI time to actually render
-        await Task.Delay(1000);
-
-        // Now start the game
+        await Task.Delay(ConstData.SecondsTillGameStart * 1000);
         gpVM.CurrentGame.StartGame();
     }
     protected override void OnDisappearing()
