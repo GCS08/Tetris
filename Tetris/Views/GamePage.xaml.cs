@@ -21,13 +21,13 @@ public partial class GamePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        gpVM.AddListener();
+        gpVM.AddGameListener();
         await Task.Delay(ConstData.SecondsTillGameStart * 1000);
         gpVM.CurrentGame.StartGame();
     }
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        gpVM.RemoveListener();
+        gpVM.RemoveGameListener();
     }
 }

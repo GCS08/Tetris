@@ -36,14 +36,14 @@ namespace Tetris.ViewModels
             await Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
 
-        public void AddGameListener()
+        public void AddWaitingRoomListener()
         {
-            CurrentGame.AddGameListener();
+            CurrentGame.AddWaitingRoomListener();
         }
 
-        public void RemoveGameListener()
+        public void RemoveWaitingRoomListener()
         {
-            CurrentGame.RemoveGameListener();
+            CurrentGame.RemoveWaitingRoomListener();
         }
     }
 }

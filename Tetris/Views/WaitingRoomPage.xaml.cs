@@ -15,11 +15,11 @@ public partial class WaitingRoomPage : ContentPage
 	protected override void OnAppearing()
 	{
 		base.OnAppearing();
-		wrpVM.AddGameListener();
+		wrpVM.AddWaitingRoomListener();
     }
     protected override void OnDisappearing()
 	{
 		base.OnDisappearing();
-		wrpVM.RemoveGameListener();
+		wrpVM.RemoveWaitingRoomListener();
     }
 }

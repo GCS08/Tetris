@@ -37,18 +37,58 @@ namespace Tetris.ModelsLogic
             }            
         }
 
+        public void AddWaitingRoomListener()
+        {
+            ilr = fbd.AddWaitingRoomListener(GameID, OnChangeWaitingRoom!);
+        }
+        public void RemoveWaitingRoomListener()
+        {
+            ilr?.Remove();
+        }
+
         public void AddGameListener()
         {
-            ilr = fbd.AddGameListener(GameID, OnChange!);
+            ilr = fbd.AddGameListener(GameID, OnChangeGame!);
         }
-        private async void OnChange(IDocumentSnapshot snapshot, Exception error)
+        public void RemoveGameListener()
         {
-            CurrentPlayersCount = await fbd.GetCurrentPlayersCount(GameID);
+            ilr?.Remove();
+        }
+        private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
+        {
+            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue.GetTail().InGameId) //Shape has changed
+            {
+                GameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
+            }
+            else if (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
+            {
+                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.PlayerActionKey))
+                {
+                    case Keys.LeftKey:
+                        MoveLeftOpShape();
+                        break;
+                    case Keys.RightKey:
+                        MoveRightOpShape();
+                        break;
+                    case Keys.DownKey:
+                        MoveDownOpShape();
+                        break;
+                    case Keys.RotateKey:
+                        RotateOpShape();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        private async void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
+        {
+            CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
             if (IsFull)
             {
                 fbd.SetGameIsFull(GameID);
-                OnGameFull?.Invoke(this, null!);
+                OnGameFull?.Invoke(this, null!);   
             }
         }
         private void OnCompleteChange(ObservableCollection<User> users)
@@ -57,11 +97,7 @@ namespace Tetris.ModelsLogic
             foreach (User user in users) { UsersInGame.Add(user); }
             OnPlayersChange!.Invoke(this, EventArgs.Empty);
         }
-        public void RemoveGameListener()
-        {
-            ilr?.Remove();
-        }
-
+         
         public override async void NavToWR()
         {
             await fbd.OnPlayerJoinWR(GameID,
@@ -76,7 +112,6 @@ namespace Tetris.ModelsLogic
             GameBoard!.StartGame();
             OpGameBoard!.StartGame();
         }
-
         public void MoveRightShape()
         {
             GameBoard!.MoveRightShape();
@@ -99,6 +134,25 @@ namespace Tetris.ModelsLogic
         {
             GameBoard!.RotateShape();
             fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RotateKey);
+        }
+        public void MoveRightOpShape()
+        {
+            OpGameBoard!.MoveRightShape();
+        }
+
+        public void MoveLeftOpShape()
+        {
+            OpGameBoard!.MoveLeftShape();
+        }
+
+        public void MoveDownOpShape()
+        {
+            OpGameBoard!.MoveDownShape();
+        }
+
+        public void RotateOpShape()
+        {
+            OpGameBoard!.RotateShape();
         }
     }
 }

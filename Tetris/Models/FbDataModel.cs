@@ -22,7 +22,7 @@ namespace Tetris.Models
             int currentShapeInGameId, string currentShapeColor, bool isPublicGame);
         public abstract IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
-        public abstract IListenerRegistration AddGameListener(
+        public abstract IListenerRegistration AddWaitingRoomListener(
             string documentId, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void GetAvailGames(Action<ObservableCollection<Game>> onComplete);
         public abstract Task<ObservableCollection<Game>> GetAvailGamesList();

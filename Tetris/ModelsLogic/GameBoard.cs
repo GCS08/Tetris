@@ -26,7 +26,6 @@ namespace Tetris.ModelsLogic
         public void StartGame()
         {
             FallTimer.Elapsed += MoveDownShape;
-            ShapesQueue!.Remove();
             //FallTimer.Start();
         }
         public override void ShowShape()
@@ -43,7 +42,7 @@ namespace Tetris.ModelsLogic
             int linesCleared = CheckForLines();
             if (ShapesQueue!.IsEmpty())
                 await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
-            CurrentShape = ShapesQueue.Remove();
+            CurrentShape = ShapesQueue.Head();
             ShowShape();
         }
         private int CheckForLines()
@@ -238,43 +237,6 @@ namespace Tetris.ModelsLogic
             }
 
             return false; // No valid position found
-        }
-        public void AddListener()
-        {
-            ilr = fbd.AddGameBoardListener(GameID!, OnChange!);
-        }
-        public void RemoveListener()
-        {
-            ilr?.Remove();
-        }
-        private void OnChange(IDocumentSnapshot snapshot, Exception error)
-        {
-            //tried to debug. I think OnChange runs twice for each board.
-
-            if (ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey) != ShapesQueue.GetTail().InGameId) //Shape has changed
-            {
-                ShapesQueue.Insert(FbData.CreateShape(snapshot));
-            }
-            else if (snapshot.Get<string>(Keys.PlayerActionMapKey+ "." + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
-            {
-                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.PlayerActionKey))
-                {
-                    case Keys.LeftKey:
-                        MoveLeftShape();
-                        break;
-                    case Keys.RightKey:
-                        MoveRightShape();
-                        break;
-                    case Keys.DownKey:
-                        MoveDownShape();
-                        break;
-                    case Keys.RotateKey:
-                        RotateShape();
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         public void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)

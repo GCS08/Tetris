@@ -39,13 +39,13 @@ public partial class GamePageVM(Game game) : ObservableObject
         CurrentGame.OpGameBoard!.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
 
-    public void AddListener()
+    public void AddGameListener()
     {
-        CurrentGame.GameBoard!.AddListener();
+        CurrentGame.AddGameListener();
     }
 
-    public void RemoveListener()
+    public void RemoveGameListener()
     {
-        CurrentGame.GameBoard!.RemoveListener();
+        CurrentGame.RemoveGameListener();
     }
 }

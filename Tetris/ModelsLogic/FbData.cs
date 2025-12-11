@@ -223,7 +223,7 @@ namespace Tetris.ModelsLogic
             ICollectionReference cr = fs.Collection(Keys.GamesCollectionName);
             return cr.AddSnapshotListener(OnChange);
         }
-        public override IListenerRegistration AddGameListener(
+        public override IListenerRegistration AddWaitingRoomListener(
             string documentId, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(documentId);
@@ -343,12 +343,6 @@ namespace Tetris.ModelsLogic
                 StringAndColorConverter.ColorToColorName(currentShape.Color!) }
             });
         }
-        public IListenerRegistration? AddGameBoardListener(string gameID,
-            Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
-        {
-            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            return dr.AddSnapshotListener(OnChange);
-        }
 
         public static Shape CreateShape(IDocumentSnapshot snapshot)
         {
@@ -366,6 +360,13 @@ namespace Tetris.ModelsLogic
                 { Keys.UserIDKey, userID },
                 { Keys.PlayerActionKey, action }
             });
+        }
+
+        public IListenerRegistration? AddGameListener(string gameID,
+            Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            return dr.AddSnapshotListener(OnChange);
         }
     }
 }
