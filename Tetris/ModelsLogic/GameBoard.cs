@@ -249,6 +249,7 @@ namespace Tetris.ModelsLogic
         }
         private void OnChange(IDocumentSnapshot snapshot, Exception error)
         {
+            //tried to debug. I think OnChange runs twice for each board.
 
             if (ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey) != ShapesQueue.GetTail().InGameId) //Shape has changed
             {
