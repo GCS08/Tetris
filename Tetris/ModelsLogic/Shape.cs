@@ -23,5 +23,10 @@ namespace Tetris.ModelsLogic
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }
+
+        public static Shape Duplicate(Shape shape)
+        {
+            return new Shape(shape.Id, shape.InGameId, StringAndColorConverter.ColorToColorName(shape.Color!));
+        }
     }
 }

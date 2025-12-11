@@ -40,7 +40,8 @@ namespace Tetris.ModelsLogic
         private async void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
-            if (ShapesQueue!.IsEmpty())
+            ShapesQueue!.Remove();
+            if (ShapesQueue.IsEmpty())
                 await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
             CurrentShape = ShapesQueue.Head();
             ShowShape();

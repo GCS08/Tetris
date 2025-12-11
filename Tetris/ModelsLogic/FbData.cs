@@ -352,15 +352,40 @@ namespace Tetris.ModelsLogic
                 snapshot.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!);
         }
 
-        public void PlayerAction(string gameID, string userID, string action)
+        public async Task PlayerAction(string gameID, string userID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            dr.UpdateAsync(Keys.PlayerActionMapKey, new Dictionary<string, object>
+            IDocumentSnapshot currentSnapshot = await dr.GetAsync();
+
+            // Get the existing map or create a fresh one
+            Dictionary<string, object> map =
+                currentSnapshot.Get<Dictionary<string, object>>(Keys.PlayerActionMapKey)
+                ?? [];
+
+            // Safely extract MoveIndex (Firestore loves storing numbers as long/double)
+            int currentMoveIndex = 0;
+
+            if (map.TryGetValue(Keys.MoveIndexKey, out object? rawVal) && rawVal != null)
             {
-                { Keys.UserIDKey, userID },
-                { Keys.PlayerActionKey, action }
-            });
+                try
+                {
+                    currentMoveIndex = Convert.ToInt32(rawVal);
+                }
+                catch
+                {
+                    currentMoveIndex = 0;
+                }
+            }
+
+            // Update map
+            map[Keys.UserIDKey] = userID;
+            map[Keys.PlayerActionKey] = action;
+            map[Keys.MoveIndexKey] = currentMoveIndex + 1;
+
+            // Push to Firestore
+            await dr.UpdateAsync(Keys.PlayerActionMapKey, map);
         }
+
 
         public IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)

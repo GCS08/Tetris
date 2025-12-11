@@ -57,5 +57,6 @@
         public const string DownKey = "down";
         public const string RotateKey = "rotate";
         public const string PlayerActionKey = "PlayerAction";
+        public const string MoveIndexKey = "MoveIndex";
     }
 }

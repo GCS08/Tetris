@@ -17,7 +17,7 @@ namespace Tetris.ModelsLogic
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
             this.GameBoard = new(shape, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-            this.OpGameBoard = new(shape, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+            this.OpGameBoard = new(Shape.Duplicate(shape), ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
