@@ -23,10 +23,11 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        public void StartGame()
+        public async void StartGame()
         {
             FallTimer.Elapsed += MoveDownShape;
-            //FallTimer.Start();
+            await Task.Delay(ConstData.SecondsTillGameStart * 1000);
+            FallTimer.Start();
         }
         public override void ShowShape()
         {
@@ -40,11 +41,28 @@ namespace Tetris.ModelsLogic
         private async void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
-            ShapesQueue!.Remove();
-            if (ShapesQueue.IsEmpty())
-                await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
-            CurrentShape = ShapesQueue.Head();
-            ShowShape();
+            if (CheckForLose())
+            {
+                IsLost = true;
+                FallTimer.Stop();
+            }
+            else
+            {
+                ShapesQueue!.Remove();
+                if (ShapesQueue.IsEmpty() && User == (Application.Current as App)!.user)
+                    await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
+                CurrentShape = ShapesQueue.Head();
+                ShowShape();
+            }
+        }
+        private bool CheckForLose()
+        {
+            for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+            {
+                if (Board![0, col].Color != Colors.Transparent)
+                    return true;
+            }
+            return false;
         }
         private int CheckForLines()
         {
@@ -102,7 +120,7 @@ namespace Tetris.ModelsLogic
         public override void MoveRightShape()
         {
             if (CurrentShape!.TopLeftX + CurrentShape.Cells.GetLength(1)
-                < ConstData.GameGridColumnCount)
+                < ConstData.GameGridColumnCount && !IsLost)
             {
                 EraseShape();
                 CurrentShape!.TopLeftX++;
@@ -111,7 +129,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveLeftShape()
         {
-            if (CurrentShape!.TopLeftX > 0)
+            if (CurrentShape!.TopLeftX > 0 && !IsLost)
             {
                 EraseShape();
                 CurrentShape.TopLeftX--;
@@ -158,15 +176,18 @@ namespace Tetris.ModelsLogic
                     canMoveDown = false;
             }
 
-            // Move or lock
-            if (canMoveDown)
+            if (!IsLost)
             {
-                EraseShape();
-                CurrentShape.TopLeftY++;
-                ShowShape();
+                // Move or lock
+                if (canMoveDown)
+                {
+                    EraseShape();
+                    CurrentShape.TopLeftY++;
+                    ShowShape();
+                }
+                else
+                    ShapeAtBottom();
             }
-            else
-                ShapeAtBottom();
         }
         private void MoveDownShape(object? sender, ElapsedEventArgs e)
         {
@@ -174,7 +195,7 @@ namespace Tetris.ModelsLogic
         }
         public override void RotateShape()
         {
-            if (CurrentShape == null) return;
+            if (CurrentShape == null || IsLost) return;
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates!.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];

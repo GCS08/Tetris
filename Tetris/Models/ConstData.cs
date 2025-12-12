@@ -6,13 +6,13 @@
         public const int MinCharacterInPW = 8;
         public const int MinCharacterInEmail = 5;
         public const int ToastFontSize = 14;
-        public static readonly GridLength UserScreenHeight = new(1.8, GridUnitType.Star);
+        public static readonly GridLength UserScreenHeight = new(1.9, GridUnitType.Star);
         public const int GameGridColumnCount = 10;
         public const int GameGridRowCount = 20;
         public const double GameGridColumnWidth = 20;
         public const double GameGridRowHeight = 20;
-        public const double OpGameGridColumnWidth = 15;
-        public const double OpGameGridRowHeight = 15;
+        public const double OpGameGridColumnWidth = 12;
+        public const double OpGameGridRowHeight = 12;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int SecondsTillShapeFall = 1;

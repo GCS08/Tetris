@@ -18,11 +18,11 @@ public partial class GamePage : ContentPage
         BindingContext = gpVM;
         gpVM.InitializeGrid();
     }
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
         gpVM.AddGameListener();
-        await Task.Delay(ConstData.SecondsTillGameStart * 1000);
+        //await Task.Delay(ConstData.SecondsTillGameStart * 1000);
         gpVM.CurrentGame.StartGame();
     }
     protected override void OnDisappearing()

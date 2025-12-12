@@ -9,8 +9,10 @@ namespace Tetris.Models
         public Shape? CurrentShape { get; set; }
         public string? GameID;
         public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; } = new();
+        public User? User { get; set; }
         protected System.Timers.Timer FallTimer = new(ConstData.SecondsTillShapeFall * 1000);
         protected FbData fbd = new();
+        protected bool IsLost = false;
         public abstract void ShowShape();
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();

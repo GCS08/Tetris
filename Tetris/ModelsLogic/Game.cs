@@ -54,11 +54,15 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
         }
-        private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
+        private void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
-            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue.GetTail().InGameId) //Shape has changed
+            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
             {
                 GameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
+            }
+            if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
+            {
+                OpGameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
             }
             else if (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
             {
@@ -81,7 +85,7 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        private async void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
+        private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
@@ -110,30 +114,34 @@ namespace Tetris.ModelsLogic
         public void StartGame()
         {
             GameBoard!.StartGame();
+            GameBoard.User = (Application.Current as App)!.user;
             OpGameBoard!.StartGame();
+            foreach (User user in UsersInGame)
+                if (user != (Application.Current as App)!.user)
+                    OpGameBoard.User = user;
         }
-        public void MoveRightShape()
+        public async void MoveRightShape()
         {
             GameBoard!.MoveRightShape();
-            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RightKey);
+            await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RightKey);
         }
 
-        public void MoveLeftShape()
+        public async void MoveLeftShape()
         {
             GameBoard!.MoveLeftShape();
-            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.LeftKey);
+            await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.LeftKey);
         }
 
-        public void MoveDownShape()
+        public async void MoveDownShape()
         {
             GameBoard!.MoveDownShape();
-            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
+            await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
         }
 
-        public void RotateShape()
+        public async void RotateShape()
         {
             GameBoard!.RotateShape();
-            fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RotateKey);
+            await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RotateKey);
         }
         public void MoveRightOpShape()
         {
