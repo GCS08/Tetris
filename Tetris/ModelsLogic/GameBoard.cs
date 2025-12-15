@@ -6,10 +6,15 @@ namespace Tetris.ModelsLogic
 {
     public class GameBoard : GameBoardModel
     {
-        public GameBoard(Shape currentShape, double cubeWidth, double cubeHeight)
+        public GameBoard(string gameId, Shape currentShape, bool IsOp)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
             this.CurrentShape = currentShape;
+            this.IsOp = IsOp;
+            this.GameID = gameId;
+
+            double cubeWidth = IsOp ? ConstData.OpGameGridColumnWidth : ConstData.GameGridColumnWidth;
+            double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
             {
@@ -23,11 +28,13 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        public async void StartGame()
+        public void StartGame()
         {
-            FallTimer.Elapsed += MoveDownShape;
-            await Task.Delay(ConstData.SecondsTillGameStart * 1000);
-            FallTimer.Start();
+            if (!IsOp)
+            {
+                FallTimer.Elapsed += MoveDownShape;
+                //FallTimer.Start();
+            }
         }
         public override void ShowShape()
         {
@@ -189,9 +196,10 @@ namespace Tetris.ModelsLogic
                     ShapeAtBottom();
             }
         }
-        private void MoveDownShape(object? sender, ElapsedEventArgs e)
+        private async void MoveDownShape(object? sender, ElapsedEventArgs e)
         {
             MoveDownShape();
+            await fbd.PlayerAction(GameID!, User!.UserID, Keys.DownKey);
         }
         public override void RotateShape()
         {

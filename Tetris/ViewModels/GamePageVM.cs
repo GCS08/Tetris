@@ -6,8 +6,10 @@ namespace Tetris.ViewModels;
 
 public partial class GamePageVM(Game game) : ObservableObject
 {
+    public bool IsReadyVisible { get; set; } = true;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
+    public ICommand ReadyCommand => new Command(Ready);
     public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
     public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
@@ -17,6 +19,10 @@ public partial class GamePageVM(Game game) : ObservableObject
     public Grid? GameBoardGrid { get; set; }
     public Grid? OpGameBoardGrid { get; set; }
 
+    private void Ready()
+    {
+        CurrentGame.Ready();
+    }
     private void MoveRightShape()
     {
         CurrentGame.MoveRightShape();

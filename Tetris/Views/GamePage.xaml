@@ -11,107 +11,136 @@
     <Grid>
         <!--  Background Image  -->
         <Image Aspect="AspectFill" Source="gameBackground.png" />
-
-        <!--  Main Content  -->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="{Binding UserScreenHeight}" />
+                <RowDefinition Height="0.8*" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
 
-            <BoxView
+            <Grid
                 Grid.Row="1"
-                Grid.ColumnSpan="2"
-                BackgroundColor="White"
-                HeightRequest="1" />
+                Padding="20"
+                BackgroundColor="Beige"
+                IsVisible="{Binding IsReadyVisible}"
+                RowSpacing="20"
+                ZIndex="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label
+                    FontSize="40"
+                    HorizontalOptions="Center"
+                    Text="{x:Static m:Strings.FeelingReady}" />
+                <Button
+                    Grid.Row="1"
+                    Command="{Binding ReadyCommand}"
+                    Text="{x:Static m:Strings.ClickMe}" />
+            </Grid>
 
-            <Frame
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                BackgroundColor="Transparent"
-                BorderColor="Transparent">
-                <Grid HorizontalOptions="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid
-                        x:Name="OpGameBoardGrid"
-                        Grid.Row="0"
-                        BackgroundColor="#152b50"
-                        FlowDirection="LeftToRight"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Start" />
-                </Grid>
-            </Frame>
+            <!--  Main Content  -->
+            <Grid Grid.RowSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="{Binding UserScreenHeight}" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <!--  Game Board Grid  -->
-            <Frame
-                Grid.Row="2"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                BackgroundColor="Transparent"
-                BorderColor="Transparent">
-                <Grid HorizontalOptions="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid
-                        x:Name="GameBoardGrid"
-                        Grid.Row="0"
-                        BackgroundColor="#152b50"
-                        FlowDirection="LeftToRight"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Start" />
-                    <Grid
-                        Grid.Row="1"
-                        FlowDirection="LeftToRight"
-                        HeightRequest="100">
+                <BoxView
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="White"
+                    HeightRequest="1" />
+
+                <Frame
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="Transparent"
+                    BorderColor="Transparent">
+                    <Grid HorizontalOptions="Center">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Button
-                            Grid.Column="2"
-                            Margin="5"
-                            Command="{Binding MoveRightShapeCommand}"
-                            Text="right" />
-                        <Button
-                            Grid.Column="1"
-                            Margin="5"
-                            Command="{Binding RotateShapeCommand}"
-                            Text="rotate" />
-                        <Button
-                            Grid.Column="0"
-                            Margin="5"
-                            Command="{Binding MoveLeftShapeCommand}"
-                            Text="left" />
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="5"
-                            Command="{Binding MoveDownShapeCommand}"
-                            Text="down" />
+                        <Grid
+                            x:Name="OpGameBoardGrid"
+                            Grid.Row="0"
+                            BackgroundColor="#152b50"
+                            FlowDirection="LeftToRight"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Start" />
                     </Grid>
-                </Grid>
-            </Frame>
+                </Frame>
+
+                <!--  Game Board Grid  -->
+                <Frame
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    BackgroundColor="Transparent"
+                    BorderColor="Transparent">
+                    <Grid HorizontalOptions="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid
+                            x:Name="GameBoardGrid"
+                            Grid.Row="0"
+                            BackgroundColor="#152b50"
+                            FlowDirection="LeftToRight"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Start" />
+                        <Grid
+                            Grid.Row="1"
+                            FlowDirection="LeftToRight"
+                            HeightRequest="100">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="2"
+                                Margin="5"
+                                Command="{Binding MoveRightShapeCommand}"
+                                Text="right" />
+                            <Button
+                                Grid.Column="1"
+                                Margin="5"
+                                Command="{Binding RotateShapeCommand}"
+                                Text="rotate" />
+                            <Button
+                                Grid.Column="0"
+                                Margin="5"
+                                Command="{Binding MoveLeftShapeCommand}"
+                                Text="left" />
+                            <Button
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="5"
+                                Command="{Binding MoveDownShapeCommand}"
+                                Text="down" />
+                        </Grid>
+                    </Grid>
+                </Frame>
+            </Grid>
         </Grid>
+
     </Grid>
 </ContentPage>

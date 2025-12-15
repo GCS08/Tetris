@@ -182,7 +182,7 @@ namespace Tetris.ModelsLogic
             return errorMessage;
         }
         public override async Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId, 
+            int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
             int currentShapeInGameId, string currentShapeColor, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
@@ -190,7 +190,6 @@ namespace Tetris.ModelsLogic
 
             await docRef.SetAsync(new
             {
-                Player0 = userID,
                 CreatorName = creatorName,
                 CubeColor = cubeColor,
                 CurrentPlayersCount = currentPlayersCount,
@@ -211,8 +210,20 @@ namespace Tetris.ModelsLogic
                 }
             });
 
-            for (int i = 1; i < maxPlayersCount; i++)
-                await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
+            for (int i = 0; i < maxPlayersCount; i++)
+            { 
+                string currentUserId = i == 0 ? userID : string.Empty;
+                await docRef.UpdateAsync(new Dictionary<string, object>
+                {
+                    {
+                        Keys.PlayerDetailsKey + i, new Dictionary<string, object>
+                        {
+                            { Keys.PlayerIdKey, currentUserId },
+                            { Keys.IsPlayerReadyKey, false }
+                        }
+                    }
+                });
+            }
 
             // Return the auto-generated document ID
             return docRef.Id;
@@ -264,8 +275,8 @@ namespace Tetris.ModelsLogic
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(-1));
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
-                if (docSnap.Get<string>(Keys.PlayerKey + i) == leavingUserID)
-                    await docRef.UpdateAsync(Keys.PlayerKey + i, string.Empty);
+                if (docSnap.Get<string>(Keys.PlayerIdKey + i) == leavingUserID)
+                    await docRef.UpdateAsync(Keys.PlayerIdKey + i, string.Empty);
         }
         public override async Task OnPlayerJoinWR(string id, string leavingUserID)
         {
@@ -274,10 +285,10 @@ namespace Tetris.ModelsLogic
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
             bool addedOnce = false;
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey) && !addedOnce; i++)
-                if (docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty)
+                if (docSnap.Get<string>(Keys.PlayerIdKey + i) == string.Empty)
                 {
                     addedOnce = true;
-                    await docRef.UpdateAsync(Keys.PlayerKey + i, leavingUserID);
+                    await docRef.UpdateAsync(Keys.PlayerIdKey + i, leavingUserID);
                 }
         }
         public override async Task DeleteGameFromDB(string id)
@@ -294,10 +305,11 @@ namespace Tetris.ModelsLogic
             
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
             {
-                if (!(docSnap.Get<string>(Keys.PlayerKey + i) == null ||
-                    docSnap.Get<string>(Keys.PlayerKey + i) == string.Empty))
+                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
                 {
-                    User tempUser = await UserIDToObject(docSnap.Get<string>(Keys.PlayerKey + i)!);
+                    User tempUser = await UserIDToObject(docSnap.Get<string>(
+                        Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey)!);
                     newList.Add(tempUser);
                 }
             }
@@ -343,7 +355,6 @@ namespace Tetris.ModelsLogic
                 StringAndColorConverter.ColorToColorName(currentShape.Color!) }
             });
         }
-
         public static Shape CreateShape(IDocumentSnapshot snapshot)
         {
             return new Shape(
@@ -351,7 +362,6 @@ namespace Tetris.ModelsLogic
                 snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!);
         }
-
         public async Task PlayerAction(string gameID, string userID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
@@ -385,13 +395,24 @@ namespace Tetris.ModelsLogic
             // Push to Firestore
             await dr.UpdateAsync(Keys.PlayerActionMapKey, map);
         }
-
-
         public IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             return dr.AddSnapshotListener(OnChange);
+        }
+
+        public async void SetPlayerReady(string gameID, int maxPlayersCount, string userID)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot snapshot = await dr.GetAsync();
+            bool changed = false;
+            for (int i = 0; i < maxPlayersCount && !changed; i++)
+                if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
+                {
+                    await dr.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true);
+                    changed = true;
+                }
         }
     }
 }

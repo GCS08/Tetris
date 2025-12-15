@@ -41,7 +41,7 @@
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";
-        public const string PlayerKey = "Player";
+        public const string PlayerIdKey = "PlayerId";
         public const string UserIDKey = "userID";
         public const string RedKey = "Red";
         public const string OrangeKey = "Orange";
@@ -58,5 +58,7 @@
         public const string RotateKey = "rotate";
         public const string PlayerActionKey = "PlayerAction";
         public const string MoveIndexKey = "MoveIndex";
+        public const string PlayerDetailsKey = "PlayerDetails";
+        public const string IsPlayerReadyKey = "IsPlayerReady";
     }
 }

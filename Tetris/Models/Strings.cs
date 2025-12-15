@@ -96,5 +96,6 @@
         public const string PlayersInRoomTitle = "Players waiting:";
         public const string TotalLinesShort = "tlc: ";
         public const string HighestScoreShort = "hs: ";
+        public const string FeelingReady = "Feeling ready???";
     }
 }

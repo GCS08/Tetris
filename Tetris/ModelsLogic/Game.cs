@@ -16,8 +16,8 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(shape, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-            this.OpGameBoard = new(Shape.Duplicate(shape), ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+            this.GameBoard = new(GameID, shape, false);
+            this.OpGameBoard = new(GameID, Shape.Duplicate(shape), true);
             UsersInGame.Add((Application.Current as App)!.user);
         }
         public async Task OnPlayerLeaveWR()
@@ -25,7 +25,6 @@ namespace Tetris.ModelsLogic
             if (CurrentPlayersCount <= 1)
             {
                 ilr?.Remove();
-                ilr = null;
                 await fbd.DeleteGameFromDB(GameID);
             }
             else
@@ -161,6 +160,11 @@ namespace Tetris.ModelsLogic
         public void RotateOpShape()
         {
             OpGameBoard!.RotateShape();
+        }
+
+        public void Ready()
+        {
+            fbd.SetPlayerReady(GameID, MaxPlayersCount, (Application.Current as App)!.user.UserID);
         }
     }
 }
