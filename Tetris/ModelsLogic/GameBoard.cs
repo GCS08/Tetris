@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 FallTimer.Elapsed += MoveDownShape;
-                //FallTimer.Start();
+                FallTimer.Start();
             }
         }
         public override void ShowShape()

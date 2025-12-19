@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Tetris.ViewModels;
 
-public partial class GamePageVM(Game game) : ObservableObject
+public partial class GamePageVM : ObservableObject
 {
     public bool IsReadyVisible { get; set; } = true;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
@@ -15,9 +15,22 @@ public partial class GamePageVM(Game game) : ObservableObject
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
     public ICommand RotateShapeCommand => new Command(RotateShape);
 
-    public Game CurrentGame { get; } = game;
+    public Game CurrentGame { get; }
     public Grid? GameBoardGrid { get; set; }
     public Grid? OpGameBoardGrid { get; set; }
+
+    public GamePageVM(Game game)
+    {
+        this.CurrentGame = game;
+        game.OnAllReady += OnAllReadyHandler;
+    }
+
+    private void OnAllReadyHandler(object? sender, EventArgs e)
+    {
+        IsReadyVisible = false;
+        OnPropertyChanged(nameof(IsReadyVisible));
+        CurrentGame.StartGame();
+    }
 
     private void Ready()
     {
@@ -45,9 +58,9 @@ public partial class GamePageVM(Game game) : ObservableObject
         CurrentGame.OpGameBoard!.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
 
-    public void AddGameListener()
+    public void AddReadyListener()
     {
-        CurrentGame.AddGameListener();
+        CurrentGame.AddReadyListener();
     }
 
     public void RemoveGameListener()

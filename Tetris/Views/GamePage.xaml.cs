@@ -21,9 +21,7 @@ public partial class GamePage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        gpVM.AddGameListener();
-        //await Task.Delay(ConstData.SecondsTillGameStart * 1000);
-        gpVM.CurrentGame.StartGame();
+        gpVM.AddReadyListener();
     }
     protected override void OnDisappearing()
     {

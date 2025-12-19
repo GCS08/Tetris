@@ -38,7 +38,7 @@ namespace Tetris.ModelsLogic
 
         public void AddWaitingRoomListener()
         {
-            ilr = fbd.AddWaitingRoomListener(GameID, OnChangeWaitingRoom!);
+            ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom!);
         }
         public void RemoveWaitingRoomListener()
         {
@@ -53,6 +53,27 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
         }
+
+        public void AddReadyListener()
+        {
+            ilr = fbd.AddGameListener(GameID, OnChangeReady!);
+        }
+        public void RemoveReadyListener()
+        {
+            ilr?.Remove();
+        }
+        private void OnChangeReady(IDocumentSnapshot snapshot, Exception error)
+        {
+            bool allReady = true;
+            for (int i = 0; i < MaxPlayersCount && allReady; i++)
+            {
+                if (!snapshot.Get<bool>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.IsPlayerReadyKey))
+                    allReady = false;
+            }
+            if (allReady)
+                OnAllReady?.Invoke(this, EventArgs.Empty);
+        }
         private void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
             if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
@@ -63,9 +84,9 @@ namespace Tetris.ModelsLogic
             {
                 OpGameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
             }
-            else if (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
+            else if (snapshot.Get<string>(Keys.PlayerActionMapKey + TechnicalConsts.DotSign + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
             {
-                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + "." + Keys.PlayerActionKey))
+                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + TechnicalConsts.DotSign + Keys.PlayerActionKey))
                 {
                     case Keys.LeftKey:
                         MoveLeftOpShape();
@@ -118,6 +139,8 @@ namespace Tetris.ModelsLogic
             foreach (User user in UsersInGame)
                 if (user != (Application.Current as App)!.user)
                     OpGameBoard.User = user;
+            RemoveReadyListener();
+            AddGameListener();
         }
         public async void MoveRightShape()
         {

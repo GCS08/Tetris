@@ -19,6 +19,7 @@ namespace Tetris.Models
         public ICommand JoinGameCommand => new Command(NavToWR);
         public EventHandler? OnPlayersChange;
         public EventHandler? OnGameFull;
+        public EventHandler? OnAllReady;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected FbData fbd = new();

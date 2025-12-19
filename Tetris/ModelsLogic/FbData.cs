@@ -234,12 +234,6 @@ namespace Tetris.ModelsLogic
             ICollectionReference cr = fs.Collection(Keys.GamesCollectionName);
             return cr.AddSnapshotListener(OnChange);
         }
-        public override IListenerRegistration AddWaitingRoomListener(
-            string documentId, Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
-        {
-            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(documentId);
-            return dr.AddSnapshotListener(OnChange);
-        }
         public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
             ObservableCollection<Game> newList = await GetAvailGamesList();
@@ -275,20 +269,20 @@ namespace Tetris.ModelsLogic
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(-1));
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
-                if (docSnap.Get<string>(Keys.PlayerIdKey + i) == leavingUserID)
-                    await docRef.UpdateAsync(Keys.PlayerIdKey + i, string.Empty);
+                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == leavingUserID)
+                    await docRef.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey, string.Empty);
         }
-        public override async Task OnPlayerJoinWR(string id, string leavingUserID)
+        public override async Task OnPlayerJoinWR(string id, string joiningUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             await docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
             bool addedOnce = false;
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey) && !addedOnce; i++)
-                if (docSnap.Get<string>(Keys.PlayerIdKey + i) == string.Empty)
+                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
                 {
                     addedOnce = true;
-                    await docRef.UpdateAsync(Keys.PlayerIdKey + i, leavingUserID);
+                    await docRef.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID);
                 }
         }
         public override async Task DeleteGameFromDB(string id)
@@ -306,7 +300,7 @@ namespace Tetris.ModelsLogic
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
             {
                 if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
-                    TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) != string.Empty)
                 {
                     User tempUser = await UserIDToObject(docSnap.Get<string>(
                         Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey)!);
@@ -401,7 +395,6 @@ namespace Tetris.ModelsLogic
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             return dr.AddSnapshotListener(OnChange);
         }
-
         public async void SetPlayerReady(string gameID, int maxPlayersCount, string userID)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
