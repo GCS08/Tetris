@@ -1,12 +1,8 @@
-﻿using System.Collections;
+﻿using Firebase.Auth;
+using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Firebase.Auth;
-using Firebase.Auth.Providers;
-using Microsoft.Maui.ApplicationModel.Communication;
-using Plugin.CloudFirestore;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -20,8 +16,6 @@ namespace Tetris.ModelsLogic
             try
             {
                 UserCredential credential = await firebaseTask;
-
-                // Immediately sign in the new user so Firestore writes can succeed
                 await facl.SignInWithEmailAndPasswordAsync(email, password);
 
                 string userId = facl.User.Uid;
@@ -37,9 +31,8 @@ namespace Tetris.ModelsLogic
                     settings2 = true,
                     totalLinesCleared = 0,
                 });
-
-                // ... inside your try block, after the user signs in
-                string idToken = await facl.User.GetIdTokenAsync(); // the user’s token
+                
+                string idToken = await facl.User.GetIdTokenAsync(); 
 
                 using HttpClient http = new();
                 object payload = new
@@ -70,17 +63,13 @@ namespace Tetris.ModelsLogic
 
             try
             {
-                // Await the Firebase sign-in
                 UserCredential credential = await firebaseTask;
 
                 if (!credential.User.Info.IsEmailVerified)
                 {
-                    // Immediately sign out the unverified user
                     facl.SignOut();
                     throw new Exception(Strings.EmailVerificationError);
                 }
-
-                // optional: continue if verified
             }
             catch (Exception ex)
             {
@@ -290,25 +279,42 @@ namespace Tetris.ModelsLogic
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             await docRef.DeleteAsync();
         }
-        public override async void GetPlayersFromDocument(string gameID,
-            Action<ObservableCollection<User>> onCompleteChange)
+        public override async Task GetPlayersFromDocument(
+    string gameID,
+    Action<ObservableCollection<User>> onCompleteChange)
         {
-            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot docSnap = await docRef.GetAsync();
-            ObservableCollection<User> newList = [];
-            
-            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
+            try
             {
-                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
-                    TechnicalConsts.DotSign + Keys.PlayerIdKey) != string.Empty)
+                IDocumentReference docRef =
+                    fs.Collection(Keys.GamesCollectionName).Document(gameID);
+
+                IDocumentSnapshot docSnap = await docRef.GetAsync();
+
+                var newList = new ObservableCollection<User>();
+                int maxPlayersCount = docSnap.Get<int>(Keys.MaxPlayersCountKey);
+
+                for (int i = 0; i < maxPlayersCount; i++)
                 {
-                    User tempUser = await UserIDToObject(docSnap.Get<string>(
-                        Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey)!);
-                    newList.Add(tempUser);
+                    string playerIdScheme =
+                        $"{Keys.PlayerDetailsKey}{i}.{Keys.PlayerIdKey}";
+
+                    string playerId = docSnap.Get<string>(playerIdScheme)!;
+
+                    if (!string.IsNullOrEmpty(playerId))
+                    {
+                        User tempUser = await UserIDToObject(playerId);
+                        newList.Add(tempUser);
+                    }
                 }
+
+                onCompleteChange(newList);
             }
-            onCompleteChange(newList);
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
+
         public override async Task<int> GetCurrentPlayersCount(string gameID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);

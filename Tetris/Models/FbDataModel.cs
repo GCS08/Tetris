@@ -27,8 +27,9 @@ namespace Tetris.Models
         public abstract Task OnPlayerLeaveWR(string id, string leavingUserID);
         public abstract Task OnPlayerJoinWR(string id, string leavingUserID);
         public abstract Task DeleteGameFromDB(string id);
-        public abstract void GetPlayersFromDocument(string gameID,
-            Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
+        public abstract Task GetPlayersFromDocument(
+    string gameID,
+    Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
         public abstract Task<int> GetCurrentPlayersCount(string gameID);
         public abstract Task AddShape(Shape currentShape, string gameId);
         public FbDataModel()

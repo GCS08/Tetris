@@ -268,7 +268,6 @@ namespace Tetris.ModelsLogic
 
             return false; // No valid position found
         }
-
         public void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
         {
             for (int r = 0; r < ConstData.GameGridRowCount; r++)

@@ -105,10 +105,10 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
+        private async void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
-            fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
+            await fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
             if (IsFull)
             {
                 fbd.SetGameIsFull(GameID);

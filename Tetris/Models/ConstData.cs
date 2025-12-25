@@ -16,7 +16,6 @@
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int SecondsTillShapeFall = 1;
-        public const int SecondsTillGameStart = 1;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,
