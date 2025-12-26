@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 FallTimer.Elapsed += MoveDownShape;
-                FallTimer.Start();
+                //FallTimer.Start();
             }
         }
         public override void ShowShape()
@@ -47,6 +47,7 @@ namespace Tetris.ModelsLogic
         }
         private async void ShapeAtBottom()
         {
+            await fbd.ShapeAtBottom(User!.UserID, GameID!);
             int linesCleared = CheckForLines();
             if (CheckForLose())
             {

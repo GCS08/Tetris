@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Tetris.Models;
+using static Android.Graphics.ColorSpace;
 
 namespace Tetris.ModelsLogic
 {
@@ -208,7 +209,9 @@ namespace Tetris.ModelsLogic
                         Keys.PlayerDetailsKey + i, new Dictionary<string, object>
                         {
                             { Keys.PlayerIdKey, currentUserId },
-                            { Keys.IsPlayerReadyKey, false }
+                            { Keys.IsShapeAtBottomKey, false },
+                            { Keys.IsPlayerReadyKey, false },
+                            { Keys.PlayerMovesKey, new Dictionary<string, object> { } }
                         }
                     }
                 });
@@ -279,25 +282,19 @@ namespace Tetris.ModelsLogic
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             await docRef.DeleteAsync();
         }
-        public override async Task GetPlayersFromDocument(
-    string gameID,
-    Action<ObservableCollection<User>> onCompleteChange)
+        public async void GetPlayersFromDocument(string gameID, 
+            Action<ObservableCollection<User>> onCompleteChange)
         {
             try
             {
-                IDocumentReference docRef =
-                    fs.Collection(Keys.GamesCollectionName).Document(gameID);
-
+                IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
                 IDocumentSnapshot docSnap = await docRef.GetAsync();
-
-                var newList = new ObservableCollection<User>();
+                ObservableCollection<User> newList = [];
                 int maxPlayersCount = docSnap.Get<int>(Keys.MaxPlayersCountKey);
 
                 for (int i = 0; i < maxPlayersCount; i++)
                 {
-                    string playerIdScheme =
-                        $"{Keys.PlayerDetailsKey}{i}.{Keys.PlayerIdKey}";
-
+                    string playerIdScheme = Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey;
                     string playerId = docSnap.Get<string>(playerIdScheme)!;
 
                     if (!string.IsNullOrEmpty(playerId))
@@ -306,15 +303,13 @@ namespace Tetris.ModelsLogic
                         newList.Add(tempUser);
                     }
                 }
-
                 onCompleteChange(newList);
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                
             }
         }
-
         public override async Task<int> GetCurrentPlayersCount(string gameID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
@@ -358,42 +353,39 @@ namespace Tetris.ModelsLogic
         public static Shape CreateShape(IDocumentSnapshot snapshot)
         {
             return new Shape(
-                snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeIdKey)!,
-                snapshot.Get<int>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeInGameIdKey)!,
-                snapshot.Get<string>(Keys.CurrentShapeMapKey + "." + Keys.CurrentShapeColorKey)!);
+                snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeIdKey)!,
+                snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
+                snapshot.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
         }
         public async Task PlayerAction(string gameID, string userID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
-
-            // Get the existing map or create a fresh one
-            Dictionary<string, object> map =
-                currentSnapshot.Get<Dictionary<string, object>>(Keys.PlayerActionMapKey)
-                ?? [];
-
-            // Safely extract MoveIndex (Firestore loves storing numbers as long/double)
-            int currentMoveIndex = 0;
-
-            if (map.TryGetValue(Keys.MoveIndexKey, out object? rawVal) && rawVal != null)
-            {
-                try
+            int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
+            bool found = false;
+            Dictionary<string, object> playerMoves = [];
+            int desiredIndex;
+            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
+                if (currentSnapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
                 {
-                    currentMoveIndex = Convert.ToInt32(rawVal);
+                    playerMoves = currentSnapshot.Get<Dictionary<string, object>>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
+                    found = true;
                 }
-                catch
+            await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + playerMoves.Count, action);
+        }
+        public async Task ShapeAtBottom(string userID, string gameID)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentSnapshot currentSnapshot = await dr.GetAsync();
+            int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
+            bool found = false;
+            int desiredIndex;
+            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
+                if (currentSnapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
                 {
-                    currentMoveIndex = 0;
+                    await SetShapeAtBottom(gameID, desiredIndex, true);
+                    found = true;
                 }
-            }
-
-            // Update map
-            map[Keys.UserIDKey] = userID;
-            map[Keys.PlayerActionKey] = action;
-            map[Keys.MoveIndexKey] = currentMoveIndex + 1;
-
-            // Push to Firestore
-            await dr.UpdateAsync(Keys.PlayerActionMapKey, map);
         }
         public IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
@@ -412,6 +404,18 @@ namespace Tetris.ModelsLogic
                     await dr.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true);
                     changed = true;
                 }
+        }
+
+        public async Task SetShapeAtBottom(string gameID, int desiredIndex, bool value)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            await dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, value);
+        }
+
+        public async Task ResetMoves(string gameID, int desiredIndex)
+        {
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            await dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey, FieldValue.Delete);
         }
     }
 }

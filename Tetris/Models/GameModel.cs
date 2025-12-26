@@ -12,7 +12,7 @@ namespace Tetris.Models
         public int CurrentPlayersCount { get; set; }
         public int MaxPlayersCount { get; set; }
         public bool IsFull => CurrentPlayersCount == MaxPlayersCount;
-        public string UsersInGameSum => $"{MaxPlayersCount} / {CurrentPlayersCount}";
+        public string UsersInGameSum => string.Empty + MaxPlayersCount + TechnicalConsts.SlashSign + CurrentPlayersCount;
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; } = string.Empty;
         public ObservableCollection<User> UsersInGame { get; set; } = [];
@@ -23,6 +23,8 @@ namespace Tetris.Models
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected FbData fbd = new();
+        protected System.Timers.Timer OpFallTimer = new(ConstData.SecondsTillOpShapeFall * 1000);
+        protected ModelsLogic.Queue<string> movesQueue = new();
         protected IListenerRegistration? ilr;
         public abstract void NavToWR();
     }

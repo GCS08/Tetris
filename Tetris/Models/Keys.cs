@@ -37,7 +37,6 @@
         public const string CurrentShapeInGameIdKey = "CurrentShapeInGameId";
         public const string CurrentShapeColorKey = "CurrentShapeColor";
         public const string CurrentShapeMapKey = "CurrentShapeMap";
-        public const string PlayerActionMapKey = "PlayerActionMap";
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
         public const string OpenSansSemiboldFontName = "OpenSansSemibold";
@@ -60,5 +59,9 @@
         public const string MoveIndexKey = "MoveIndex";
         public const string PlayerDetailsKey = "PlayerDetails";
         public const string IsPlayerReadyKey = "IsPlayerReady";
+        public const string IsShapeAtBottomKey = "IsShapeAtBottom";
+        public const string PlayerMovesKey = "PlayerMoves";
+        public const string PlayerMoveKey = "PlayerMove";
+        public const string MoveKey = "Move";
     }
 }

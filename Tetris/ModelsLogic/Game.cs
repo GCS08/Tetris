@@ -18,8 +18,10 @@ namespace Tetris.ModelsLogic
             this.GameID = GameID;
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, Shape.Duplicate(shape), true);
+            OpFallTimer.Elapsed += ApplyOpMove;
             UsersInGame.Add((Application.Current as App)!.user);
         }
+        
         public async Task OnPlayerLeaveWR()
         {
             if (CurrentPlayersCount <= 1)
@@ -74,25 +76,50 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
-        private void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
+        private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
-            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
-            {
+            
+            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
                 GameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
-            }
-            if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
-            {
+            if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
                 OpGameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
-            }
-            else if (snapshot.Get<string>(Keys.PlayerActionMapKey + TechnicalConsts.DotSign + Keys.UserIDKey) != (Application.Current as App)!.user.UserID) //op Move has changed
+            else
             {
-                switch (snapshot.Get<string>(Keys.PlayerActionMapKey + TechnicalConsts.DotSign + Keys.PlayerActionKey))
+                int maxPlayers = snapshot.Get<int>(Keys.MaxPlayersCountKey);
+                bool found = false;
+                int desiredIndex;
+                for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
+                    if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
+                        TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
+                        found = true;
+                if (snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
+                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID)
                 {
-                    case Keys.LeftKey:
-                        MoveLeftOpShape();
-                        break;
+                    Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
+                        Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
+                    //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
+                    for (int i = 0; i < playerMoveMap.Count; i++)
+                        movesQueue.Insert(playerMoveMap[i]);
+                    OpFallTimer.Start();
+                    await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
+                    await fbd.ResetMoves(GameID, desiredIndex);
+                }
+            }
+        }
+        private void ApplyOpMove(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (!movesQueue.IsEmpty())
+            {
+                string move = movesQueue.Remove();
+                switch (move)
+                {
                     case Keys.RightKey:
                         MoveRightOpShape();
+                        break;
+                    case Keys.LeftKey:
+                        MoveLeftOpShape();
                         break;
                     case Keys.DownKey:
                         MoveDownOpShape();
@@ -100,15 +127,17 @@ namespace Tetris.ModelsLogic
                     case Keys.RotateKey:
                         RotateOpShape();
                         break;
-                    default:
-                        break;
                 }
             }
+            else
+            {
+                OpFallTimer.Stop();
+            }
         }
-        private async void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
+        private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
-            await fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
+            fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
             if (IsFull)
             {
                 fbd.SetGameIsFull(GameID);
