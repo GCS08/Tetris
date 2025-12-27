@@ -23,6 +23,7 @@
         public const char AtSign = '@';
         public const char DotSign = '.';
         public const char SlashSign = '/';
+        public const char SpaceSign = ' ';
         public const char ZeroSign = '0';
         public const char NineSign = '9';
         public const char ASign = 'a';

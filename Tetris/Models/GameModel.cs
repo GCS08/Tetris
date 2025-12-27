@@ -12,7 +12,9 @@ namespace Tetris.Models
         public int CurrentPlayersCount { get; set; }
         public int MaxPlayersCount { get; set; }
         public bool IsFull => CurrentPlayersCount == MaxPlayersCount;
-        public string UsersInGameSum => string.Empty + MaxPlayersCount + TechnicalConsts.SlashSign + CurrentPlayersCount;
+        public string UsersInGameSum => string.Empty + MaxPlayersCount
+            + TechnicalConsts.SpaceSign + TechnicalConsts.SlashSign
+            + TechnicalConsts.SpaceSign + CurrentPlayersCount;
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; } = string.Empty;
         public ObservableCollection<User> UsersInGame { get; set; } = [];

@@ -87,32 +87,35 @@ namespace Tetris.ModelsLogic
                 OpGameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
             else
             {
-                int maxPlayers = snapshot.Get<int>(Keys.MaxPlayersCountKey);
                 bool found = false;
                 int desiredIndex;
-                for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
+                for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
                     if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
                         TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                         found = true;
                 if (snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID)
+                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID && found)
                 {
                     Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
                         Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
                     //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
+                    movesArr = new string[playerMoveMap.Count];
                     for (int i = 0; i < playerMoveMap.Count; i++)
-                        movesQueue.Insert(playerMoveMap[i]);
-                    OpFallTimer.Start();
-                    await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
-                    await fbd.ResetMoves(GameID, desiredIndex);
+                        movesArr[i] = playerMoveMap[i];
+                    ApplyOpMove(null, null);
+                    //OpFallTimer.Start();
+                    //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
+                    //await fbd.ResetMoves(GameID, desiredIndex);
                 }
             }
         }
+        private int counter = 0;
+        private string[] movesArr;
         private void ApplyOpMove(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!movesQueue.IsEmpty())
-            {
-                string move = movesQueue.Remove();
+            while (counter < movesArr.Length)
+                {
+                string move = movesArr[counter];
                 switch (move)
                 {
                     case Keys.RightKey:
@@ -128,11 +131,11 @@ namespace Tetris.ModelsLogic
                         RotateOpShape();
                         break;
                 }
+                counter++;
             }
-            else
-            {
+                counter = 0;
                 OpFallTimer.Stop();
-            }
+            
         }
         private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {

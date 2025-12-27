@@ -409,13 +409,13 @@ namespace Tetris.ModelsLogic
         public async Task SetShapeAtBottom(string gameID, int desiredIndex, bool value)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            await dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, value);
+            await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 0) + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, value);
         }
 
         public async Task ResetMoves(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            await dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey, FieldValue.Delete);
+            await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey, FieldValue.Delete);
         }
     }
 }
