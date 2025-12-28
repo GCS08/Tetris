@@ -79,37 +79,38 @@ namespace Tetris.ModelsLogic
         private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
             
+            bool found = false;
+            int desiredIndex;
+            for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
+                if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
+                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
+                    found = true;
+
             if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
-                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
-                GameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
-            if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId ||
+                OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
                 + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
-                OpGameBoard!.ShapesQueue.Insert(FbData.CreateShape(snapshot));
-            else
             {
-                bool found = false;
-                int desiredIndex;
-                for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
-                    if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
-                        TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
-                        found = true;
-                if (snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID && found)
-                {
-                    Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
-                        Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
-                    //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
-                    movesArr = new string[playerMoveMap.Count + 1];
-                    movesArr[0] = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
-                    for (int i = 1; i <= playerMoveMap.Count; i++)
-                        movesArr[i] = playerMoveMap[i - 1];
-                    Dictionary<string, object> shapeData = snapshot.Get<Dictionary<string, object>>(Keys.CurrentShapeMapKey)!;
+                Shape newShape = FbData.CreateShape(snapshot);
+                GameBoard!.ShapesQueue.Insert(newShape);
+                OpGameBoard!.ShapesQueue!.Insert(newShape);
+            }
+            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
+                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID)
+            {
+                Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
+                    Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
+                //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
+                movesArr = new string[playerMoveMap.Count + 1];
+                movesArr[0] = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+                for (int i = 1; i <= playerMoveMap.Count; i++)
+                    movesArr[i] = playerMoveMap[i - 1];
+                Dictionary<string, object> shapeData = snapshot.Get<Dictionary<string, object>>(Keys.CurrentShapeMapKey)!;
                     
-                    ApplyOpMove(shapeData, null);
-                    //OpFallTimer.Start();
-                    //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
-                    //await fbd.ResetMoves(GameID, desiredIndex);
-                }
+                ApplyOpMove(shapeData, null);
+                //OpFallTimer.Start();
+                //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
+                await fbd.ResetMoves(GameID, desiredIndex);
             }
         }
         private int counter = 0;

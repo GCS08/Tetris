@@ -13,6 +13,7 @@ namespace Tetris.Models
         public bool IsOp { get; set; }
         protected System.Timers.Timer FallTimer = new(ConstData.SecondsTillShapeFall * 1000);
         protected FbData fbd = new();
+        public EventHandler? OnOpQueueEmpty;
         protected bool IsLost = false;
         public abstract void ShowShape();
         public abstract void MoveRightShape();

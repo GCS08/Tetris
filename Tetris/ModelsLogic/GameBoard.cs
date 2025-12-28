@@ -12,7 +12,7 @@ namespace Tetris.ModelsLogic
             this.CurrentShape = currentShape;
             this.IsOp = IsOp;
             this.GameID = gameId;
-
+            
             double cubeWidth = IsOp ? ConstData.OpGameGridColumnWidth : ConstData.GameGridColumnWidth;
             double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
 
@@ -56,12 +56,13 @@ namespace Tetris.ModelsLogic
             else
             {
                 ShapesQueue!.Remove();
-                if (ShapesQueue.IsEmpty() && !IsOp)
-                    await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
-                if (IsOp)
-                    ShapesQueue.Insert(FbData.CreateShape(shapeData));
-                CurrentShape = ShapesQueue.Head();
-                ShowShape();
+                if (!IsOp)
+                {
+                    if (ShapesQueue.IsEmpty())
+                        await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
+                    CurrentShape = ShapesQueue.Head();
+                    ShowShape();
+                }
             }
         }
         private bool CheckForLose()

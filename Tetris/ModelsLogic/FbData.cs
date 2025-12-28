@@ -1,4 +1,5 @@
 ﻿using Firebase.Auth;
+using Firebase.Firestore.Auth;
 using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
@@ -389,17 +390,13 @@ namespace Tetris.ModelsLogic
             bool found = false;
             for (i = 0; i < maxPlayers && !found; i++)
             {
-                if (snapshot.Get<string>(
-                    Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey
-                ) == userID)
-                {
+                if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
                     found = true;        
-                }
             }
 
             i--;
 
-            var playerMoves =
+            Dictionary<string, object> playerMoves =
                 snapshot.Get<Dictionary<string, object>>(
                     Keys.PlayerDetailsKey + i +
                     TechnicalConsts.DotSign + Keys.PlayerMovesKey
@@ -442,16 +439,26 @@ namespace Tetris.ModelsLogic
                 }
         }
 
-        public async Task SetShapeAtBottom(string gameID, int desiredIndex, bool value)
-        {
-            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 0) + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, value);
-        }
-
         public async Task ResetMoves(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey, FieldValue.Delete);
+            desiredIndex--;
+
+            Dictionary<string, object> updates = new()
+            {
+                {
+                    Keys.PlayerDetailsKey + desiredIndex +
+                    TechnicalConsts.DotSign + Keys.PlayerMovesKey,
+                    new Dictionary<string, object>()
+                },
+                {
+                    Keys.PlayerDetailsKey + desiredIndex +
+                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey,
+                    false
+                }
+            };
+
+            await dr.UpdateAsync(updates);
         }
     }
 }
