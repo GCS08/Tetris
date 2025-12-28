@@ -357,6 +357,12 @@ namespace Tetris.ModelsLogic
                 snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
         }
+        public static Shape CreateShape(Dictionary<string, object> shapeData)
+        {
+            return new Shape((int)shapeData[Keys.CurrentShapeIdKey],
+                (int)shapeData[Keys.CurrentShapeInGameIdKey],
+                (string)shapeData[Keys.CurrentShapeColorKey]);
+        }
         public async Task PlayerAction(string gameID, string userID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);

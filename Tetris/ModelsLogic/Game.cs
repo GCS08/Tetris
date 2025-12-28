@@ -18,7 +18,7 @@ namespace Tetris.ModelsLogic
             this.GameID = GameID;
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, Shape.Duplicate(shape), true);
-            OpFallTimer.Elapsed += ApplyOpMove;
+            //OpFallTimer.Elapsed += ApplyOpMove;
             UsersInGame.Add((Application.Current as App)!.user);
         }
         
@@ -103,7 +103,9 @@ namespace Tetris.ModelsLogic
                     movesArr[0] = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
                     for (int i = 1; i <= playerMoveMap.Count; i++)
                         movesArr[i] = playerMoveMap[i - 1];
-                    ApplyOpMove(null, null);
+                    Dictionary<string, object> shapeData = snapshot.Get<Dictionary<string, object>>(Keys.CurrentShapeMapKey)!;
+                    
+                    ApplyOpMove(shapeData, null);
                     //OpFallTimer.Start();
                     //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
                     //await fbd.ResetMoves(GameID, desiredIndex);
@@ -112,7 +114,7 @@ namespace Tetris.ModelsLogic
         }
         private int counter = 0;
         private string[] movesArr;
-        private void ApplyOpMove(object? sender, System.Timers.ElapsedEventArgs e)
+        private void ApplyOpMove(Dictionary<string, object> shapeData, System.Timers.ElapsedEventArgs e)
         {
             while (counter + 1 < movesArr.Length && GameBoard!.User!.UserID != movesArr[0])
                 {
@@ -126,7 +128,7 @@ namespace Tetris.ModelsLogic
                         MoveLeftOpShape();
                         break;
                     case Keys.DownKey:
-                        MoveDownOpShape();
+                        MoveDownOpShape(shapeData);
                         break;
                     case Keys.RotateKey:
                         RotateOpShape();
@@ -210,9 +212,9 @@ namespace Tetris.ModelsLogic
             OpGameBoard!.MoveLeftShape();
         }
 
-        public void MoveDownOpShape()
+        public async void MoveDownOpShape(Dictionary<string, object> shapeData)
         {
-            OpGameBoard!.MoveDownShape();
+            await OpGameBoard!.MoveDownShape(shapeData);
         }
 
         public void RotateOpShape()

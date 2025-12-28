@@ -45,7 +45,7 @@ namespace Tetris.ModelsLogic
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
 
         }
-        private async void ShapeAtBottom()
+        private async void ShapeAtBottom(Dictionary<string, object> shapeData)
         {
             int linesCleared = CheckForLines();
             if (CheckForLose())
@@ -56,8 +56,10 @@ namespace Tetris.ModelsLogic
             else
             {
                 ShapesQueue!.Remove();
-                if (ShapesQueue.IsEmpty() && User == (Application.Current as App)!.user)
+                if (ShapesQueue.IsEmpty() && !IsOp)
                     await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
+                if (IsOp)
+                    ShapesQueue.Insert(FbData.CreateShape(shapeData));
                 CurrentShape = ShapesQueue.Head();
                 ShowShape();
             }
@@ -143,7 +145,7 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-        public override async Task<bool> MoveDownShape()
+        public override async Task<bool> MoveDownShape(Dictionary<string, object> shapeData = null!)
         {
             bool canMoveDown = true;
 
@@ -198,7 +200,7 @@ namespace Tetris.ModelsLogic
                     if (!IsOp)
                         await fbd.PlayerActionWithBottom(User!.UserID, GameID!, Keys.DownKey);
                     isAtBottom = true;
-                    ShapeAtBottom();
+                    ShapeAtBottom(shapeData);
                 }
             }
             return isAtBottom;
