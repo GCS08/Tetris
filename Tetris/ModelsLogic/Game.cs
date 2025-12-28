@@ -99,9 +99,10 @@ namespace Tetris.ModelsLogic
                     Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
                         Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
                     //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
-                    movesArr = new string[playerMoveMap.Count];
-                    for (int i = 0; i < playerMoveMap.Count; i++)
-                        movesArr[i] = playerMoveMap[i];
+                    movesArr = new string[playerMoveMap.Count + 1];
+                    movesArr[0] = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+                    for (int i = 1; i <= playerMoveMap.Count; i++)
+                        movesArr[i] = playerMoveMap[i - 1];
                     ApplyOpMove(null, null);
                     //OpFallTimer.Start();
                     //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
@@ -113,9 +114,9 @@ namespace Tetris.ModelsLogic
         private string[] movesArr;
         private void ApplyOpMove(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            while (counter < movesArr.Length)
+            while (counter + 1 < movesArr.Length && GameBoard!.User!.UserID != movesArr[0])
                 {
-                string move = movesArr[counter];
+                string move = movesArr[counter + 1];
                 switch (move)
                 {
                     case Keys.RightKey:
@@ -188,8 +189,10 @@ namespace Tetris.ModelsLogic
 
         public async void MoveDownShape()
         {
-            GameBoard!.MoveDownShape();
-            await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
+            bool isAtBottom = await GameBoard!.MoveDownShape();
+            if (!isAtBottom)
+                await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
+
         }
 
         public async void RotateShape()

@@ -47,7 +47,6 @@ namespace Tetris.ModelsLogic
         }
         private async void ShapeAtBottom()
         {
-            await fbd.ShapeAtBottom(User!.UserID, GameID!);
             int linesCleared = CheckForLines();
             if (CheckForLose())
             {
@@ -144,7 +143,7 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-        public override void MoveDownShape()
+        public override async Task<bool> MoveDownShape()
         {
             bool canMoveDown = true;
 
@@ -183,7 +182,8 @@ namespace Tetris.ModelsLogic
                 if (IsCubesUnderShapeFilled[col])
                     canMoveDown = false;
             }
-
+            
+            bool isAtBottom = false;
             if (!IsLost)
             {
                 // Move or lock
@@ -194,12 +194,18 @@ namespace Tetris.ModelsLogic
                     ShowShape();
                 }
                 else
+                {
+                    if (!IsOp)
+                        await fbd.PlayerActionWithBottom(User!.UserID, GameID!, Keys.DownKey);
+                    isAtBottom = true;
                     ShapeAtBottom();
+                }
             }
+            return isAtBottom;
         }
         private async void MoveDownShape(object? sender, ElapsedEventArgs e)
         {
-            MoveDownShape();
+            await MoveDownShape();
             await fbd.PlayerAction(GameID!, User!.UserID, Keys.DownKey);
         }
         public override void RotateShape()

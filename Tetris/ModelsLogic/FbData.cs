@@ -373,20 +373,50 @@ namespace Tetris.ModelsLogic
                 }
             await dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + playerMoves.Count, action);
         }
-        public async Task ShapeAtBottom(string userID, string gameID)
+        public async Task PlayerActionWithBottom(string userID, string gameID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot currentSnapshot = await dr.GetAsync();
-            int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
+
+            IDocumentSnapshot snapshot = await dr.GetAsync();
+            
+            int maxPlayers = snapshot.Get<int>(Keys.MaxPlayersCountKey), i;
             bool found = false;
-            int desiredIndex;
-            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
-                if (currentSnapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
+            for (i = 0; i < maxPlayers && !found; i++)
+            {
+                if (snapshot.Get<string>(
+                    Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey
+                ) == userID)
                 {
-                    await SetShapeAtBottom(gameID, desiredIndex, true);
-                    found = true;
+                    found = true;        
                 }
+            }
+
+            i--;
+
+            var playerMoves =
+                snapshot.Get<Dictionary<string, object>>(
+                    Keys.PlayerDetailsKey + i +
+                    TechnicalConsts.DotSign + Keys.PlayerMovesKey
+                ) ?? [];
+
+            Dictionary<string, object> updates = new()
+            {
+                {
+                    Keys.PlayerDetailsKey + i +
+                    TechnicalConsts.DotSign + Keys.PlayerMovesKey +
+                    TechnicalConsts.DotSign + playerMoves.Count,
+                    action
+                },
+                {
+                    Keys.PlayerDetailsKey + i +
+                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey,
+                    true
+                }
+            };
+
+            await dr.UpdateAsync(updates);
         }
+
         public IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {

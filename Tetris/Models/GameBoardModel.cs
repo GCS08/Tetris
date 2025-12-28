@@ -17,7 +17,7 @@ namespace Tetris.Models
         public abstract void ShowShape();
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
-        public abstract void MoveDownShape();
+        public abstract Task<bool> MoveDownShape();
         public abstract void RotateShape();
     }
 }
