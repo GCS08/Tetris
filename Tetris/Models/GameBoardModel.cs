@@ -11,7 +11,7 @@ namespace Tetris.Models
         public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; } = new();
         public User? User { get; set; }
         public bool IsOp { get; set; }
-        protected System.Timers.Timer FallTimer = new(ConstData.SecondsTillShapeFall * 1000);
+        protected System.Timers.Timer FallTimer = new(ConstData.ShapeFallInternalS * 1000);
         protected FbData fbd = new();
         public EventHandler? OnOpQueueEmpty;
         protected bool IsLost = false;

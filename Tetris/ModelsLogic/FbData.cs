@@ -419,7 +419,6 @@ namespace Tetris.ModelsLogic
 
             await dr.UpdateAsync(updates);
         }
-
         public IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
@@ -438,7 +437,6 @@ namespace Tetris.ModelsLogic
                     changed = true;
                 }
         }
-
         public async Task ResetMoves(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);

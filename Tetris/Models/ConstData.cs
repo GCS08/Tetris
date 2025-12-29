@@ -8,15 +8,16 @@
         public const int ToastFontSize = 14;
         public static readonly GridLength UserScreenHeight = new(1.9, GridUnitType.Star);
         public const int GameGridColumnCount = 10;
-        public const int GameGridRowCount = 5;
+        public const int GameGridRowCount = 10;
         public const double GameGridColumnWidth = 20;
         public const double GameGridRowHeight = 20;
         public const double OpGameGridColumnWidth = 12;
         public const double OpGameGridRowHeight = 12;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
-        public const int SecondsTillShapeFall = 1;
-        public const double SecondsTillOpShapeFall = 0.3;
+        public const int ShapeFallInternalS = 1;
+        public const double OpShapeFallIntervalS = 0.3;
+        public const int DeleteFbDocsIntervalS = 3600;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,

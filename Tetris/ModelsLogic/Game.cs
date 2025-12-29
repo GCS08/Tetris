@@ -76,6 +76,7 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
+        private bool justReset = false;
         private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
             
@@ -86,18 +87,37 @@ namespace Tetris.ModelsLogic
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                     found = true;
 
-            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+            if (!justReset && (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
                 + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId ||
                 OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId) //Shape has changed
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)) //Shape has changed
             {
                 Shape newShape = FbData.CreateShape(snapshot);
-                GameBoard!.ShapesQueue.Insert(newShape);
-                OpGameBoard!.ShapesQueue!.Insert(newShape);
+                Shape newShape2 = FbData.CreateShape(snapshot);
+                if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId)
+                    GameBoard!.ShapesQueue.Insert(newShape);
+                if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)
+                {
+                    OpGameBoard!.ShapesQueue!.Insert(newShape2);
+                    if (newShape2 == OpGameBoard.ShapesQueue!.Head())//doest work
+                    {
+                        OpGameBoard.CurrentShape = OpGameBoard.ShapesQueue.Head();
+                        OpGameBoard.ShowShape();
+                        await fbd.ResetMoves(GameID, desiredIndex);
+                        justReset = true;
+                    }
+                }
             }
-            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
+            else if (!justReset && found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
                     + Keys.UserIDKey) != (Application.Current as App)!.user.UserID)
             {
+                string userId = (Application.Current as App)!.user.UserID;
+                string otherUserId = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
+                    + Keys.UserIDKey)!;
+                System.Diagnostics.Debug.WriteLine(otherUserId == userId);
+
                 Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
                     Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
                 //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
@@ -109,8 +129,11 @@ namespace Tetris.ModelsLogic
                     
                 ApplyOpMove(shapeData, null);
                 //OpFallTimer.Start();
-                //await fbd.SetShapeAtBottom(GameID, desiredIndex, false);
-                await fbd.ResetMoves(GameID, desiredIndex);
+
+            }
+            else if (justReset)
+            {
+                justReset = false;
             }
         }
         private int counter = 0;

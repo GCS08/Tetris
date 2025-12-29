@@ -25,7 +25,7 @@ namespace Tetris.Models
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected FbData fbd = new();
-        protected System.Timers.Timer OpFallTimer = new(ConstData.SecondsTillOpShapeFall * 1000);
+        protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);
         protected ModelsLogic.Queue<string> movesQueue = new();
         protected IListenerRegistration? ilr;
         public abstract void NavToWR();
