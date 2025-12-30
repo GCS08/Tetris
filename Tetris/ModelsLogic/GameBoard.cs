@@ -208,8 +208,9 @@ namespace Tetris.ModelsLogic
         }
         private async void MoveDownShape(object? sender, ElapsedEventArgs e)
         {
-            await MoveDownShape();
-            await fbd.PlayerAction(GameID!, User!.UserID, Keys.DownKey);
+            bool isAtBottom = await MoveDownShape();
+            if (!isAtBottom)
+                await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
         }
         public override void RotateShape()
         {
