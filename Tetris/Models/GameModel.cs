@@ -24,6 +24,8 @@ namespace Tetris.Models
         public EventHandler? OnAllReady;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
+        protected int desiredIndex = 0;
+        protected string currentMovingOp = string.Empty;
         protected FbData fbd = new();
         protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);
         protected ModelsLogic.Queue<string> movesQueue = new();

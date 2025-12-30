@@ -1,5 +1,7 @@
 ﻿using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
+using System.Timers;
 using Tetris.Models;
 using Tetris.Views;
 
@@ -18,10 +20,10 @@ namespace Tetris.ModelsLogic
             this.GameID = GameID;
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, Shape.Duplicate(shape), true);
-            //OpFallTimer.Elapsed += ApplyOpMove;
+            OpFallTimer.Elapsed += ApplyOpMove;
             UsersInGame.Add((Application.Current as App)!.user);
         }
-        
+
         public async Task OnPlayerLeaveWR()
         {
             if (CurrentPlayersCount <= 1)
@@ -76,21 +78,18 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
-        private bool justReset = false;
         private async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
         {
-            
             bool found = false;
-            int desiredIndex;
             for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
                 if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                     found = true;
 
-            if (!justReset && (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
                 + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId ||
                 OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)) //Shape has changed
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)// Shape has changed
             {
                 Shape newShape = FbData.CreateShape(snapshot);
                 Shape newShape2 = FbData.CreateShape(snapshot);
@@ -99,50 +98,28 @@ namespace Tetris.ModelsLogic
                     GameBoard!.ShapesQueue.Insert(newShape);
                 if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
                 + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)
-                {
                     OpGameBoard!.ShapesQueue!.Insert(newShape2);
-                    if (newShape2 == OpGameBoard.ShapesQueue!.Head())//doest work
-                    {
-                        OpGameBoard.CurrentShape = OpGameBoard.ShapesQueue.Head();
-                        OpGameBoard.ShowShape();
-                        await fbd.ResetMoves(GameID, desiredIndex);
-                        justReset = true;
-                    }
-                }
             }
-            else if (!justReset && found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.UserIDKey) != (Application.Current as App)!.user.UserID)
+            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
+                    + Keys.PlayerIdKey) != (Application.Current as App)!.user.UserID)// Op player has moved
             {
-                string userId = (Application.Current as App)!.user.UserID;
-                string otherUserId = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.UserIDKey)!;
-                System.Diagnostics.Debug.WriteLine(otherUserId == userId);
-
                 Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
                     Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
-                //movesQueue.Insert(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey);
-                movesArr = new string[playerMoveMap.Count + 1];
-                movesArr[0] = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
-                for (int i = 1; i <= playerMoveMap.Count; i++)
-                    movesArr[i] = playerMoveMap[i - 1];
-                Dictionary<string, object> shapeData = snapshot.Get<Dictionary<string, object>>(Keys.CurrentShapeMapKey)!;
-                    
-                ApplyOpMove(shapeData, null);
-                //OpFallTimer.Start();
 
-            }
-            else if (justReset)
-            {
-                justReset = false;
+                currentMovingOp = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+
+                for (int i = 0; i < playerMoveMap.Count; i++)
+                    movesQueue.Insert(playerMoveMap[i]);
+
+                OpFallTimer.Start();
             }
         }
-        private int counter = 0;
-        private string[] movesArr;
-        private void ApplyOpMove(Dictionary<string, object> shapeData, System.Timers.ElapsedEventArgs e)
+        private async void ApplyOpMove(object? sender, ElapsedEventArgs e)
         {
-            while (counter + 1 < movesArr.Length && GameBoard!.User!.UserID != movesArr[0])
-                {
-                string move = movesArr[counter + 1];
+            if (!movesQueue.IsEmpty() && GameBoard!.User!.UserID != currentMovingOp)
+                // second check is unnecessary since it enters the second if in the on change game only if its not the player who finished a moved.
+            {
+                string move = movesQueue.Remove();
                 switch (move)
                 {
                     case Keys.RightKey:
@@ -152,17 +129,18 @@ namespace Tetris.ModelsLogic
                         MoveLeftOpShape();
                         break;
                     case Keys.DownKey:
-                        MoveDownOpShape(shapeData);
+                        MoveDownOpShape();
                         break;
                     case Keys.RotateKey:
                         RotateOpShape();
                         break;
                 }
-                counter++;
             }
-                counter = 0;
+            else
+            {
                 OpFallTimer.Stop();
-            
+                await fbd.ResetMoves(GameID, desiredIndex);
+            }
         }
         private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {
@@ -236,9 +214,9 @@ namespace Tetris.ModelsLogic
             OpGameBoard!.MoveLeftShape();
         }
 
-        public async void MoveDownOpShape(Dictionary<string, object> shapeData)
+        public async void MoveDownOpShape()
         {
-            await OpGameBoard!.MoveDownShape(shapeData);
+            await OpGameBoard!.MoveDownShape();
         }
 
         public void RotateOpShape()
