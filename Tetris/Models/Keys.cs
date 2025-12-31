@@ -63,5 +63,6 @@
         public const string PlayerMovesKey = "PlayerMoves";
         public const string PlayerMoveKey = "PlayerMove";
         public const string MoveKey = "Move";
+        public const long FinishedSignal = 0;
     }
 }

@@ -97,5 +97,6 @@
         public const string TotalLinesShort = "tlc: ";
         public const string HighestScoreShort = "hs: ";
         public const string FeelingReady = "Feeling ready???";
+        public const string TimeUp = "May the best win!";
     }
 }

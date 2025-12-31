@@ -129,23 +129,98 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveRightShape()
         {
-            if (CurrentShape!.TopLeftX + CurrentShape.Cells.GetLength(1)
-                < ConstData.GameGridColumnCount && !IsLost)
+            if (IsLost)
+                return;
+
+            int shapeHeight = CurrentShape!.Cells.GetLength(0);
+            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+
+            bool canMoveRight = true;
+
+            // Check collision on the right
+            for (int row = 0; row < shapeHeight && canMoveRight; row++)
+            {
+                bool found = false;
+                for (int col = shapeWidth - 1; col >= 0 && !found; col--)
+                {
+                    // Find the rightmost filled block in this row
+                    if (CurrentShape.Cells[row, col])
+                    {
+                        int boardY = CurrentShape.TopLeftY + row;
+                        int boardX = CurrentShape.TopLeftX + col + 1;
+
+                        // Outside board
+                        if (boardX >= ConstData.GameGridColumnCount)
+                        {
+                            canMoveRight = false;
+                        }
+                        else
+                        {
+                            // Check board collision
+                            if (Board![boardY, boardX].Color != Colors.Transparent)
+                                canMoveRight = false;
+                        }
+
+                        found = true;
+                    }
+                }
+            }
+
+            if (canMoveRight)
             {
                 EraseShape();
-                CurrentShape!.TopLeftX++;
+                CurrentShape.TopLeftX++;
                 ShowShape();
             }
         }
+
         public override void MoveLeftShape()
         {
-            if (CurrentShape!.TopLeftX > 0 && !IsLost)
+            if (IsLost)
+                return;
+
+            int shapeHeight = CurrentShape!.Cells.GetLength(0);
+            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+
+            bool canMoveLeft = true;
+
+            // Check collision on the left
+            for (int row = 0; row < shapeHeight && canMoveLeft; row++)
+            {
+                bool found = false;
+                for (int col = 0; col < shapeWidth && !found; col++)
+                {
+                    // Find the leftmost filled block in this row
+                    if (CurrentShape.Cells[row, col])
+                    {
+                        int boardY = CurrentShape.TopLeftY + row;
+                        int boardX = CurrentShape.TopLeftX + col - 1;
+
+                        // Outside board
+                        if (boardX < 0)
+                        {
+                            canMoveLeft = false;
+                        }
+                        else
+                        {
+                            // Check board collision
+                            if (Board![boardY, boardX].Color != Colors.Transparent)
+                                canMoveLeft = false;
+                        }
+
+                        found = true;
+                    }
+                }
+            }
+
+            if (canMoveLeft)
             {
                 EraseShape();
                 CurrentShape.TopLeftX--;
                 ShowShape();
             }
         }
+
         public override async Task<bool> MoveDownShape()
         {
             bool canMoveDown = true;

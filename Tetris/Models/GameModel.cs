@@ -17,11 +17,17 @@ namespace Tetris.Models
             + TechnicalConsts.SpaceSign + CurrentPlayersCount;
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; } = string.Empty;
+        public string TimeLeft
+        {
+            get;
+            set;
+        } = string.Empty;
         public ObservableCollection<User> UsersInGame { get; set; } = [];
         public ICommand JoinGameCommand => new Command(NavToWR);
         public EventHandler? OnPlayersChange;
         public EventHandler? OnGameFull;
         public EventHandler? OnAllReady;
+        public EventHandler? OnTimeLeftChanged;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;
@@ -30,6 +36,8 @@ namespace Tetris.Models
         protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);
         protected ModelsLogic.Queue<string> movesQueue = new();
         protected IListenerRegistration? ilr;
+        protected StartGameTimerSettings startGameTimerSettings = 
+            new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
         public abstract void NavToWR();
     }
 }

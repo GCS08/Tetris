@@ -7,6 +7,7 @@ namespace Tetris.ViewModels;
 public partial class GamePageVM : ObservableObject
 {
     public bool IsReadyVisible { get; set; } = true;
+    public string TimeLeft => CurrentGame.TimeLeft;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
     public ICommand ReadyCommand => new Command(Ready);
@@ -23,6 +24,12 @@ public partial class GamePageVM : ObservableObject
     {
         this.CurrentGame = game;
         game.OnAllReady += OnAllReadyHandler;
+        game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
+    }
+
+    private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(TimeLeft));
     }
 
     private void OnAllReadyHandler(object? sender, EventArgs e)

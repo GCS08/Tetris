@@ -1,4 +1,5 @@
-﻿using Plugin.CloudFirestore;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Metrics;
 using System.Timers;
@@ -9,9 +10,11 @@ namespace Tetris.ModelsLogic
 {
     public class Game : GameModel
     {
+        public Game() { RegisterTimer(); }
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
         {
+            RegisterTimer();
             this.CubeColor = CubeColor;
             this.CreatorName = CreatorName;
             this.CurrentPlayersCount = CurrentPlayersCount;
@@ -22,6 +25,20 @@ namespace Tetris.ModelsLogic
             this.OpGameBoard = new(GameID, Shape.Duplicate(shape), true);
             OpFallTimer.Elapsed += ApplyOpMove;
             UsersInGame.Add((Application.Current as App)!.user);
+        }
+
+        private void RegisterTimer()
+        {
+            WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
+            {
+                OnMessageReceived(m.Value);
+            });
+        }
+
+        private void OnMessageReceived(long timeLeft)
+        {
+            TimeLeft = timeLeft == Keys.FinishedSignal ? Strings.TimeUp : double.Round(timeLeft / 1000, 1).ToString();
+            OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task OnPlayerLeaveWR()
@@ -108,6 +125,8 @@ namespace Tetris.ModelsLogic
 
                 currentMovingOp = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
 
+                await fbd.ResetMoves(GameID, desiredIndex);
+
                 for (int i = 0; i < playerMoveMap.Count; i++)
                     movesQueue.Insert(playerMoveMap[i]);
 
@@ -137,10 +156,7 @@ namespace Tetris.ModelsLogic
                 }
             }
             else
-            {
                 OpFallTimer.Stop();
-                await fbd.ResetMoves(GameID, desiredIndex);
-            }
         }
         private void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
         {
