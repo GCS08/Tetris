@@ -9,60 +9,36 @@ namespace Tetris.ModelsLogic
             first = null;
             last = null;
         }
-
-        public bool IsEmpty()
+        public override bool IsEmpty()
         {
             return first == null;
         }
-
-        public void Insert(T value)
+        public override void Insert(T value)
         {
             Node<T> oldLast = last!;
             last = new Node<T>(value);
             if (IsEmpty())
-            {
                 first = last;
-            }
             else
-            {
                 oldLast.SetNext(last);
-            }
         }
-        public T GetTail()
+        public override T GetTail()
+        {
+            return IsEmpty() ? default! : last!.GetValue();
+        }
+        public override T Remove()
         {
             if (IsEmpty())
-            {
-                Console.WriteLine("Queue is empty, returning default value");
                 return default!;
-            }
-
-            return last!.GetValue();
-        }
-
-        public T Remove()
-        {
-            if (IsEmpty())
-            {
-                Console.WriteLine("Queue is empty, returning default value");
-                return default!;
-            }
             T value = first!.GetValue();
             first = first.GetNext();
             if (IsEmpty())
-            {
                 last = null;
-            }
             return value;
         }
-
-        public T Head()
+        public override T Head()
         {
-            if (IsEmpty())
-            {
-                Console.WriteLine("Queue is empty, returning default value");
-                return default!;
-            }
-            return first!.GetValue();
+            return IsEmpty() ? default! : first!.GetValue();
         }
     }
 }

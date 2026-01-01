@@ -1,13 +1,14 @@
-﻿using Tetris.Models;
+﻿using System.Windows.Input;
+using Tetris.Models;
 using Tetris.ModelsLogic;
-using System.Windows.Input;
 
 namespace Tetris.ViewModels;
 
 public partial class GamePageVM : ObservableObject
 {
     public bool IsReadyVisible { get; set; } = true;
-    public string TimeLeft => CurrentGame.TimeLeft;
+    public bool IsTimerVisible { get; set; } = false;
+    public string TimeLeft => CurrentGame.TimeLeftText;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
     public ICommand ReadyCommand => new Command(Ready);
@@ -26,17 +27,27 @@ public partial class GamePageVM : ObservableObject
         game.OnAllReady += OnAllReadyHandler;
         game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
     }
-
     private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(TimeLeft));
+
+        if (CurrentGame.TimeLeftMs <= 0)
+        {
+            IsTimerVisible = false;
+            OnPropertyChanged(nameof(IsTimerVisible));
+            CurrentGame.StartGame();
+        }
     }
 
     private void OnAllReadyHandler(object? sender, EventArgs e)
     {
         IsReadyVisible = false;
+        IsTimerVisible = true;
+
         OnPropertyChanged(nameof(IsReadyVisible));
-        CurrentGame.StartGame();
+        OnPropertyChanged(nameof(IsTimerVisible));
+
+        CurrentGame.PrepareGame();
     }
 
     private void Ready()
@@ -64,12 +75,10 @@ public partial class GamePageVM : ObservableObject
         CurrentGame.GameBoard!.InitializeGrid(GameBoardGrid, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
         CurrentGame.OpGameBoard!.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
-
     public void AddReadyListener()
     {
         CurrentGame.AddReadyListener();
     }
-
     public void RemoveGameListener()
     {
         CurrentGame.RemoveGameListener();

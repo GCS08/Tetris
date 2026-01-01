@@ -1,6 +1,8 @@
-﻿namespace Tetris.Models
+﻿using Tetris.ModelsLogic;
+
+namespace Tetris.Models
 {
-    public class ShapeModel
+    public abstract class ShapeModel
     {
         public int Id { get; set; }
         public int InGameId { get; set; }
@@ -11,5 +13,6 @@
         public int TopLeftY { get; set; }
         public Color? Color { get; set; }
         protected readonly Random rnd = new();
+        public abstract Shape Duplicate(Shape shape);
     }
 }

@@ -20,6 +20,7 @@
         public const string UsernameJson = "username";
         public const string DateFormat = "dd/MM/yy";
         public const string ClosingBraceSign = "}";
+        public const string ZeroSignString = "0";
         public const char AtSign = '@';
         public const char DotSign = '.';
         public const char SlashSign = '/';

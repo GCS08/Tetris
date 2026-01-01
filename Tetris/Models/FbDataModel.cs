@@ -27,11 +27,19 @@ namespace Tetris.Models
         public abstract Task OnPlayerLeaveWR(string id, string leavingUserID);
         public abstract Task OnPlayerJoinWR(string id, string leavingUserID);
         public abstract Task DeleteGameFromDB(string id);
-    //    public abstract Task GetPlayersFromDocument(
-    //string gameID,
-    //Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
+        public abstract void GetPlayersFromDocument(string gameID,
+            Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
         public abstract Task<int> GetCurrentPlayersCount(string gameID);
+        protected abstract Task<ModelsLogic.User> UserIDToObject(string id);
+        public abstract void SetGameIsFull(string gameID);
         public abstract Task AddShape(Shape currentShape, string gameId);
+        public abstract Shape CreateShape(IDocumentSnapshot snapshot);
+        public abstract Task PlayerAction(string gameID, string userID, string action);
+        public abstract Task PlayerActionWithBottom(string userID, string gameID, string action);
+        public abstract IListenerRegistration? AddGameListener(string gameID,
+        Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
+        public abstract void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
+        public abstract Task ResetMoves(string gameID, int desiredIndex);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()
@@ -43,6 +51,5 @@ namespace Tetris.Models
             facl = new FirebaseAuthClient(fac);
             fs = CrossCloudFirestore.Current.Instance;
         }
-
     }
 }

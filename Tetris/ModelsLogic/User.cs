@@ -11,7 +11,7 @@ namespace Tetris.ModelsLogic
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
-        private async Task<bool> OnCompleteLogin(Task task)
+        protected override async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -26,7 +26,7 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-        private async Task LoginSaveToPreferencesAsync()
+        protected override async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
             UserID = fbd.GetCurrentUserID();
@@ -46,7 +46,7 @@ namespace Tetris.ModelsLogic
             bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
             return success;
         }
-        private async Task<bool> OnCompleteRegister(Task task)
+        protected override async Task<bool> OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -65,7 +65,7 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-        private void SaveToPreferences()
+        protected override void SaveToPreferences()
         {
             // Now store everything in Preferences
             Preferences.Set(Keys.UserIDKey, UserID);
@@ -85,11 +85,11 @@ namespace Tetris.ModelsLogic
             fbd.SignOut();
             Preferences.Clear();
         }
-        public async Task ResetPassword()
+        public override async Task ResetPassword()
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
-        private async Task OnCompleteSendEmail(Task task)
+        protected override async Task OnCompleteSendEmail(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -109,7 +109,7 @@ namespace Tetris.ModelsLogic
         {
             return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
         }
-        private bool IsEmailValid()
+        protected override bool IsEmailValid()
         {
             if (Email.Length < MinCharacterInEmail)
             {
@@ -123,7 +123,7 @@ namespace Tetris.ModelsLogic
             }
             return true;
         }
-        private bool IsPasswordValid()
+        protected override bool IsPasswordValid()
         {
             if (Password.Length < MinCharacterInPW)
             {
@@ -147,7 +147,7 @@ namespace Tetris.ModelsLogic
             }
             return true;
         }
-        private bool IsUserNameValid()
+        protected override bool IsUserNameValid()
         {
             if (UserName.Length < MinCharacterInUN)
             {
@@ -161,35 +161,35 @@ namespace Tetris.ModelsLogic
             }
             return true;
         }
-        private static bool HasAtSign(string str)
+        protected override bool HasAtSign(string str)
         {
             for (int i = 0; i < str.Length; i++)
                 if (str[i] == TechnicalConsts.AtSign)
                     return true;
             return false;
         }
-        private static bool HasDot(string str)
+        protected override bool HasDot(string str)
         {
             for (int i = 0; i < str.Length; i++)
                 if (str[i] == TechnicalConsts.DotSign)
                     return true;
             return false;
         }
-        private static bool HasNumber(string str)
+        protected override bool HasNumber(string str)
         {
             for (int i = 0; i < str.Length; i++)
                 if (str[i] >= TechnicalConsts.ZeroSign && str[i] <= TechnicalConsts.NineSign)
                     return true;
             return false;
         }
-        private static bool HasLowerCase(string str)
+        protected override bool HasLowerCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
                 if (str[i] >= TechnicalConsts.ASign && str[i] <= TechnicalConsts.ZSign)
                     return true;
             return false;
         }
-        private static bool HasUpperCase(string str)
+        protected override bool HasUpperCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
                 if (str[i] >= TechnicalConsts.CapitalASign && str[i] <= TechnicalConsts.CapitalZSign)

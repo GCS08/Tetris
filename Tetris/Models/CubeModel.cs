@@ -2,7 +2,7 @@
 
 namespace Tetris.Models;
 
-public partial class CubeModel(double width, double height,
+public class CubeModel(double width, double height,
     Color? color) : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
     public double Width { get; } = width;

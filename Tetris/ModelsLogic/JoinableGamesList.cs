@@ -10,7 +10,10 @@ namespace Tetris.ModelsLogic
         {
             this.gamesObsCollection = list;
         }
-        public static async Task<JoinableGamesList> CreateAsync()
+        public JoinableGamesList()
+        {
+        }
+        public override async Task<JoinableGamesList> CreateAsync()
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
@@ -21,11 +24,11 @@ namespace Tetris.ModelsLogic
         {
             ilr = fbd.AddGamesCollectionListener(OnChange!);
         }
-        private void OnChange(IQuerySnapshot snapshot, Exception error)
+        protected override void OnChange(IQuerySnapshot snapshot, Exception error)
         {
             fbd.GetAvailGames(OnCompleteChange);
         }
-        private void OnCompleteChange(ObservableCollection<Game> newList)
+        protected override void OnCompleteChange(ObservableCollection<Game> newList)
         {
             gamesObsCollection!.Clear();
             foreach (Game game in newList) { gamesObsCollection.Add(game); }
@@ -35,8 +38,7 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
         }
-
-        public async Task AddGameToDB(Game currentNewGame, User creator)
+        public override async Task AddGameToDB(Game currentNewGame, User creator)
         {
             currentNewGame.GameID = await fbd.AddGameToDB(
                 creator.UserID,

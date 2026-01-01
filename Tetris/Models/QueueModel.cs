@@ -6,5 +6,10 @@ namespace Tetris.Models
     {
         protected Node<T>? first;
         protected Node<T>? last;
+        public abstract bool IsEmpty();
+        public abstract void Insert(T value);
+        public abstract T GetTail();
+        public abstract T Remove();
+        public abstract T Head();
     }
 }

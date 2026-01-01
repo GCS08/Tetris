@@ -15,11 +15,12 @@
         public const double OpGameGridRowHeight = 12;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
-        public const int ShapeFallInternalS = 1;
+        public const int ShapeFallIntervalS = 1;
         public const double OpShapeFallIntervalS = 0.3;
         public const int DeleteFbDocsIntervalS = 3600;
         public const long TotalGameTimeS = 6;
         public const long GameTimeIntervalS = 1;
+        public const long FinishedSignal = 0;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,

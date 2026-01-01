@@ -32,12 +32,30 @@
                 <Label
                     FontSize="40"
                     HorizontalOptions="Center"
-                    TextColor="Black"
-                    Text="{x:Static m:Strings.FeelingReady}" />
+                    Text="{x:Static m:Strings.FeelingReady}"
+                    TextColor="Black" />
                 <Button
                     Grid.Row="1"
                     Command="{Binding ReadyCommand}"
                     Text="{x:Static m:Strings.ClickMe}" />
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                Padding="20"
+                BackgroundColor="Beige"
+                IsVisible="{Binding IsTimerVisible}"
+                RowSpacing="20"
+                ZIndex="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Label
+                    FontSize="40"
+                    HorizontalOptions="Center"
+                    Text="{Binding TimeLeft}"
+                    TextColor="Black"
+                    VerticalOptions="Center" />
             </Grid>
 
             <!--  Main Content  -->

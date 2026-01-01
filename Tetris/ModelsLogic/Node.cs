@@ -19,31 +19,31 @@ namespace Tetris.ModelsLogic
         }
 
         // Getter for value
-        public T GetValue()
+        public override T GetValue()
         {
             return this.value!;
         }
 
         // Getter for next node
-        public Node<T> GetNext()
+        public override Node<T> GetNext()
         {
             return this.next!;
         }
 
         // Setter for value
-        public void SetValue(T value)
+        public override void SetValue(T value)
         {
             this.value = value;
         }
 
         // Setter for next node
-        public void SetNext(Node<T> next)
+        public override void SetNext(Node<T> next)
         {
             this.next = next;
         }
 
         // Check if there is a next node
-        public bool HasNext()
+        public override bool HasNext()
         {
             return this.next != null;
         }

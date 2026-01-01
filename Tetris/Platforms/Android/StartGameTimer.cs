@@ -8,7 +8,7 @@ namespace Tetris.Platforms.Android
     {
         public override void OnFinish()
         {
-            WeakReferenceMessenger.Default.Send(new AppMessage<long>(Keys.FinishedSignal));
+            WeakReferenceMessenger.Default.Send(new AppMessage<long>(ConstData.FinishedSignal));
         }
         public override void OnTick(long millisUntilFinished)
         {
