@@ -126,6 +126,8 @@ namespace Tetris.ModelsLogic
                 for (int i = 0; i < playerMoveMap.Count; i++)
                     movesQueue.Insert(playerMoveMap[i]);
 
+                System.Diagnostics.Debug.WriteLine(movesQueue.PrintQueue(out int counter) + "\nNodes in queue = " + counter);
+
                 OpFallTimer.Start();
             }
         }

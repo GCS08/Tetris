@@ -40,5 +40,22 @@ namespace Tetris.ModelsLogic
         {
             return IsEmpty() ? default! : first!.GetValue();
         }
+        public override string PrintQueue(out int counter)
+        {
+            counter = 0;
+            string output = string.Empty;
+            ModelsLogic.Queue<T> temp = new();
+            while (!IsEmpty())
+            {
+                T value = Remove();
+                output += value.ToString() + TechnicalConsts.SpaceSign
+                    + TechnicalConsts.ArrowSignString + TechnicalConsts.SpaceSign;
+                temp.Insert(value);
+                counter++;
+            }
+            while (!temp.IsEmpty())
+                Insert(temp.Remove());
+            return output;
+        }
     }
 }

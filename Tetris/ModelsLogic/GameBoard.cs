@@ -57,10 +57,8 @@ namespace Tetris.ModelsLogic
             {
                 ShapesQueue!.Remove();
                 if (!IsOp)
-                {
                     if (ShapesQueue.IsEmpty())
                         await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
-                }
                 CurrentShape = ShapesQueue.Head();
                 ShowShape();
             }
