@@ -171,7 +171,6 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-
         public override void MoveLeftShape()
         {
             if (IsLost)
@@ -218,7 +217,6 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-
         public override async Task<bool> MoveDownShape()
         {
             bool canMoveDown = true;

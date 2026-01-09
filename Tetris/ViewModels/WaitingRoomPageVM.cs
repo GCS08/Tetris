@@ -20,9 +20,9 @@ namespace Tetris.ViewModels
             CurrentGame.OnGameFull += OnGameFull;
         }
 
-        private async void OnGameFull(object? sender, EventArgs e)
+        private  void OnGameFull(object? sender, EventArgs e)
         {
-            await Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
+             Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
         }
 
         private void OnPlayersChange(object? sender, EventArgs e)

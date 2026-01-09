@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Metrics;
 using System.Timers;
 using Tetris.Models;
 using Tetris.Views;
