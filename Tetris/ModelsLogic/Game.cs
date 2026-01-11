@@ -39,12 +39,12 @@ namespace Tetris.ModelsLogic
                 OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
             });
         }
-        public override async Task OnPlayerLeaveWR()
+        public override async Task OnPlayerLeaveWR() // cannot be sync because of firestore method
         {
             if (CurrentPlayersCount <= 1)
             {
                 ilr?.Remove();
-                await fbd.DeleteGameFromDB(GameID);
+                fbd.DeleteGameFromDB(GameID);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Tetris.ModelsLogic
         }
         public override void AddWaitingRoomListener()
         {
-            ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom!);
+            ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom);
         }
         public override void RemoveWaitingRoomListener()
         {
@@ -64,7 +64,7 @@ namespace Tetris.ModelsLogic
         }
         public override void AddGameListener()
         {
-            ilr = fbd.AddGameListener(GameID, OnChangeGame!);
+            ilr = fbd.AddGameListener(GameID, OnChangeGame);
         }
         public override void RemoveGameListener()
         {
@@ -72,14 +72,15 @@ namespace Tetris.ModelsLogic
         }
         public override void AddReadyListener()
         {
-            ilr = fbd.AddGameListener(GameID, OnChangeReady!);
+            ilr = fbd.AddGameListener(GameID, OnChangeReady);
         }
         public override void RemoveReadyListener()
         {
             ilr?.Remove();
         }
-        protected override void OnChangeReady(IDocumentSnapshot snapshot, Exception error)
+        protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
         {
+            if (snapshot == null) return;
             bool allReady = true;
             for (int i = 0; i < MaxPlayersCount && allReady; i++)
             {
@@ -90,27 +91,30 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
-        protected override async void OnChangeGame(IDocumentSnapshot snapshot, Exception error)
+        protected override void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
+            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
+                || OpGameBoard == null || OpGameBoard.ShapesQueue == null) return;
+
             bool found = false;
             for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
                 if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                     found = true;
 
-            if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
-                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId ||
-                OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)// Shape has changed
+            if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId ||
+                OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)// Shape has changed
             {
                 Shape newShape = fbd.CreateShape(snapshot);
                 Shape newShape2 = fbd.CreateShape(snapshot);
-                if (GameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != GameBoard!.ShapesQueue!.GetTail().InGameId)
-                    GameBoard!.ShapesQueue.Insert(newShape);
-                if (OpGameBoard!.ShapesQueue!.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard!.ShapesQueue!.GetTail().InGameId)
-                    OpGameBoard!.ShapesQueue!.Insert(newShape2);
+                if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId)
+                    GameBoard.ShapesQueue.Insert(newShape);
+                if (OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)
+                    OpGameBoard.ShapesQueue.Insert(newShape2);
             }
             else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
                     + Keys.PlayerIdKey) != (Application.Current as App)!.user.UserID)// Op player has moved
@@ -120,19 +124,18 @@ namespace Tetris.ModelsLogic
 
                 currentMovingOp = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
 
-                await fbd.ResetMoves(GameID, desiredIndex);
+                fbd.ResetMoves(GameID, desiredIndex);
 
                 for (int i = 0; i < playerMoveMap.Count; i++)
                     movesQueue.Insert(playerMoveMap[i]);
-
-                System.Diagnostics.Debug.WriteLine(movesQueue.PrintQueue(out int counter) + "\nNodes in queue = " + counter);
 
                 OpFallTimer.Start();
             }
         }
         protected override void ApplyOpMove(object? sender, ElapsedEventArgs e)
         {
-            if (!movesQueue.IsEmpty() && GameBoard!.User!.UserID != currentMovingOp)
+            if (GameBoard == null || GameBoard.User == null) return;
+            if (!movesQueue.IsEmpty() && GameBoard.User.UserID != currentMovingOp)
                 // second check is unnecessary since it enters the second if in the on change game only if its not the player who finished a moved.
             {
                 string move = movesQueue.Remove();
@@ -155,10 +158,11 @@ namespace Tetris.ModelsLogic
             else
                 OpFallTimer.Stop();
         }
-        protected override void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error)
+        protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
         {
+            if (snapshot == null) return;
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
-            fbd.GetPlayersFromDocument(GameID, OnCompleteChange!);
+            fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
             if (IsFull)
             {
                 fbd.SetGameIsFull(GameID);
@@ -169,70 +173,87 @@ namespace Tetris.ModelsLogic
         {
             UsersInGame.Clear();
             foreach (User user in users) { UsersInGame.Add(user); }
-            OnPlayersChange!.Invoke(this, EventArgs.Empty);
+            OnPlayersChange?.Invoke(this, EventArgs.Empty);
         }
-        public override async void NavToWR()
+        public override async void NavToWR()// cannot be sync because of firestore method
         {
             await fbd.OnPlayerJoinWR(GameID,
                 (Application.Current as App)!.user.UserID);
             CurrentPlayersCount++;
             UsersInGame.Add((Application.Current as App)!.user);
-            await Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
+            _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
         }
         public override void PrepareGame()
         {
             WeakReferenceMessenger.Default.Send(
                 new AppMessage<StartGameTimerSettings>(startGameTimerSettings));
 
-            GameBoard!.User = (Application.Current as App)!.user;
+            if (GameBoard == null || OpGameBoard == null) return;
+
+            GameBoard.User = (Application.Current as App)!.user;
             foreach (User user in UsersInGame)
                 if (user != (Application.Current as App)!.user)
-                    OpGameBoard!.User = user;
+                    OpGameBoard.User = user;
 
             RemoveReadyListener();
         }
         public override void StartGame()
         {
             AddGameListener();
-            GameBoard!.StartGame();
-            OpGameBoard!.StartGame();
+
+            if (GameBoard == null || OpGameBoard == null) return;
+
+            GameBoard.StartGame();
+            OpGameBoard.StartGame();
         }
-        public override async void MoveRightShape()
+        public override async void MoveRightShape() // cannot be sync because of firestore method
         {
-            GameBoard!.MoveRightShape();
+            if (GameBoard == null) return;
+            
+            GameBoard.MoveRightShape();
             await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RightKey);
         }
-        public override async void MoveLeftShape()
+        public override async void MoveLeftShape() // cannot be sync because of firestore method
         {
-            GameBoard!.MoveLeftShape();
+            if (GameBoard == null) return;
+
+            GameBoard.MoveLeftShape();
             await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.LeftKey);
         }
-        public override async void MoveDownShape()
+        public override async void MoveDownShape() // cannot be sync because of firestore method
         {
-            bool isAtBottom = await GameBoard!.MoveDownShape();
+            if (GameBoard == null) return;
+
+            bool isAtBottom = await GameBoard.MoveDownShape();
             if (!isAtBottom)
                 await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
         }
-        public override async void RotateShape()
+        public override async void RotateShape() // cannot be sync because of firestore method
         {
-            GameBoard!.RotateShape();
+            if (GameBoard == null) return;
+
+            GameBoard.RotateShape();
             await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RotateKey);
         }
         public override void MoveRightOpShape()
         {
-            OpGameBoard!.MoveRightShape();
+            if (OpGameBoard == null) return;
+            OpGameBoard.MoveRightShape();
         }
         public override void MoveLeftOpShape()
         {
-            OpGameBoard!.MoveLeftShape();
+            if (OpGameBoard == null) return; 
+            OpGameBoard.MoveLeftShape();
         }
-        public override async void MoveDownOpShape()
+        public override async void MoveDownOpShape() // cannot be sync because of firestore method
         {
-            await OpGameBoard!.MoveDownShape();
+            if (OpGameBoard == null) return;
+            await OpGameBoard.MoveDownShape();
         }
         public override void RotateOpShape()
         {
-            OpGameBoard!.RotateShape();
+            if (OpGameBoard == null) return;
+            OpGameBoard.RotateShape();
         }
         public override void Ready()
         {

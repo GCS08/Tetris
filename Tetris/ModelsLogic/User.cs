@@ -6,27 +6,27 @@ namespace Tetris.ModelsLogic
 {
     public class User : UserModel
     {        
-        public override async Task<bool> Login()
+        public override async Task<bool> Login()// cannot be sync because of firestore method
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
-        protected override async Task<bool> OnCompleteLogin(Task task)
+        protected override async Task<bool> OnCompleteLogin(Task task)// cannot be sync because of firestore method
         {
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
-                await Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
+                _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
+                _ = Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
                 return false;
             }
         }
-        protected override async Task LoginSaveToPreferencesAsync()
+        protected override async Task LoginSaveToPreferencesAsync()// cannot be sync because of firestore method
         {
             // Await all async Firebase reads
             UserID = fbd.GetCurrentUserID();
@@ -41,18 +41,18 @@ namespace Tetris.ModelsLogic
 
             SaveToPreferences();
         }
-        public override async Task<bool> Register()
+        public override async Task<bool> Register()// cannot be sync because of firestore method
         {
             bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
             return success;
         }
-        protected override async Task<bool> OnCompleteRegister(Task task)
+        protected override bool OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 UserID = fbd.GetCurrentUserID();
                 SaveToPreferences();
-                await Toast.Make(Strings.RegisterSuccess,
+                _ = Toast.Make(Strings.RegisterSuccess,
                     CommunityToolkit.Maui.Core.ToastDuration.Short,
                     ConstData.ToastFontSize).Show();
                 return true;
@@ -60,7 +60,7 @@ namespace Tetris.ModelsLogic
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert(Strings.RegisterErrorTitle,
+                _ = Shell.Current.DisplayAlert(Strings.RegisterErrorTitle,
                     errorMessage, Strings.RegisterFailButton);
                 return false;
             }
@@ -85,20 +85,21 @@ namespace Tetris.ModelsLogic
             fbd.SignOut();
             Preferences.Clear();
         }
-        public override async Task ResetPassword()
+        public override async Task ResetPassword() // cannot be sync because of firestore method
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
-        protected override async Task OnCompleteSendEmail(Task task)
+
+        protected override void OnCompleteSendEmail(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
-                await Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+                _ = Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                await Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
+                _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
         }
         public override bool CanLogin()

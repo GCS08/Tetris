@@ -15,7 +15,8 @@ namespace Tetris.ModelsLogic
         }
         public override void Insert(T value)
         {
-            Node<T> oldLast = last!;
+            if (last == null) return;
+            Node<T> oldLast = last;
             last = new Node<T>(value);
             if (IsEmpty())
                 first = last;
@@ -24,13 +25,13 @@ namespace Tetris.ModelsLogic
         }
         public override T GetTail()
         {
-            return IsEmpty() ? default! : last!.GetValue();
+            return last == null || IsEmpty() ? default! : last.GetValue();
         }
         public override T Remove()
         {
-            if (IsEmpty())
+            if (first == null || IsEmpty())
                 return default!;
-            T value = first!.GetValue();
+            T value = first.GetValue();
             first = first.GetNext();
             if (IsEmpty())
                 last = null;
@@ -38,7 +39,7 @@ namespace Tetris.ModelsLogic
         }
         public override T Head()
         {
-            return IsEmpty() ? default! : first!.GetValue();
+            return first == null || IsEmpty() ? default! : first.GetValue();
         }
         public override string PrintQueue(out int counter)
         {
@@ -48,6 +49,7 @@ namespace Tetris.ModelsLogic
             while (!IsEmpty())
             {
                 T value = Remove();
+                if (value == null) return output;
                 output += value.ToString() + TechnicalConsts.SpaceSign
                     + TechnicalConsts.ArrowSignString + TechnicalConsts.SpaceSign;
                 temp.Insert(value);

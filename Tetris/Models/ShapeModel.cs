@@ -8,7 +8,14 @@ namespace Tetris.Models
         public int InGameId { get; set; }
         public List<bool[,]>? RotationStates { get; set; }
         public int RotationIndex { get; set; } = 0;
-        public bool[,] Cells => RotationStates![RotationIndex];
+        public bool[,] Cells
+        {
+            get
+            {
+                if (RotationStates == null) return null!;
+                return RotationStates[RotationIndex];
+            }
+        }
         public int TopLeftX { get; set; }
         public int TopLeftY { get; set; }
         public Color? Color { get; set; }

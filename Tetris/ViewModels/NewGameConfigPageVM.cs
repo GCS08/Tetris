@@ -8,7 +8,7 @@ namespace Tetris.ViewModels
     public partial class NewGameConfigPageVM : ObservableObject
     {
         public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
-        public ICommand CreateGameCommand { get; }
+        public ICommand CreateGameCommand => new Command(CreateGame);
         private readonly Game currentNewGame;
         private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
@@ -16,10 +16,8 @@ namespace Tetris.ViewModels
         private readonly User user;
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
-            App? app = Application.Current as App;
-            user = app!.user;
-            CreateGameCommand = new Command(async () => await CreateGame());
-            currentNewGame = new("Red", user.UserName, 1, 2, true, new(0), string.Empty);
+            user = (Application.Current as App)!.user;
+            currentNewGame = new(Keys.RedKey, user.UserName, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
         public string SelectedColor
@@ -37,13 +35,13 @@ namespace Tetris.ViewModels
         }
         public string SelectedPrivacy
         {
-            get => !currentNewGame.IsPublicGame ? "Private" : "Public";
+            get => !currentNewGame.IsPublicGame ? Keys.PrivateKey : Keys.PublicKey;
             set
             {
-                string PublicOrProtected = currentNewGame.IsPublicGame ? "Public" : "Private";
+                string PublicOrProtected = currentNewGame.IsPublicGame ? Keys.PublicKey : Keys.PrivateKey;
                 if (PublicOrProtected != value)
                 {
-                    currentNewGame.IsPublicGame = (value == "Public");
+                    currentNewGame.IsPublicGame = (value == Keys.PublicKey);
                     OnPropertyChanged(nameof(currentNewGame.IsPublicGame));
                     // You can react to selection change here if you want
                 }
@@ -62,13 +60,13 @@ namespace Tetris.ViewModels
                 }
             }
         }
-        private async Task CreateGame()
+        private void CreateGame()
         {
             UpdatePropertiesByBusy(true);
-            await gamesList.AddGameToDB(currentNewGame,
+            gamesList.AddGameToDB(currentNewGame,
                 (Application.Current as App)!.user);
             UpdatePropertiesByBusy(false);
-            await Shell.Current.Navigation.PushAsync(
+            Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));
         }
         private void UpdatePropertiesByBusy(bool value)
@@ -78,9 +76,9 @@ namespace Tetris.ViewModels
             IsCreateEnabled = !value;
             OnPropertyChanged(nameof(IsCreateEnabled));
         }
-        private async void NavGameLobby()
+        private void NavGameLobby()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPage);
+            Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
     }
 }

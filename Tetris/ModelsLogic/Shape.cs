@@ -25,7 +25,8 @@ namespace Tetris.ModelsLogic
         }
         public override Shape Duplicate(Shape shape)
         {
-            return new Shape(shape.Id, shape.InGameId, StringAndColorConverter.ColorToColorName(shape.Color!));
+            if (shape.Color == null) return null!;
+            return new Shape(shape.Id, shape.InGameId, StringAndColorConverter.ColorToColorName(shape.Color));
         }
     }
 }

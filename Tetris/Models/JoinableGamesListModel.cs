@@ -15,6 +15,6 @@ namespace Tetris.Models
         protected abstract void OnChange(IQuerySnapshot snapshot, Exception error);
         protected abstract void OnCompleteChange(ObservableCollection<Game> newList);
         public abstract void RemoveGamesCollectionListener();
-        public abstract Task AddGameToDB(Game currentNewGame, User creator);
+        public abstract void AddGameToDB(Game currentNewGame, User creator);
     }
 }

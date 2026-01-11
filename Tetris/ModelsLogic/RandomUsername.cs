@@ -6,7 +6,7 @@ namespace Tetris.ModelsLogic
     public class RandomUsername : RandomUsernameModel
     {
         // Static method to get a random username
-        public override async Task<string> GetAsync()
+        public override async Task<string> GetAsync()// cannot be sync because of http method
         {
             using (client)
             {
@@ -25,7 +25,7 @@ namespace Tetris.ModelsLogic
                               .GetProperty(TechnicalConsts.ResultsJson)[0]
                               .GetProperty(TechnicalConsts.LoginJson)
                               .GetProperty(TechnicalConsts.UsernameJson)
-                              .GetString()!;
+                              .GetString() ?? Strings.FailedRandomApiUN;
                 }
                 catch
                 {

@@ -38,14 +38,15 @@ namespace Tetris.ModelsLogic
         }
         public override void ShowShape()
         {
-            for (int i = 0; i < CurrentShape!.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape!.Cells.GetLength(1); j++)
+            if (CurrentShape == null || Board == null) return;
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
                     if (CurrentShape.Cells[i, j])
-                        Board![i + CurrentShape.TopLeftY, j +
+                        Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
 
         }
-        private async Task ShapeAtBottom()
+        private void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
             if (CheckForLose())
@@ -55,25 +56,26 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                ShapesQueue!.Remove();
+                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
+                ShapesQueue.Remove();
                 if (!IsOp)
                     if (ShapesQueue.IsEmpty())
-                        await fbd.AddShape(new(CurrentShape!.InGameId + 1), GameID!);
+                        fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
                 CurrentShape = ShapesQueue.Head();
                 ShowShape();
             }
         }
         private bool CheckForLose()
         {
+            if (Board == null) return false;
             for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-            {
-                if (Board![0, col].Color != Colors.Transparent)
+                if (Board[0, col].Color != Colors.Transparent)
                     return true;
-            }
             return false;
         }
         private int CheckForLines()
         {
+            if (Board == null) return 0;
             int linesCleared = 0;
 
             int writeRow = ConstData.GameGridRowCount - 1;
@@ -82,56 +84,46 @@ namespace Tetris.ModelsLogic
             {
                 bool lineFull = true;
                 for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                {
-                    if (Board![readRow, col].Color == Colors.Transparent)
+                    if (Board[readRow, col].Color == Colors.Transparent)
                     {
                         lineFull = false;
                         break;
                     }
-                }
 
                 if (!lineFull)
                 {
                     if (writeRow != readRow)
-                    {
                         for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                        {
-                            Board![writeRow, col].Color = Board[readRow, col].Color;
-                        }
-                    }
+                            Board[writeRow, col].Color = Board[readRow, col].Color;
                     writeRow--;
                 }
                 else
-                {
                     linesCleared++;
-                }
             }
 
             for (int row = writeRow; row >= 0; row--)
-            {
                 for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                {
-                    Board![row, col].Color = Colors.Transparent;
-                }
-            }
+                    Board[row, col].Color = Colors.Transparent;
 
             return linesCleared;
         }
         private void EraseShape()
         {
-            for (int i = 0; i < CurrentShape!.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape!.Cells.GetLength(1); j++)
+            if (CurrentShape == null || Board == null) return;
+
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
                     if (CurrentShape.Cells[i, j])
-                        Board![i + CurrentShape.TopLeftY, j +
+                        Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = Colors.Transparent;
         }
         public override void MoveRightShape()
         {
-            if (IsLost)
+            if (IsLost || CurrentShape == null || Board == null)
                 return;
 
-            int shapeHeight = CurrentShape!.Cells.GetLength(0);
-            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+            int shapeHeight = CurrentShape.Cells.GetLength(0);
+            int shapeWidth = CurrentShape.Cells.GetLength(1);
 
             bool canMoveRight = true;
 
@@ -155,7 +147,7 @@ namespace Tetris.ModelsLogic
                         else
                         {
                             // Check board collision
-                            if (Board![boardY, boardX].Color != Colors.Transparent)
+                            if (Board[boardY, boardX].Color != Colors.Transparent)
                                 canMoveRight = false;
                         }
 
@@ -173,11 +165,11 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveLeftShape()
         {
-            if (IsLost)
+            if (IsLost || CurrentShape == null || Board == null)
                 return;
 
-            int shapeHeight = CurrentShape!.Cells.GetLength(0);
-            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+            int shapeHeight = CurrentShape.Cells.GetLength(0);
+            int shapeWidth = CurrentShape.Cells.GetLength(1);
 
             bool canMoveLeft = true;
 
@@ -201,7 +193,7 @@ namespace Tetris.ModelsLogic
                         else
                         {
                             // Check board collision
-                            if (Board![boardY, boardX].Color != Colors.Transparent)
+                            if (Board[boardY, boardX].Color != Colors.Transparent)
                                 canMoveLeft = false;
                         }
 
@@ -217,12 +209,15 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-        public override async Task<bool> MoveDownShape()
+        public override async Task<bool> MoveDownShape() // cannot be sync because of firestore method
         {
+            if (CurrentShape == null || Board == null || User == null || GameID == null)
+                return false;
+
             bool canMoveDown = true;
 
-            int shapeHeight = CurrentShape!.Cells.GetLength(0);
-            int shapeWidth = CurrentShape!.Cells.GetLength(1);
+            int shapeHeight = CurrentShape.Cells.GetLength(0);
+            int shapeWidth = CurrentShape.Cells.GetLength(1);
 
             bool[] IsCubesUnderShapeFilled = new bool[shapeWidth];
 
@@ -245,7 +240,7 @@ namespace Tetris.ModelsLogic
                         {
                             // Check if the cell under it is filled
                             IsCubesUnderShapeFilled[col] =
-                                Board![boardY, boardX].Color != Colors.Transparent;
+                                Board[boardY, boardX].Color != Colors.Transparent;
                         }
 
                         found = true; // stop scanning this column
@@ -270,24 +265,25 @@ namespace Tetris.ModelsLogic
                 else
                 {
                     isAtBottom = true;
-                    await ShapeAtBottom();
+                    ShapeAtBottom();
                     if (!IsOp)
-                        await fbd.PlayerActionWithBottom(User!.UserID, GameID!, Keys.DownKey);
+                        await fbd.PlayerActionWithBottom(User.UserID, GameID, Keys.DownKey);
                 }
             }
             return isAtBottom;
         }
-        private async void MoveDownShape(object? sender, ElapsedEventArgs e)
+        private async void MoveDownShape(object? sender, ElapsedEventArgs e) // cannot be sync because of firestore method
         {
+            if (GameID == null) return;
             bool isAtBottom = await MoveDownShape();
             if (!isAtBottom)
-                await fbd.PlayerAction(GameID!, (Application.Current as App)!.user.UserID, Keys.DownKey);
+                await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
         }
         public override void RotateShape()
         {
-            if (CurrentShape == null || IsLost) return;
+            if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost) return;
 
-            int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates!.Count;
+            int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];
 
             EraseShape();
@@ -304,6 +300,13 @@ namespace Tetris.ModelsLogic
         }
         private bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)
         {
+            if (Board == null)
+            {
+                newX = x;
+                newY = y;
+                return false;
+            }
+
             newX = x;
             newY = y;
 
@@ -332,7 +335,7 @@ namespace Tetris.ModelsLogic
                             // Out of bounds or collides with existing cube
                             if (boardX < 0 || boardX >= ConstData.GameGridColumnCount ||
                                 boardY < 0 || boardY >= ConstData.GameGridRowCount ||
-                                Board![boardY, boardX].Color != Colors.Transparent)
+                                Board[boardY, boardX].Color != Colors.Transparent)
                             {
                                 canPlace = false;
                             }
@@ -352,17 +355,19 @@ namespace Tetris.ModelsLogic
         }
         public void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
         {
+            if (gameBoardGrid == null || Board == null) return;
+
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                gameBoardGrid!.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
+                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
 
             for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                gameBoardGrid!.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
+                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
             {
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                 {
-                    Cube cube = Board![r, c];
+                    Cube cube = Board[r, c];
 
                     BoxView boxView = new()
                     {

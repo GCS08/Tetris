@@ -13,7 +13,7 @@ namespace Tetris.ModelsLogic
         public JoinableGamesList()
         {
         }
-        public override async Task<JoinableGamesList> CreateAsync()
+        public override async Task<JoinableGamesList> CreateAsync()// cannot be sync because of firestore method
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
@@ -22,15 +22,16 @@ namespace Tetris.ModelsLogic
         }
         public override void AddGamesCollectionListener()
         {
-            ilr = fbd.AddGamesCollectionListener(OnChange!);
+            ilr = fbd.AddGamesCollectionListener(OnChange);
         }
-        protected override void OnChange(IQuerySnapshot snapshot, Exception error)
+        protected override void OnChange(IQuerySnapshot? snapshot, Exception? error)
         {
             fbd.GetAvailGames(OnCompleteChange);
         }
         protected override void OnCompleteChange(ObservableCollection<Game> newList)
         {
-            gamesObsCollection!.Clear();
+            if (gamesObsCollection == null) return;
+            gamesObsCollection.Clear();
             foreach (Game game in newList) { gamesObsCollection.Add(game); }
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -38,19 +39,21 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
         }
-        public override async Task AddGameToDB(Game currentNewGame, User creator)
+        public override void AddGameToDB(Game currentNewGame, User creator)
         {
-            currentNewGame.GameID = await fbd.AddGameToDB(
+            if (currentNewGame.GameBoard == null || currentNewGame.GameBoard.CurrentShape == null
+                || currentNewGame.GameBoard.CurrentShape.Color == null) return;
+            currentNewGame.GameID = fbd.AddGameToDB(
                 creator.UserID,
                 creator.UserName,
                 currentNewGame.CubeColor,
                 currentNewGame.CurrentPlayersCount,
                 currentNewGame.MaxPlayersCount,
                 currentNewGame.IsFull,
-                currentNewGame.GameBoard!.CurrentShape!.Id!,
-                currentNewGame.GameBoard!.CurrentShape!.InGameId!,
+                currentNewGame.GameBoard.CurrentShape.Id,
+                currentNewGame.GameBoard.CurrentShape.InGameId,
                 Converters.StringAndColorConverter.ColorToColorName
-                (currentNewGame.GameBoard!.CurrentShape!.Color!),
+                (currentNewGame.GameBoard.CurrentShape.Color),
                 currentNewGame.IsPublicGame);
         }
     }

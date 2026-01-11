@@ -1,11 +1,12 @@
-﻿using System.Windows.Input;
+﻿using CommunityToolkit.Maui.Alerts;
+using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
-using CommunityToolkit.Maui.Alerts;
+using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
-    public class RegisterPageVM : ObservableObject, IQueryAttributable
+    public class RegisterPageVM : ObservableObject
     {
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand NavBackHomeCommand => new Command(NavHome);
@@ -15,8 +16,7 @@ namespace Tetris.ViewModels
         public ICommand ToggleIsPassword2Command { get; }
         public bool RegisterEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
-        private App? app;
-        private User user;
+        private readonly User user;
         public string UserName
         {
             get => user.UserName;
@@ -64,10 +64,10 @@ namespace Tetris.ViewModels
         }
         public bool IsPassword1 { get; set; } = true;
         public bool IsPassword2 { get; set; } = true;
-        public RegisterPageVM()
+        public RegisterPageVM()// cannot be sync because of firestore method
         {
-            app = Application.Current as App;
-            user = app!.user;
+            RefreshProperties();
+            user = (Application.Current as App)!.user;
             passwordRepeat = string.Empty;
             RegisterCommand = new Command(async () => await Register());
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);
@@ -87,7 +87,7 @@ namespace Tetris.ViewModels
         {
             return user.CanRegister(passwordRepeat);
         }
-        private async Task Register()
+        private async Task Register()// cannot be sync because of firestore method
         {
             if (CanRegister())
             {
@@ -97,27 +97,19 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(RegisterEnable));
                 bool successfullyRegistered = await user.Register();
                 if (successfullyRegistered)
-                    await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+                    _ = Shell.Current.Navigation.PushAsync(new MainPage());
                 IsBusy = false;
                 OnPropertyChanged(nameof(IsBusy));
                 RegisterEnable = false;
                 OnPropertyChanged(nameof(RegisterEnable));
             }
         }
-        private async void GetRandomUsername(object obj)
+        private async void GetRandomUsername(object obj)// cannot be sync because of http method
         {
             // Create an instance of RandomUsername to call the instance method GetAsync
             RandomUsername randomUsername = new();
             UserName = await randomUsername.GetAsync();
             OnPropertyChanged(nameof(UserName));
-
-        }
-
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            app = Application.Current as App;
-            user = app!.user;
-            RefreshProperties();
         }
         private void RefreshProperties()
         {
@@ -131,13 +123,13 @@ namespace Tetris.ViewModels
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
-        private async void NavToLogin()
+        private void NavToLogin()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectLoginPageRefresh);
+            Shell.Current.Navigation.PushAsync(new LoginPage());
         }
-        private async void NavHome()
+        private void NavHome()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            Shell.Current.Navigation.PushAsync(new MainPage());
         }
     }
 }

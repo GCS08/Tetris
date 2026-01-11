@@ -19,24 +19,28 @@ namespace Tetris.ViewModels
         }
         public void AddGamesCollectionListener()
         {
-            JoinableGamesList!.AddGamesCollectionListener();
+            if (JoinableGamesList == null) return;
+            JoinableGamesList.AddGamesCollectionListener();
         }
         public void RemoveGamesCollectionListener()
         {
-            JoinableGamesList!.RemoveGamesCollectionListener();
+            if (JoinableGamesList == null) return;
+            JoinableGamesList.RemoveGamesCollectionListener();
         }
-        private async void NavHome()
+        private void NavHome()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            Shell.Current.Navigation.PushAsync(new MainPage());
         }
-        private async void NavToNewGameConfigGame()
+        private void NavToNewGameConfigGame()
         {
-            await Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList!));
+            if (JoinableGamesList == null) return;
+            Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList));
         }
-        public async Task LoadGamesList()
+        public async Task LoadGamesList() // cannot be sync because of firestore method
         {
-            JoinableGamesList = await JoinableGamesList!.CreateAsync();
-            JoinableGamesList!.OnGamesChanged += OnGamesChanged;
+            if (JoinableGamesList == null) return;
+            JoinableGamesList = await JoinableGamesList.CreateAsync();
+            JoinableGamesList.OnGamesChanged += OnGamesChanged;
             Games = JoinableGamesList.gamesObsCollection;
             OnPropertyChanged(nameof(Games));
         }

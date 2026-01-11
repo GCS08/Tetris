@@ -15,7 +15,7 @@ namespace Tetris.ViewModels
         public WaitingRoomPageVM(Game game)
         {
             this.CurrentGame = game;
-            CurrentGame.GameBoard!.GameID = game.GameID;
+            CurrentGame.GameBoard?.GameID = game.GameID;
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
         }
@@ -30,10 +30,10 @@ namespace Tetris.ViewModels
             OnPropertyChanged(nameof(PlayersInGame));
         }
 
-        private async void NavToGameLobby()
+        private async void NavToGameLobby()// cannot be sync because of firestore method
         {
             await CurrentGame.OnPlayerLeaveWR();
-            await Shell.Current.Navigation.PushAsync(new GameLobbyPage());
+            _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
 
         public void AddWaitingRoomListener()

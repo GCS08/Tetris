@@ -10,14 +10,14 @@ namespace Tetris.Models
     {
         protected FirebaseAuthClient facl;
         protected IFirestore fs;
-        public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, Task<bool>> OnCompleteRegister);
+        public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, bool> OnCompleteRegister);
         public abstract Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin);
         public abstract void SignOut();
         public abstract string GetCurrentUserID();
-        public abstract Task SendPasswordResetEmailAsync(string email, Func<Task, Task> OnCompleteSendEmail);
+        public abstract Task SendPasswordResetEmailAsync(string email, Action<Task> OnCompleteSendEmail);
         public abstract Task<T> GetUserDataAsync<T>(string key);
         public abstract string IdentifyFireBaseError(Task task);
-        public abstract Task<string> AddGameToDB(string userID, string creatorName, string cubeColor,
+        public abstract string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
             int currentShapeInGameId, string currentShapeColor, bool isPublicGame);
         public abstract IListenerRegistration AddGamesCollectionListener(
@@ -26,20 +26,20 @@ namespace Tetris.Models
         public abstract Task<ObservableCollection<Game>> GetAvailGamesList();
         public abstract Task OnPlayerLeaveWR(string id, string leavingUserID);
         public abstract Task OnPlayerJoinWR(string id, string leavingUserID);
-        public abstract Task DeleteGameFromDB(string id);
+        public abstract void DeleteGameFromDB(string id);
         public abstract void GetPlayersFromDocument(string gameID,
             Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
         public abstract Task<int> GetCurrentPlayersCount(string gameID);
         protected abstract Task<ModelsLogic.User> UserIDToObject(string id);
         public abstract void SetGameIsFull(string gameID);
-        public abstract Task AddShape(Shape currentShape, string gameId);
+        public abstract void AddShape(Shape currentShape, string gameId);
         public abstract Shape CreateShape(IDocumentSnapshot snapshot);
         public abstract Task PlayerAction(string gameID, string userID, string action);
         public abstract Task PlayerActionWithBottom(string userID, string gameID, string action);
         public abstract IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
-        public abstract Task ResetMoves(string gameID, int desiredIndex);
+        public abstract void ResetMoves(string gameID, int desiredIndex);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

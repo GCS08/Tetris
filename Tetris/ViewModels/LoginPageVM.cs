@@ -1,10 +1,11 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
+using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
-    public partial class LoginPageVM : ObservableObject, IQueryAttributable
+    public partial class LoginPageVM : ObservableObject
     {
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);
@@ -12,7 +13,6 @@ namespace Tetris.ViewModels
         public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
         public bool LoginEnable { get; set; } = true;
-        private App? app;
         private User user;
         public bool IsBusy { get; set; } = false;
         public string Email
@@ -32,10 +32,10 @@ namespace Tetris.ViewModels
             }
         }
         public bool IsPassword { get; set; } = true;
-        public LoginPageVM()
+        public LoginPageVM()// cannot be sync because of firestore method
         {
-            app = Application.Current as App;
-            user = app!.user;
+            RefreshProperties();
+            user = (Application.Current as App)!.user;
             LoginCommand = new Command(async () => await Login());
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
@@ -50,7 +50,7 @@ namespace Tetris.ViewModels
         {
             return user.CanLogin();
         }
-        private async Task Login()
+        private async Task Login()// cannot be sync because of firestore method
         {
             if (CanLogin())
             {
@@ -60,26 +60,20 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(LoginEnable));
                 bool successfullyLogged = await user.Login();
                 if (successfullyLogged)
-                    await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+                    _ = Shell.Current.Navigation.PushAsync(new MainPage());
                 IsBusy = false;
                 OnPropertyChanged(nameof(IsBusy));
                 LoginEnable = true;
                 OnPropertyChanged(nameof(LoginEnable));
             }
         }
-        private async Task ForgotPassword()
+        private async Task ForgotPassword()// cannot be sync because of firestore method
         {
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));
             await user.ResetPassword();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
-        }
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            app = Application.Current as App;
-            user = app!.user;
-            RefreshProperties();
         }
         private void RefreshProperties()
         {
@@ -92,13 +86,13 @@ namespace Tetris.ViewModels
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
-        private async void NavToRegister()
+        private void NavToRegister()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectRegisterPageRefresh);
+            Shell.Current.Navigation.PushAsync(new RegisterPage());
         }
-        private async void NavHome()
+        private void NavHome()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectMainPageRefresh);
+            Shell.Current.Navigation.PushAsync(new MainPage());
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
+using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
-    public partial class MainPageVM : ObservableObject, IQueryAttributable
+    public partial class MainPageVM : ObservableObject
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
-        private readonly App? app;
-        private readonly User user;
+        private User user;
         private bool isLogged;
         private bool IsLogged
         {
@@ -43,8 +43,7 @@ namespace Tetris.ViewModels
 
         public MainPageVM()
         {
-            app = Application.Current as App;
-            user = app!.user;
+            user = (Application.Current as App)!.user;
             //SignOut();
             RefreshProperties();
         }
@@ -56,27 +55,22 @@ namespace Tetris.ViewModels
         }
         private void RefreshProperties()
         {
-            WelcomeUserName = $"{Strings.Welcome} {Preferences.Get(Keys.UserNameKey, TechnicalConsts.DefaultUserName)}{TechnicalConsts.ExclamationSign}";
-            IsLogged = Preferences.Get(Keys.EmailKey, string.Empty) != string.Empty;
+            WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign + 
+                (Application.Current as App)!.user.UserName + TechnicalConsts.ExclamationSign;
+            IsLogged = (Application.Current as App)!.user.Email != string.Empty;
         }
-
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        private void NavToLogin()
         {
-            // This will be triggered every time the page is navigated to
-            RefreshProperties();
+            Shell.Current.Navigation.PushAsync(new LoginPage());
         }
-        private async void NavToLogin()
+        private void NavToGameLobby()
         {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectLoginPageRefresh);
-        }
-        private async void NavToGameLobby()
-        {
-            await Shell.Current.GoToAsync(TechnicalConsts.RedirectGameLobbyPage);
+            Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
         private void SignOut()
         {
             user.SignOut();
-            app!.user = new();
+            (Application.Current as App)!.user = new();
             Preferences.Clear();
             RefreshProperties();
         }

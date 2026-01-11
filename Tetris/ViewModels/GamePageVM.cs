@@ -72,8 +72,9 @@ public partial class GamePageVM : ObservableObject
     }
     public void InitializeGrid()
     {
-        CurrentGame.GameBoard!.InitializeGrid(GameBoardGrid, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-        CurrentGame.OpGameBoard!.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+        if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null || GameBoardGrid == null || OpGameBoardGrid == null) return;
+        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
+        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
     public void AddReadyListener()
     {
