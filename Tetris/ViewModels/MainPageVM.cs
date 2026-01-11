@@ -10,7 +10,7 @@ namespace Tetris.ViewModels
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
-        private User user;
+        private readonly User user;
         private bool isLogged;
         private bool IsLogged
         {

@@ -6,7 +6,8 @@
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
     x:DataType="vm:LoginPageVM"
-    IsBusy="{Binding IsBusy}">
+    IsBusy="{Binding IsBusy}"
+    Shell.NavBarIsVisible="False">
 
     <Grid>
         <!--  Background Image  -->
