@@ -12,15 +12,20 @@ namespace Tetris.ViewModels
         private Game CurrentGame { get; set; }
         public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
         public ObservableCollection<User> PlayersInGame => CurrentGame.UsersInGame;
-        public WaitingRoomPageVM(Game game)
+        public WaitingRoomPageVM(Game? game)
         {
-            this.CurrentGame = game;
-            CurrentGame.GameBoard?.GameID = game.GameID;
+            if (game == null || game.GameBoard == null)
+            {
+                CurrentGame = null!; // intentional
+                return;
+            }
+            CurrentGame = game;
+            CurrentGame.GameBoard.GameID = CurrentGame.GameID;
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
         }
 
-        private  void OnGameFull(object? sender, EventArgs e)
+        private void OnGameFull(object? sender, EventArgs e)
         {
              Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
         }
@@ -30,7 +35,7 @@ namespace Tetris.ViewModels
             OnPropertyChanged(nameof(PlayersInGame));
         }
 
-        private async void NavToGameLobby()// cannot be sync because of firestore method
+        private async void NavToGameLobby()
         {
             await CurrentGame.OnPlayerLeaveWR();
             _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());

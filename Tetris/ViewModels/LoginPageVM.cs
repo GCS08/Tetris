@@ -32,7 +32,7 @@ namespace Tetris.ViewModels
             }
         }
         public bool IsPassword { get; set; } = true;
-        public LoginPageVM()// cannot be sync because of firestore method
+        public LoginPageVM()
         {
             RefreshProperties();
             user = (Application.Current as App)!.user;
@@ -50,7 +50,7 @@ namespace Tetris.ViewModels
         {
             return user.CanLogin();
         }
-        private async Task Login()// cannot be sync because of firestore method
+        private async Task Login()
         {
             if (CanLogin())
             {
@@ -67,7 +67,7 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(LoginEnable));
             }
         }
-        private async Task ForgotPassword()// cannot be sync because of firestore method
+        private async Task ForgotPassword()
         {
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));

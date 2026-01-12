@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 FallTimer.Elapsed += MoveDownShape;
-                FallTimer.Start();
+                //FallTimer.Start();
             }
         }
         public override void ShowShape()
@@ -44,7 +44,6 @@ namespace Tetris.ModelsLogic
                     if (CurrentShape.Cells[i, j])
                         Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
-
         }
         private void ShapeAtBottom()
         {
@@ -57,11 +56,16 @@ namespace Tetris.ModelsLogic
             else
             {
                 if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
+                
                 ShapesQueue.Remove();
-                if (!IsOp)
-                    if (ShapesQueue.IsEmpty())
-                        fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
-                CurrentShape = ShapesQueue.Head();
+                if (ShapesQueue.IsEmpty() && !IsOp)
+                {
+                    Shape shape = new(CurrentShape.InGameId + 1);
+                    fbd.AddShape(shape, GameID);
+                    CurrentShape = shape;
+                }
+                else
+                    CurrentShape = ShapesQueue.Head();
                 ShowShape();
             }
         }
@@ -209,7 +213,7 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-        public override async Task<bool> MoveDownShape() // cannot be sync because of firestore method
+        public override async Task<bool> MoveDownShape() 
         {
             if (CurrentShape == null || Board == null || User == null || GameID == null)
                 return false;
@@ -272,7 +276,7 @@ namespace Tetris.ModelsLogic
             }
             return isAtBottom;
         }
-        private async void MoveDownShape(object? sender, ElapsedEventArgs e) // cannot be sync because of firestore method
+        private async void MoveDownShape(object? sender, ElapsedEventArgs e) 
         {
             if (GameID == null) return;
             bool isAtBottom = await MoveDownShape();

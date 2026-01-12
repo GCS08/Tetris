@@ -36,7 +36,7 @@ namespace Tetris.ViewModels
             if (JoinableGamesList == null) return;
             Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList));
         }
-        public async Task LoadGamesList() // cannot be sync because of firestore method
+        public async Task LoadGamesList() 
         {
             if (JoinableGamesList == null) return;
             JoinableGamesList = await JoinableGamesList.CreateAsync();

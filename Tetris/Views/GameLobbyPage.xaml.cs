@@ -9,7 +9,7 @@ public partial class GameLobbyPage : ContentPage
         InitializeComponent();
         BindingContext = glpVM;
     }
-    protected async override void OnAppearing() // cannot be sync because of firestore method
+    protected async override void OnAppearing() 
     {
         base.OnAppearing();
         await glpVM.LoadGamesList();

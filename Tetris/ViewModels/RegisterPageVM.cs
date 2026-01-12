@@ -64,7 +64,7 @@ namespace Tetris.ViewModels
         }
         public bool IsPassword1 { get; set; } = true;
         public bool IsPassword2 { get; set; } = true;
-        public RegisterPageVM()// cannot be sync because of firestore method
+        public RegisterPageVM()
         {
             RefreshProperties();
             user = (Application.Current as App)!.user;
@@ -87,7 +87,7 @@ namespace Tetris.ViewModels
         {
             return user.CanRegister(passwordRepeat);
         }
-        private async Task Register()// cannot be sync because of firestore method
+        private async Task Register()
         {
             if (CanRegister())
             {

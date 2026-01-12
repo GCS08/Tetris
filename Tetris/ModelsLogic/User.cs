@@ -6,12 +6,12 @@ namespace Tetris.ModelsLogic
 {
     public class User : UserModel
     {        
-        public override async Task<bool> Login()// cannot be sync because of firestore method
+        public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
-        protected override async Task<bool> OnCompleteLogin(Task task)// cannot be sync because of firestore method
+        protected override async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
@@ -26,7 +26,7 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-        protected override async Task LoginSaveToPreferencesAsync()// cannot be sync because of firestore method
+        protected override async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
             UserID = fbd.GetCurrentUserID();
@@ -41,7 +41,7 @@ namespace Tetris.ModelsLogic
 
             SaveToPreferences();
         }
-        public override async Task<bool> Register()// cannot be sync because of firestore method
+        public override async Task<bool> Register()
         {
             bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
             return success;
@@ -85,7 +85,7 @@ namespace Tetris.ModelsLogic
             fbd.SignOut();
             Preferences.Clear();
         }
-        public override async Task ResetPassword() // cannot be sync because of firestore method
+        public override async Task ResetPassword() 
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }

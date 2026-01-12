@@ -88,7 +88,7 @@
         public const string PlaySoloButtonText = "Play solo";
         public const string CreateNewRoomButtonText = "Create new room";
         public const string AvailableGamesTitle = "Available Games:";
-        public const string JoinGameButtonText = "Join Game!";
+        public const string JoinGameButtonText = "Join!";
         public const string FailedRandomApiUN = "UnknownUser";
         public const string CreateNewGameTitle = "Create new game:";
         public const string CreateGameButtonText = "Create game!";

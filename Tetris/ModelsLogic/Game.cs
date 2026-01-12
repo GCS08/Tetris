@@ -39,7 +39,7 @@ namespace Tetris.ModelsLogic
                 OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
             });
         }
-        public override async Task OnPlayerLeaveWR() // cannot be sync because of firestore method
+        public override async Task OnPlayerLeaveWR() 
         {
             if (CurrentPlayersCount <= 1)
             {
@@ -175,13 +175,22 @@ namespace Tetris.ModelsLogic
             foreach (User user in users) { UsersInGame.Add(user); }
             OnPlayersChange?.Invoke(this, EventArgs.Empty);
         }
-        public override async void NavToWR()// cannot be sync because of firestore method
+        public override async void NavToWR()
         {
             await fbd.OnPlayerJoinWR(GameID,
                 (Application.Current as App)!.user.UserID);
             CurrentPlayersCount++;
             UsersInGame.Add((Application.Current as App)!.user);
-            _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
+
+            if (CurrentPlayersCount < MaxPlayersCount)
+                _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
+            else
+            {
+                if (this == null || GameBoard == null)
+                    return;
+                GameBoard.GameID = GameID;
+                _ = Shell.Current.Navigation.PushAsync(new GamePage(this));
+            }
         }
         public override void PrepareGame()
         {
@@ -206,21 +215,21 @@ namespace Tetris.ModelsLogic
             GameBoard.StartGame();
             OpGameBoard.StartGame();
         }
-        public override async void MoveRightShape() // cannot be sync because of firestore method
+        public override async void MoveRightShape() 
         {
             if (GameBoard == null) return;
             
             GameBoard.MoveRightShape();
             await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.RightKey);
         }
-        public override async void MoveLeftShape() // cannot be sync because of firestore method
+        public override async void MoveLeftShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.MoveLeftShape();
             await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.LeftKey);
         }
-        public override async void MoveDownShape() // cannot be sync because of firestore method
+        public override async void MoveDownShape() 
         {
             if (GameBoard == null) return;
 
@@ -228,7 +237,7 @@ namespace Tetris.ModelsLogic
             if (!isAtBottom)
                 await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
         }
-        public override async void RotateShape() // cannot be sync because of firestore method
+        public override async void RotateShape() 
         {
             if (GameBoard == null) return;
 
@@ -245,7 +254,7 @@ namespace Tetris.ModelsLogic
             if (OpGameBoard == null) return; 
             OpGameBoard.MoveLeftShape();
         }
-        public override async void MoveDownOpShape() // cannot be sync because of firestore method
+        public override async void MoveDownOpShape() 
         {
             if (OpGameBoard == null) return;
             await OpGameBoard.MoveDownShape();

@@ -6,12 +6,6 @@
         public const string ResponseText = "Response:";
         public const string ErrorJson = "error";
         public const string MessageJson = "message";
-        public const string RedirectMainPageRefresh = "///MainPage?refresh=true";
-        public const string RedirectGamePage = "///GamePage";
-        public const string RedirectNewGameConfigPage = "///NewGameConfigPage";
-        public const string RedirectRegisterPageRefresh = "///RegisterPage?refresh=true";
-        public const string RedirectLoginPageRefresh = "///LoginPage?refresh=true";
-        public const string RedirectGameLobbyPage = "///GameLobbyPage";
         public const string MaterialSymbolsFontPath = "MaterialSymbolsOutlined.ttf";
         public const string OpenSansRegular = "OpenSans-Regular.ttf";
         public const string OpenSansSemiBold = "OpenSans-Semibold.ttf";

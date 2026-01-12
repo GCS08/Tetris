@@ -13,7 +13,7 @@ namespace Tetris.ModelsLogic
         public JoinableGamesList()
         {
         }
-        public override async Task<JoinableGamesList> CreateAsync()// cannot be sync because of firestore method
+        public override async Task<JoinableGamesList> CreateAsync()
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
