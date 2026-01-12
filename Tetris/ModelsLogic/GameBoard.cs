@@ -44,7 +44,7 @@ namespace Tetris.ModelsLogic
                     if (CurrentShape.Cells[i, j])
                         Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
-        }
+         }
         private void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
@@ -62,6 +62,7 @@ namespace Tetris.ModelsLogic
                 {
                     Shape shape = new(CurrentShape.InGameId + 1);
                     fbd.AddShape(shape, GameID);
+                    ShapesQueue.Insert(shape);
                     CurrentShape = shape;
                 }
                 else

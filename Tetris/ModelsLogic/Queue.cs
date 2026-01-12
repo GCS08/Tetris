@@ -15,8 +15,7 @@ namespace Tetris.ModelsLogic
         }
         public override void Insert(T value)
         {
-            if (last == null) return;
-            Node<T> oldLast = last;
+            Node<T> oldLast = last!;
             last = new Node<T>(value);
             if (IsEmpty())
                 first = last;
