@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 FallTimer.Elapsed += MoveDownShape;
-                //FallTimer.Start();
+                FallTimer.Start();
             }
         }
         public override void ShowShape()
@@ -216,7 +216,7 @@ namespace Tetris.ModelsLogic
         }
         public override async Task<bool> MoveDownShape() 
         {
-            if (CurrentShape == null || Board == null || User == null || GameID == null)
+            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null)
                 return false;
 
             bool canMoveDown = true;
@@ -272,7 +272,7 @@ namespace Tetris.ModelsLogic
                     isAtBottom = true;
                     ShapeAtBottom();
                     if (!IsOp)
-                        await fbd.PlayerActionWithBottom(User.UserID, GameID, Keys.DownKey);
+                        await fbd.PlayerActionWithBottom(User!.UserID, GameID, Keys.DownKey);
                 }
             }
             return isAtBottom;

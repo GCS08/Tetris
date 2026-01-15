@@ -288,15 +288,17 @@ namespace Tetris.ModelsLogic
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             ObservableCollection<User> newList = [];
             int maxPlayersCount = docSnap.Get<int>(Keys.MaxPlayersCountKey);
-
+            List<string> playerIds = [];
             for (int i = 0; i < maxPlayersCount; i++)
             {
                 string playerIdScheme = Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey;
-                string playerId = docSnap.Get<string>(playerIdScheme)!;
-
-                if (!string.IsNullOrEmpty(playerId))
+                playerIds.Add(docSnap.Get<string>(playerIdScheme)!);
+            }
+            for (int i = 0; i < maxPlayersCount; i++)
+            {
+                if (!string.IsNullOrEmpty(playerIds[i]))
                 {
-                    User tempUser = await UserIDToObject(playerId);
+                    User tempUser = await UserIDToObject(playerIds[i]);
                     newList.Add(tempUser);
                 }
             }

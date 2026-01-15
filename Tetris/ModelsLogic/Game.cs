@@ -126,6 +126,11 @@ namespace Tetris.ModelsLogic
 
                 fbd.ResetMoves(GameID, desiredIndex);
 
+                //string[] movesArr = new string[playerMoveMap.Count];
+                //for (int i = 0; i < movesArr.Length; i++)
+                //    movesArr[i] = playerMoveMap[i];
+                //ApplyOpMove(movesArr);
+
                 for (int i = 0; i < playerMoveMap.Count; i++)
                     movesQueue.Insert(playerMoveMap[i]);
 
@@ -134,6 +139,29 @@ namespace Tetris.ModelsLogic
                 OpFallTimer.Start();
             }
         }
+        //private void ApplyOpMove(string[] movesArr)
+        //{
+        //    if (GameBoard == null || GameBoard.User == null) return;
+        //    for (int i = 0; i < movesArr.Length; i++)
+        //    {
+        //        string move = movesArr[i];
+        //        switch (move)
+        //        {
+        //            case Keys.RightKey:
+        //                MoveRightOpShape();
+        //                break;
+        //            case Keys.LeftKey:
+        //                MoveLeftOpShape();
+        //                break;
+        //            case Keys.DownKey:
+        //                MoveDownOpShape();
+        //                break;
+        //            case Keys.RotateKey:
+        //                RotateOpShape();
+        //                break;
+        //        }
+        //    }
+        //}
         protected override void ApplyOpMove(object? sender, ElapsedEventArgs e)
         {
             if (GameBoard == null || GameBoard.User == null) return;

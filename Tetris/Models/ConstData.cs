@@ -178,9 +178,13 @@
             public static readonly List<bool[,]> XShape =
             [
                 new bool[,] {
-                    { false, true, false},
+                    { true, true },
+                    { true, true },
+                    { true, true }
+                },
+                new bool[,] {
                     { true, true, true },
-                    { false, true, false }
+                    { true, true, true }
                 }
             ];
         }
