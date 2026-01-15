@@ -136,7 +136,8 @@ namespace Tetris.ModelsLogic
 
                 System.Diagnostics.Debug.WriteLine(movesQueue.PrintQueue(out int counter) + "\nNodes in queue: " + counter);
 
-                OpFallTimer.Start();
+                if (!OpFallTimer.Enabled)
+                    OpFallTimer.Start();
             }
         }
         //private void ApplyOpMove(string[] movesArr)
