@@ -335,6 +335,7 @@ namespace Tetris.ModelsLogic
         }
         public override void AddShape(Shape currentShape, string gameId)
         {
+            System.Diagnostics.Debug.WriteLine("FbData.AddShape start");
             if (currentShape.Color == null) return;
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
             docRef.UpdateAsync(Keys.CurrentShapeMapKey, new Dictionary<string, object>
@@ -344,6 +345,7 @@ namespace Tetris.ModelsLogic
                 { Keys.CurrentShapeColorKey, Converters.
                 StringAndColorConverter.ColorToColorName(currentShape.Color) }
             });
+            System.Diagnostics.Debug.WriteLine("FbData.AddShape end");
         }
         public override Shape CreateShape(IDocumentSnapshot snapshot)
         {
@@ -356,28 +358,45 @@ namespace Tetris.ModelsLogic
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
+            int desiredIndex;
             int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
+            List<string> ids = [];
             bool found = false;
             Dictionary<string, object> playerMoves = [];
-            int desiredIndex;
-            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
-                if (currentSnapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
+
+            for (int i = 0; i < maxPlayers; i++)// 1
+                ids.Add(currentSnapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
+            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)// 2
+                if (ids[desiredIndex] == userID)
                 {
                     playerMoves = currentSnapshot.Get<Dictionary<string, object>>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
                     found = true;
                 }
-            _ = dr.UpdateAsync(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + playerMoves.Count, action);
+            if (false && currentSnapshot.Get<bool>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
+            {
+                _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
+                    (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + 0, action); ;
+            }
+            else
+            {
+                _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
+                    (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + playerMoves.Count, action); ;
+            }
         }
         public override async Task PlayerActionWithBottom(string userID, string gameID, string action)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-
             IDocumentSnapshot snapshot = await dr.GetAsync();
             
             int maxPlayers = snapshot.Get<int>(Keys.MaxPlayersCountKey), i;
             bool found = false;
+            List<string> ids = [];
+
+            for (int j = 0; j < maxPlayers; j++)// 1
+                ids.Add(snapshot.Get<string>(Keys.PlayerDetailsKey + j + TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
+
             for (i = 0; i < maxPlayers && !found; i++)
-                if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
+                if (ids[i] == userID)
                     found = true;        
 
             i--;
@@ -403,7 +422,7 @@ namespace Tetris.ModelsLogic
                 }
             };
 
-            _ = dr.UpdateAsync(updates);
+            _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(updates);
         }
         public override IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
