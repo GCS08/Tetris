@@ -362,26 +362,16 @@ namespace Tetris.ModelsLogic
             int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
             List<string> ids = [];
             bool found = false;
-            Dictionary<string, object> playerMoves = [];
 
             for (int i = 0; i < maxPlayers; i++)// 1
                 ids.Add(currentSnapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
             for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)// 2
                 if (ids[desiredIndex] == userID)
-                {
-                    playerMoves = currentSnapshot.Get<Dictionary<string, object>>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
                     found = true;
-                }
-            if (false && currentSnapshot.Get<bool>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
-            {
-                _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
-                    (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + 0, action); ;
-            }
-            else
-            {
-                _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
-                    (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign + playerMoves.Count, action); ;
-            }
+
+            _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
+                (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign
+                + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), action);
         }
         public override async Task PlayerActionWithBottom(string userID, string gameID, string action)
         {
@@ -401,18 +391,12 @@ namespace Tetris.ModelsLogic
 
             i--;
 
-            Dictionary<string, object> playerMoves =
-                snapshot.Get<Dictionary<string, object>>(
-                    Keys.PlayerDetailsKey + i +
-                    TechnicalConsts.DotSign + Keys.PlayerMovesKey
-                ) ?? [];
-
             Dictionary<string, object> updates = new()
             {
                 {
                     Keys.PlayerDetailsKey + i +
                     TechnicalConsts.DotSign + Keys.PlayerMovesKey +
-                    TechnicalConsts.DotSign + playerMoves.Count,
+                    TechnicalConsts.DotSign + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                     action
                 },
                 {

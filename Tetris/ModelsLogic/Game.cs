@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Plugin.CloudFirestore;
+using System;
 using System.Collections.ObjectModel;
 using System.Timers;
 using Tetris.Models;
@@ -119,20 +120,24 @@ namespace Tetris.ModelsLogic
             else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
                     + Keys.PlayerIdKey) != (Application.Current as App)!.user.UserID)// Op player has moved
             {
-                Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>(
-                    Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey)!;
+                Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
+                    (Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
+
+                List<string> orderedMoves = [.. playerMoveMap
+                .Select(kvp => new
+                {
+                    Time = long.Parse(kvp.Key),
+                    Action = kvp.Value
+                })
+                .OrderBy(x => x.Time)
+                .Select(x => x.Action)];
 
                 currentMovingOp = snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
 
                 fbd.ResetMoves(GameID, desiredIndex);
 
-                //string[] movesArr = new string[playerMoveMap.Count];
-                //for (int i = 0; i < movesArr.Length; i++)
-                //    movesArr[i] = playerMoveMap[i];
-                //ApplyOpMove(movesArr);
-
-                for (int i = 0; i < playerMoveMap.Count; i++)
-                    movesQueue.Insert(playerMoveMap[i]);
+                foreach (var move in orderedMoves)
+                    movesQueue.Insert(move);
 
                 if (!OpFallTimer.Enabled)
                     OpFallTimer.Start();

@@ -124,13 +124,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveRightShape()
         {
-            if (IsLost || CurrentShape == null || Board == null)
-            {
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRightShape.IsLost: " + IsLost);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRightShape.CurrentShape: " + CurrentShape);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRightShape.Board: " + Board);
-                return;
-            }
+            if (IsLost || CurrentShape == null || Board == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -175,13 +169,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveLeftShape()
         {
-            if (IsLost || CurrentShape == null || Board == null)
-            {
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveLeftShape.IsLost: " + IsLost);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveLeftShape.CurrentShape: " + CurrentShape);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveLeftShape.Board: " + Board);
-                return;
-            }
+            if (IsLost || CurrentShape == null || Board == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -226,15 +214,7 @@ namespace Tetris.ModelsLogic
         }
         public override async Task<bool> MoveDownShape() 
         {
-            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null)
-            {
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveDownShape.CurrentShape: " + CurrentShape);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveDownShape.Board: " + Board);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveDownShape.IsOp: " + IsOp);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveDownShape.User: " + User);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveDownShape.GameID: " + GameID);
-                return false;
-            }
+            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null) return false;
 
             bool canMoveDown = true;
 
@@ -304,14 +284,6 @@ namespace Tetris.ModelsLogic
         public override void RotateShape()
         {
             if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost) return;
-
-            if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost)
-            {
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRotateShape.CurrentShape: " + CurrentShape);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRotateShape.CurrentShape.RotationStates: " + CurrentShape?.RotationStates ?? string.Empty);
-                System.Diagnostics.Debug.WriteLine("GameBoard.MoveRotateShape.IsLost: " + IsLost);
-                return;
-            }
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];
