@@ -58,5 +58,38 @@ namespace Tetris.ModelsLogic
                 Insert(temp.Remove());
             return output;
         }
+        public override async Task SortByUnixTimestampKeyAsync()
+        {
+            // This method only makes sense for this specific T
+            if (typeof(T) != typeof(KeyValuePair<string, string>) || IsEmpty())
+                return;
+
+            await Task.Run(() =>
+            {
+                List<KeyValuePair<string, string>> buffer = [];
+
+                // Drain queue
+                while (!IsEmpty())
+                {
+                    KeyValuePair<string, string> item = (KeyValuePair<string, string>)(object)Remove()!;
+                    buffer.Add(item);
+                }
+
+                // Sort by Unix timestamp (ascending)
+                buffer.Sort((a, b) =>
+                {
+                    long ta = long.Parse(a.Key);
+                    long tb = long.Parse(b.Key);
+                    return ta.CompareTo(tb);
+                });
+
+                // Restore sorted queue
+                foreach (KeyValuePair<string, string> item in buffer)
+                {
+                    Insert((T)(object)item);
+                }
+            });
+        }
+
     }
 }

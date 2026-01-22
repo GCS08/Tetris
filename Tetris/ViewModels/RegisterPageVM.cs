@@ -67,7 +67,7 @@ namespace Tetris.ViewModels
         public RegisterPageVM()
         {
             RefreshProperties();
-            user = (Application.Current as App)!.user;
+            user = (Application.Current as App)!.AppUser;
             passwordRepeat = string.Empty;
             RegisterCommand = new Command(async () => await Register());
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);

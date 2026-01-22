@@ -30,10 +30,11 @@ namespace Tetris.Models
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;
-        protected string currentMovingOp = string.Empty;
+        protected string currentMovingOpId = string.Empty;
         protected FbData fbd = new();
         protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);
-        protected ModelsLogic.Queue<string> movesQueue = new();
+        protected ModelsLogic.Queue<KeyValuePair<string, string>> movesQueue = new();
+        protected bool IsMovesQueueSorting { get; set; } = false;
         protected IListenerRegistration? ilr;
         protected StartGameTimerSettings startGameTimerSettings = 
             new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);

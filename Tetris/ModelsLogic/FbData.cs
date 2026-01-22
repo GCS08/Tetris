@@ -354,7 +354,7 @@ namespace Tetris.ModelsLogic
                 snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
         }
-        public override async Task PlayerAction(string gameID, string userID, string action)
+        public override async Task FinishRound(string userID, string gameID, Queue<string> movesQueue)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
@@ -368,41 +368,26 @@ namespace Tetris.ModelsLogic
             for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)// 2
                 if (ids[desiredIndex] == userID)
                     found = true;
+            desiredIndex--;
 
-            _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(Keys.PlayerDetailsKey +
-                (desiredIndex - 1) + TechnicalConsts.DotSign + Keys.PlayerMovesKey + TechnicalConsts.DotSign
-                + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), action);
-        }
-        public override async Task PlayerActionWithBottom(string userID, string gameID, string action)
-        {
-            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot snapshot = await dr.GetAsync();
-            
-            int maxPlayers = snapshot.Get<int>(Keys.MaxPlayersCountKey), i;
-            bool found = false;
-            List<string> ids = [];
-
-            for (int j = 0; j < maxPlayers; j++)// 1
-                ids.Add(snapshot.Get<string>(Keys.PlayerDetailsKey + j + TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
-
-            for (i = 0; i < maxPlayers && !found; i++)
-                if (ids[i] == userID)
-                    found = true;        
-
-            i--;
+            Queue<string> tempMovesQueue = new();
+            Dictionary<string, string> moves = [];
+            while (!movesQueue.IsEmpty())
+            {
+                string move = movesQueue.Remove();
+                tempMovesQueue.Insert(move);
+                moves.Add(DateTimeOffset.UtcNow.
+                    ToUnixTimeMilliseconds().ToString(), move);
+                Thread.Sleep(1);
+            }
 
             Dictionary<string, object> updates = new()
             {
                 {
-                    Keys.PlayerDetailsKey + i +
-                    TechnicalConsts.DotSign + Keys.PlayerMovesKey +
-                    TechnicalConsts.DotSign + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    action
+                    Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves
                 },
                 {
-                    Keys.PlayerDetailsKey + i +
-                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey,
-                    true
+                    Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, true
                 }
             };
 
@@ -426,26 +411,11 @@ namespace Tetris.ModelsLogic
                     changed = true;
                 }
         }
-        public override void ResetMoves(string gameID, int desiredIndex)
+        public override void ResetIsShapeAtBottom(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            desiredIndex--;
-
-            Dictionary<string, object> updates = new()
-            {
-                {
-                    Keys.PlayerDetailsKey + desiredIndex +
-                    TechnicalConsts.DotSign + Keys.PlayerMovesKey,
-                    new Dictionary<string, object>()
-                },
-                {
-                    Keys.PlayerDetailsKey + desiredIndex +
-                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey,
-                    false
-                }
-            };
-
-            dr.UpdateAsync(updates);
+            dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
+                + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
         }
     }
 }

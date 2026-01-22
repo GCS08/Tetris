@@ -16,7 +16,7 @@ namespace Tetris.ViewModels
         private readonly User user;
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
-            user = (Application.Current as App)!.user;
+            user = (Application.Current as App)!.AppUser;
             currentNewGame = new(Keys.RedKey, user.UserName, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
@@ -64,7 +64,7 @@ namespace Tetris.ViewModels
         {
             UpdatePropertiesByBusy(true);
             gamesList.AddGameToDB(currentNewGame,
-                (Application.Current as App)!.user);
+                (Application.Current as App)!.AppUser);
             UpdatePropertiesByBusy(false);
             Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));

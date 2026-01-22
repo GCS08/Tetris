@@ -35,7 +35,7 @@ namespace Tetris.ViewModels
         public LoginPageVM()
         {
             RefreshProperties();
-            user = (Application.Current as App)!.user;
+            user = (Application.Current as App)!.AppUser;
             LoginCommand = new Command(async () => await Login());
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);

@@ -1,5 +1,4 @@
-﻿using Plugin.CloudFirestore;
-using System.Timers;
+﻿using System.Timers;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -36,15 +35,6 @@ namespace Tetris.ModelsLogic
                 FallTimer.Start();
             }
         }
-        public override void ShowShape()
-        {
-            if (CurrentShape == null || Board == null) return;
-            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
-                    if (CurrentShape.Cells[i, j])
-                        Board[i + CurrentShape.TopLeftY, j +
-                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
-         }
         private void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
@@ -112,7 +102,16 @@ namespace Tetris.ModelsLogic
 
             return linesCleared;
         }
-        private void EraseShape()
+        protected override void ShowShape()
+        {
+            if (CurrentShape == null || Board == null) return;
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
+                    if (CurrentShape.Cells[i, j])
+                        Board[i + CurrentShape.TopLeftY, j +
+                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
+        }
+        protected override void EraseShape()
         {
             if (CurrentShape == null || Board == null) return;
 
@@ -124,7 +123,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveRightShape()
         {
-            if (IsLost || CurrentShape == null || Board == null) return;
+            if (IsLost || CurrentShape == null || Board == null || MovesQueue == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -165,11 +164,12 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftX++;
                 ShowShape();
+                MovesQueue.Insert(Keys.RightKey);
             }
         }
         public override void MoveLeftShape()
         {
-            if (IsLost || CurrentShape == null || Board == null) return;
+            if (IsLost || CurrentShape == null || Board == null || MovesQueue == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -210,11 +210,12 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftX--;
                 ShowShape();
+                MovesQueue.Insert(Keys.LeftKey);
             }
         }
-        public override async Task<bool> MoveDownShape() 
+        public override async Task MoveDownShape() 
         {
-            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null) return false;
+            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null || MovesQueue == null) return;
 
             bool canMoveDown = true;
 
@@ -254,9 +255,9 @@ namespace Tetris.ModelsLogic
                     canMoveDown = false;
             }
             
-            bool isAtBottom = false;
             if (!IsLost)
             {
+                MovesQueue.Insert(Keys.DownKey);
                 // Move or lock
                 if (canMoveDown)
                 {
@@ -266,24 +267,22 @@ namespace Tetris.ModelsLogic
                 }
                 else
                 {
-                    isAtBottom = true;
                     ShapeAtBottom();
                     if (!IsOp)
-                        await fbd.PlayerActionWithBottom(User!.UserID, GameID, Keys.DownKey);
+                        await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
                 }
             }
-            return isAtBottom;
         }
         private async void MoveDownShape(object? sender, ElapsedEventArgs e) 
         {
             if (GameID == null) return;
-            bool isAtBottom = await MoveDownShape();
-            if (!isAtBottom)
-                await fbd.PlayerAction(GameID, (Application.Current as App)!.user.UserID, Keys.DownKey);
+            await MoveDownShape();
+            //if (!isAtBottom)
+                //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.DownKey);
         }
         public override void RotateShape()
         {
-            if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost) return;
+            if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost || MovesQueue == null) return;
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];
@@ -298,6 +297,7 @@ namespace Tetris.ModelsLogic
                 CurrentShape.RotationIndex = nextIndex;
             }
 
+            MovesQueue.Insert(Keys.RotateKey);
             ShowShape();
         }
         private bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)

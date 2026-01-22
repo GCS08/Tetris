@@ -43,7 +43,7 @@ namespace Tetris.ViewModels
 
         public MainPageVM()
         {
-            user = (Application.Current as App)!.user;
+            user = (Application.Current as App)!.AppUser;
             //SignOut();
             RefreshProperties();
         }
@@ -55,13 +55,13 @@ namespace Tetris.ViewModels
         }
         private void RefreshProperties()
         {
-            if ((Application.Current as App)!.user.UserName != string.Empty)
+            if ((Application.Current as App)!.AppUser.UserName != string.Empty)
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign + 
-                    (Application.Current as App)!.user.UserName + TechnicalConsts.ExclamationSign;
+                    (Application.Current as App)!.AppUser.UserName + TechnicalConsts.ExclamationSign;
             else
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign +
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
-            IsLogged = (Application.Current as App)!.user.Email != string.Empty;
+            IsLogged = (Application.Current as App)!.AppUser.Email != string.Empty;
         }
         private void NavToLogin()
         {
@@ -74,7 +74,7 @@ namespace Tetris.ViewModels
         private void SignOut()
         {
             user.SignOut();
-            (Application.Current as App)!.user = new();
+            (Application.Current as App)!.AppUser = new();
             Preferences.Clear();
             RefreshProperties();
         }

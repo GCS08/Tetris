@@ -34,12 +34,11 @@ namespace Tetris.Models
         public abstract void SetGameIsFull(string gameID);
         public abstract void AddShape(Shape currentShape, string gameId);
         public abstract Shape CreateShape(IDocumentSnapshot snapshot);
-        public abstract Task PlayerAction(string gameID, string userID, string action);
-        public abstract Task PlayerActionWithBottom(string userID, string gameID, string action);
+        public abstract Task FinishRound(string userID, string gameID, ModelsLogic.Queue<string> movesQueue);
         public abstract IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
-        public abstract void ResetMoves(string gameID, int desiredIndex);
+        public abstract void ResetIsShapeAtBottom(string gameID, int desiredIndex);
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

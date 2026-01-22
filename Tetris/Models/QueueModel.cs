@@ -12,5 +12,6 @@ namespace Tetris.Models
         public abstract T Remove();
         public abstract T Head();
         public abstract string PrintQueue(out int counter);
+        public abstract Task SortByUnixTimestampKeyAsync();
     }
 }
