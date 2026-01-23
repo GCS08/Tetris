@@ -28,7 +28,7 @@
             <VerticalStackLayout>
                 <Button
                     Margin="0,100,0,20"
-                    Command="{Binding NavToGameCommand}"
+                    Command="{Binding SendNotificationCommand}"
                     FontSize="30"
                     HorizontalOptions="Center"
                     Text="{x:Static m:Strings.PlaySoloButtonText}" />

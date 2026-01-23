@@ -11,11 +11,30 @@ namespace Tetris.Platforms.Android
     public class MainActivity : MauiAppCompatActivity
     {
         StartGameTimer? startGameTimer;
-        protected override void OnCreate(Bundle? savedInstanceState)
+        protected override async void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             RegisterTimerMessages();
             StartDeleteFbDocsService();
+            PermissionStatus status = await Permissions.RequestAsync<NotificationPermission>().ContinueWith(OnComplete);
+        }
+        protected override void OnNewIntent(Intent? intent)
+        {
+            base.OnNewIntent(intent);
+            if (intent != null)
+                CreateNotificationFromIntent(intent);
+        }
+        static void CreateNotificationFromIntent(Intent intent)
+        {
+            if (intent?.Extras != null)
+            {
+                string title = intent.GetStringExtra(NotificationManagerService.TitleKey) ?? string.Empty;
+                string message = intent.GetStringExtra(NotificationManagerService.MessageKey) ?? string.Empty;
+                INotificationManagerService? service = null;
+                if (IPlatformApplication.Current != null)
+                    service = IPlatformApplication.Current.Services.GetService<INotificationManagerService>();
+                service?.ReceiveNotification(title, message);
+            }
         }
         private void RegisterTimerMessages()
         {
@@ -45,6 +64,10 @@ namespace Tetris.Platforms.Android
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));
             StartService(intent);
+        }
+        private PermissionStatus OnComplete(Task<PermissionStatus> task)
+        {
+            return task.Result;
         }
     }
 }

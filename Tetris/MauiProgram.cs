@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Tetris.Models;
+using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace Tetris
 {
@@ -23,6 +24,9 @@ namespace Tetris
     		builder.Logging.AddDebug();
 #endif
 
+#if ANDROID
+            builder.Services.AddSingleton<INotificationManagerService, Platforms.Android.NotificationManagerService>();
+#endif
             return builder.Build();
         }
     }

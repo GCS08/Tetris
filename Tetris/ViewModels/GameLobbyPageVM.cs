@@ -8,11 +8,22 @@ namespace Tetris.ViewModels
 {
     public partial class GameLobbyPageVM : ObservableObject
     {
+        private readonly Notifications notifications;
         private JoinableGamesList? JoinableGamesList { get; set; } = new();
         public ObservableCollection<Game>? Games { get; private set; }
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavHome);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
+        public ICommand SendNotificationCommand { get; private set; }
+        public GameLobbyPageVM()
+        {
+            notifications = new Notifications();
+            SendNotificationCommand = new Command(SendNotification);
+        }
+        private void SendNotification(object obj)
+        {
+            notifications.PushNotification("Notification", "My notification message... ");
+        }
         private void OnGamesChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Games));

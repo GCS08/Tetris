@@ -69,6 +69,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Resources\drawable\appiconsmall.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <GoogleServicesJson Include="Resources\Raw\google-services.json" />
 	</ItemGroup>
 
