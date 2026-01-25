@@ -3,12 +3,14 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Platforms.Android
 {
     public class DeleteFbDocsService : Service
     {
         private bool isRunning = true;
+        private FbData fbd = new();
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
@@ -22,16 +24,18 @@ namespace Tetris.Platforms.Android
         {
             while (isRunning)
             {
-                // Here will be the code to delete old documents from Firebase Firestore
+                fbd.DeleteFbDocs();
                 Thread.Sleep(ConstData.DeleteFbDocsIntervalS * 1000); // 1 hour
             }
             StopSelf();
         }
+
         public override void OnDestroy()
         {
             isRunning = false;
             base.OnDestroy();
         }
+        
         public override IBinder? OnBind(Intent? intent)
         {
             // We don't use it

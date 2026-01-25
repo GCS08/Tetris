@@ -3,6 +3,7 @@ using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -185,6 +186,7 @@ namespace Tetris.ModelsLogic
                 MaxPlayersCount = maxPlayersCount,
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
+                TimeCreated = DateTime.UtcNow.ToString()
             });
 
             docRef.UpdateAsync(new Dictionary<string, object>
@@ -416,6 +418,26 @@ namespace Tetris.ModelsLogic
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
                 + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
+        }
+        public override async void DeleteFbDocs()
+        {
+            ICollectionReference collectionRef =
+                fs.Collection(Keys.GamesCollectionName);
+
+            IQuerySnapshot snapshot = await collectionRef.GetAsync();
+
+            foreach (IDocumentSnapshot docSnap in snapshot.Documents)
+            {
+                DateTime timeCreated =
+                    DateTime.Parse(docSnap.Get<string>(Keys.TimeCreatedKey)!);
+
+                TimeSpan timeDiff = DateTime.UtcNow - timeCreated;
+
+                if (timeDiff.TotalSeconds >= ConstData.TimePassedToDeleteFbDocS)
+                {
+                    docSnap.Reference.DeleteAsync();
+                }
+            }
         }
     }
 }

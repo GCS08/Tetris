@@ -55,13 +55,13 @@ namespace Tetris.ViewModels
         }
         private void RefreshProperties()
         {
-            if ((Application.Current as App)!.AppUser.UserName != string.Empty)
+            if (user.UserName != string.Empty)
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign + 
-                    (Application.Current as App)!.AppUser.UserName + TechnicalConsts.ExclamationSign;
+                    user.UserName + TechnicalConsts.ExclamationSign;
             else
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign +
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
-            IsLogged = (Application.Current as App)!.AppUser.Email != string.Empty;
+            IsLogged = user.UserID != string.Empty;
         }
         private void NavToLogin()
         {

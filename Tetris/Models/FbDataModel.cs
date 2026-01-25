@@ -39,6 +39,7 @@ namespace Tetris.Models
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
         public abstract void ResetIsShapeAtBottom(string gameID, int desiredIndex);
+        public abstract void DeleteFbDocs();
         public FbDataModel()
         {
             FirebaseAuthConfig fac = new()

@@ -18,9 +18,10 @@
         public const int ShapeFallIntervalS = 1;
         public const double OpShapeFallIntervalS = 0.3;
         public const int DeleteFbDocsIntervalS = 3600;
-        public const long TotalGameTimeS = 6;
-        public const long GameTimeIntervalS = 1;
+        public const int TotalGameTimeS = 6;
+        public const int GameTimeIntervalS = 1;
         public const long FinishedSignal = 0;
+        public const int TimePassedToDeleteFbDocS = 60 * 60 * 5;
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,
