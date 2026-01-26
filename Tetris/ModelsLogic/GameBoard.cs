@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using Tetris.Models;
+using Tetris.Platforms.Android;
 
 namespace Tetris.ModelsLogic
 {
@@ -11,7 +12,7 @@ namespace Tetris.ModelsLogic
             this.CurrentShape = currentShape;
             this.IsOp = IsOp;
             this.GameID = gameId;
-            
+
             double cubeWidth = IsOp ? ConstData.OpGameGridColumnWidth : ConstData.GameGridColumnWidth;
             double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
 
@@ -38,6 +39,9 @@ namespace Tetris.ModelsLogic
         private void ShapeAtBottom()
         {
             int linesCleared = CheckForLines();
+            if (linesCleared > 0 && !IsOp)
+                SoundManager.Instance.PlayLineCleared();
+
             if (CheckForLose())
             {
                 IsLost = true;

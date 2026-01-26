@@ -1,5 +1,4 @@
-﻿using Plugin.CloudFirestore;
-using Tetris.ModelsLogic;
+﻿using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {

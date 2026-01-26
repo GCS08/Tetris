@@ -435,7 +435,7 @@ namespace Tetris.ModelsLogic
 
                 if (timeDiff.TotalSeconds >= ConstData.TimePassedToDeleteFbDocS)
                 {
-                    docSnap.Reference.DeleteAsync();
+                    _ = docSnap.Reference.DeleteAsync();
                 }
             }
         }

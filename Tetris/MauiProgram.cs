@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Tetris.Models;
-using static Microsoft.Maui.ApplicationModel.Permissions;
 
 namespace Tetris
 {
@@ -21,7 +20,7 @@ namespace Tetris
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
 #if ANDROID

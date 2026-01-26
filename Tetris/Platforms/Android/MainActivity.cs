@@ -16,6 +16,7 @@ namespace Tetris.Platforms.Android
             base.OnCreate(savedInstanceState);
             RegisterTimerMessages();
             StartDeleteFbDocsService();
+            _ = SoundManager.Instance.InitializeAsync();
             PermissionStatus status = await Permissions.RequestAsync<NotificationPermission>().ContinueWith(OnComplete);
         }
         protected override void OnNewIntent(Intent? intent)
