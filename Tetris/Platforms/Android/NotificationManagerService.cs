@@ -10,8 +10,6 @@ namespace Tetris.Platforms.Android
 {
     class NotificationManagerService : INotificationManagerService
     {
-        public const string TitleKey = "title";
-        public const string MessageKey = "message";
         const string channelId = "default", channelName = "Default",
             channelDescription = "The default channel for notifications.";
         bool channelInitialized = false;
@@ -43,8 +41,8 @@ namespace Tetris.Platforms.Android
             if (notifyTime != null)
             {
                 Intent intent = new(Platform.AppContext, typeof(AlarmHandler));
-                intent.PutExtra(TitleKey, title);
-                intent.PutExtra(MessageKey, message);
+                intent.PutExtra(Keys.TitleKey, title);
+                intent.PutExtra(Keys.MessageKey, message);
                 intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
 
                 var pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
@@ -65,8 +63,8 @@ namespace Tetris.Platforms.Android
         public void Show(string title, string message)
         {
             Intent intent = new(Platform.AppContext, typeof(MainActivity));
-            intent.PutExtra(TitleKey, title);
-            intent.PutExtra(MessageKey, message);
+            intent.PutExtra(Keys.TitleKey, title);
+            intent.PutExtra(Keys.MessageKey, message);
             intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
             PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
                 ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable

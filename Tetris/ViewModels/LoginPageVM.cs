@@ -13,7 +13,7 @@ namespace Tetris.ViewModels
         public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
         public bool LoginEnable { get; set; } = true;
-        private User user;
+        private readonly User user;
         public bool IsBusy { get; set; } = false;
         public string Email
         {

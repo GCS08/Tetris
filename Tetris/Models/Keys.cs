@@ -66,5 +66,7 @@
         public const string MoveKey = "Move";
         public const string PublicKey = "Public";
         public const string PrivateKey = "Private";
+        public const string TitleKey = "title";
+        public const string MessageKey = "message";
     }
 }

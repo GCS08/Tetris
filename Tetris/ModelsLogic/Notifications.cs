@@ -6,18 +6,26 @@ namespace Tetris.ModelsLogic
     {
         public Notifications()
         {
+            Permissions.CheckStatusAsync<Permissions.PostNotifications>().ContinueWith(SetPermissionStatus);
+            // Get the notification manager service from the MAUI context.
+            // Obviously the app doesn't send notification, the maui does on command from the app, called from notification manager service.
             notificationManager = Application.Current?.MainPage?.Handler?.MauiContext?.Services.GetService<INotificationManagerService>();
             if (notificationManager != null)
                 notificationManager.NotificationReceived += OnNotificationReceived;
         }
-        private void OnNotificationReceived(object? sender, EventArgs e)
+        protected override void SetPermissionStatus(Task<PermissionStatus> task)
         {
-            NotificationArgs = (NotificationEventArgs)e;
-            NotificationReceived?.Invoke(this, NotificationArgs);
+            if (task.IsCompletedSuccessfully)
+                PermissionStatus = task.Result;
         }
-        public bool PushNotification(string title, string message, DateTime? notifyTime = null)
+        protected override void OnNotificationReceived(object? sender, EventArgs e)
+        {
+            NotificationReceived?.Invoke(this, (NotificationEventArgs)e);
+        }
+        public override bool PushNotification(string title, string message, DateTime? notifyTime = null)
         {
             bool sent = false;
+            Permissions.CheckStatusAsync<Permissions.PostNotifications>().ContinueWith(SetPermissionStatus);
             if (notificationManager != null && PermissionStatus == PermissionStatus.Granted)
             {
                 notificationManager.SendNotification(title, message, notifyTime);

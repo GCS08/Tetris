@@ -10,7 +10,7 @@ namespace Tetris.Platforms.Android
     public class DeleteFbDocsService : Service
     {
         private bool isRunning = true;
-        private FbData fbd = new();
+        private readonly FbData fbd = new();
         [return: GeneratedEnum]
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {

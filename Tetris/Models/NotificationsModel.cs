@@ -1,11 +1,13 @@
 ﻿namespace Tetris.Models
 {
-    public class NotificationsModel
+    public abstract class NotificationsModel
     {
         protected INotificationManagerService? notificationManager;
-        public NotificationEventArgs? NotificationArgs { get; set; }
         public EventHandler<NotificationEventArgs>? NotificationReceived;
-        public static PermissionStatus PermissionStatus => Permissions
-            .CheckStatusAsync<Permissions.PostNotifications>().Result;
+        protected PermissionStatus PermissionStatus { get; set; }
+            = Permissions.CheckStatusAsync<Permissions.PostNotifications>().Result;
+        protected abstract void SetPermissionStatus(Task<PermissionStatus> task);
+        protected abstract void OnNotificationReceived(object? sender, EventArgs e);
+        public abstract bool PushNotification(string title, string message, DateTime? notifyTime = null);
     }
 }

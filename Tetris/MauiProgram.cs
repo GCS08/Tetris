@@ -24,7 +24,7 @@ namespace Tetris
 #endif
 
 #if ANDROID
-            builder.Services.AddSingleton<INotificationManagerService, Platforms.Android.NotificationManagerService>();
+            builder.Services.AddSingleton<INotificationManagerService, Tetris.Platforms.Android.NotificationManagerService>();
 #endif
             return builder.Build();
         }

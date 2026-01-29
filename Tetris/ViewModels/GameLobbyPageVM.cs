@@ -18,7 +18,17 @@ namespace Tetris.ViewModels
         public GameLobbyPageVM()
         {
             notifications = new Notifications();
+            notifications.NotificationReceived += OnNotificationReceived;
             SendNotificationCommand = new Command(SendNotification);
+        }
+        private void OnNotificationReceived(object? sender, NotificationEventArgs e)
+        {
+            //Will run when a user taps on a notification
+
+            //NotificationTitle = e.Title;
+            //NotificationMessage = e.Message;
+            //OnPropertyChanged(nameof(NotificationTitle));
+            //OnPropertyChanged(nameof(NotificationMessage));
         }
         private void SendNotification(object obj)
         {
