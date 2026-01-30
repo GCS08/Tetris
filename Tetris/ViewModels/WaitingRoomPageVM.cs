@@ -14,20 +14,19 @@ namespace Tetris.ViewModels
         public ObservableCollection<User> PlayersInGame => CurrentGame.UsersInGame;
         public WaitingRoomPageVM(Game? game)
         {
-            if (game == null || game.GameBoard == null)
+            if (game == null)
             {
                 CurrentGame = null!; // intentional
                 return;
             }
             CurrentGame = game;
-            CurrentGame.GameBoard.GameID = CurrentGame.GameID;
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
         }
 
         private void OnGameFull(object? sender, EventArgs e)
         {
-             Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
+            Shell.Current.Navigation.PushAsync(new GamePage(CurrentGame));
         }
 
         private void OnPlayersChange(object? sender, EventArgs e)

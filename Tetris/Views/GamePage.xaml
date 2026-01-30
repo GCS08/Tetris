@@ -82,21 +82,19 @@
                     Grid.ColumnSpan="2"
                     BackgroundColor="Transparent"
                     BorderColor="Transparent">
-                    <Grid HorizontalOptions="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                        <Label
+                            Margin="10"
+                            HorizontalOptions="Center"
+                            Text="{Binding OpName}"
+                            TextColor="White" />
                         <Grid
                             x:Name="OpGameBoardGrid"
-                            Grid.Row="0"
                             BackgroundColor="#152b50"
                             FlowDirection="LeftToRight"
                             HorizontalOptions="Center"
                             VerticalOptions="Start" />
-                    </Grid>
+                    </VerticalStackLayout>
                 </Frame>
 
                 <!--  Game Board Grid  -->
@@ -106,57 +104,67 @@
                     Grid.ColumnSpan="2"
                     BackgroundColor="Transparent"
                     BorderColor="Transparent">
-                    <Grid HorizontalOptions="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid
-                            x:Name="GameBoardGrid"
-                            Grid.Row="0"
-                            BackgroundColor="#152b50"
-                            FlowDirection="LeftToRight"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Start" />
-                        <Grid
-                            Grid.Row="1"
-                            FlowDirection="LeftToRight"
-                            HeightRequest="100">
+                    <VerticalStackLayout>
+                        <Grid HorizontalOptions="Center">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
-                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Button
-                                Grid.Column="2"
+                            <Label
+                                Grid.Row="0"
                                 Margin="5"
-                                Command="{Binding MoveRightShapeCommand}"
-                                Text="right" />
-                            <Button
-                                Grid.Column="1"
-                                Margin="5"
-                                Command="{Binding RotateShapeCommand}"
-                                Text="rotate" />
-                            <Button
-                                Grid.Column="0"
-                                Margin="5"
-                                Command="{Binding MoveLeftShapeCommand}"
-                                Text="left" />
-                            <Button
+                                HorizontalOptions="Center"
+                                Text="{Binding PlayerName}"
+                                TextColor="White" />
+                            <Grid
+                                x:Name="GameBoardGrid"
                                 Grid.Row="1"
-                                Grid.Column="1"
                                 Margin="5"
-                                Command="{Binding MoveDownShapeCommand}"
-                                Text="down" />
+                                BackgroundColor="#152b50"
+                                FlowDirection="LeftToRight"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Start" />
+                            <Grid
+                                Grid.Row="2"
+                                FlowDirection="LeftToRight"
+                                HeightRequest="100">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button
+                                    Grid.Column="2"
+                                    Margin="5"
+                                    Command="{Binding MoveRightShapeCommand}"
+                                    Text="right" />
+                                <Button
+                                    Grid.Column="1"
+                                    Margin="5"
+                                    Command="{Binding RotateShapeCommand}"
+                                    Text="rotate" />
+                                <Button
+                                    Grid.Column="0"
+                                    Margin="5"
+                                    Command="{Binding MoveLeftShapeCommand}"
+                                    Text="left" />
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="5"
+                                    Command="{Binding MoveDownShapeCommand}"
+                                    Text="down" />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </VerticalStackLayout>
                 </Frame>
             </Grid>
         </Grid>

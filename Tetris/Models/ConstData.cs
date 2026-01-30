@@ -9,10 +9,10 @@
         public static readonly GridLength UserScreenHeight = new(1.9, GridUnitType.Star);
         public const int GameGridColumnCount = 10;
         public const int GameGridRowCount = 20;
-        public const double GameGridColumnWidth = 20;
-        public const double GameGridRowHeight = 20;
-        public const double OpGameGridColumnWidth = 12;
-        public const double OpGameGridRowHeight = 12;
+        public const double GameGridColumnWidth = 18;
+        public const double GameGridRowHeight = 18;
+        public const double OpGameGridColumnWidth = 9;
+        public const double OpGameGridRowHeight = 9;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int ShapeFallIntervalS = 1;
@@ -46,7 +46,10 @@
                 Colors.Violet,
                 Colors.LightBlue
             ];
-
+        public static class DebugData
+        {
+            public const bool StartFallTimer = false;
+        }
         public static class ShapeRotationStates
         {
             public static readonly List<bool[,]> IShape =

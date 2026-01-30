@@ -9,6 +9,8 @@ public partial class GamePageVM : ObservableObject
     public bool IsReadyVisible { get; set; } = true;
     public bool IsTimerVisible { get; set; } = false;
     public string TimeLeft => CurrentGame.TimeLeftText;
+    public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UaUsername;
+    public string PlayerName => (Application.Current as App)!.AppUser.UserName;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
     public ICommand ReadyCommand => new Command(Ready);

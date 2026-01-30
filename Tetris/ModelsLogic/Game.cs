@@ -23,7 +23,6 @@ namespace Tetris.ModelsLogic
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, shape.Duplicate(shape), true);
             OpFallTimer.Elapsed += ApplyOpMove;
-            UsersInGame.Add((Application.Current as App)!.AppUser);
         }
         protected override void RegisterTimer()
         {
@@ -172,46 +171,39 @@ namespace Tetris.ModelsLogic
             if (snapshot == null) return;
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
-            if (IsFull)
-            {
-                fbd.SetGameIsFull(GameID);
-                OnGameFull?.Invoke(this, null!);   
-            }
         }
         protected override void OnCompleteChange(ObservableCollection<User> users)
         {
             UsersInGame.Clear();
             foreach (User user in users) { UsersInGame.Add(user); }
-            OnPlayersChange?.Invoke(this, EventArgs.Empty);
+
+            if (!IsFull)
+                OnPlayersChange?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                if (GameBoard == null || OpGameBoard == null) return;
+                fbd.SetGameIsFull(GameID);
+                GameBoard.GameID = GameID;
+                OpGameBoard.GameID = GameID;
+                GameBoard.User = (Application.Current as App)!.AppUser;
+                foreach (User user in UsersInGame)
+                    if (user.UserID != (Application.Current as App)!.AppUser.UserID)
+                        OpGameBoard.User = user;
+                OnGameFull?.Invoke(this, EventArgs.Empty);
+            }
         }
         public override async void NavToWR()
         {
             await fbd.OnPlayerJoinWR(GameID,
                 (Application.Current as App)!.AppUser.UserID);
             CurrentPlayersCount++;
-            UsersInGame.Add((Application.Current as App)!.AppUser);
 
-            if (CurrentPlayersCount < MaxPlayersCount)
-                _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
-            else
-            {
-                if (this == null || GameBoard == null)
-                    return;
-                GameBoard.GameID = GameID;
-                _ = Shell.Current.Navigation.PushAsync(new GamePage(this));
-            }
+            _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
         }
         public override void PrepareGame()
         {
             WeakReferenceMessenger.Default.Send(
                 new AppMessage<StartGameTimerSettings>(startGameTimerSettings));
-
-            if (GameBoard == null || OpGameBoard == null) return;
-
-            GameBoard.User = (Application.Current as App)!.AppUser;
-            foreach (User user in UsersInGame)
-                if (user != (Application.Current as App)!.AppUser)
-                    OpGameBoard.User = user;
 
             RemoveReadyListener();
         }

@@ -68,5 +68,7 @@
         public const string PrivateKey = "Private";
         public const string TitleKey = "title";
         public const string MessageKey = "message";
+        public const string NotificationChannelId = "default";
+        public const string NotificationChannelName = "Default";
     }
 }

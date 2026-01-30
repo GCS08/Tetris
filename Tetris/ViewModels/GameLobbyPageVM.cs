@@ -24,13 +24,14 @@ namespace Tetris.ViewModels
         private void OnNotificationReceived(object? sender, NotificationEventArgs e)
         {
             //Will run when a user taps on a notification
+            //Enter here the code to navigate to a specific game
 
             //NotificationTitle = e.Title;
             //NotificationMessage = e.Message;
             //OnPropertyChanged(nameof(NotificationTitle));
             //OnPropertyChanged(nameof(NotificationMessage));
         }
-        private void SendNotification(object obj)
+        private void SendNotification()
         {
             notifications.PushNotification("Notification", "My notification message... ");
         }

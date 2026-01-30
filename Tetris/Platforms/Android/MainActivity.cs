@@ -11,26 +11,26 @@ namespace Tetris.Platforms.Android
     public class MainActivity : MauiAppCompatActivity
     {
         StartGameTimer? startGameTimer;
-        protected override async void OnCreate(Bundle? savedInstanceState)
+        protected override void OnCreate(Bundle? savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
-            RegisterTimerMessages();
-            StartDeleteFbDocsService();
-            _ = SoundManager.Instance.InitializeAsync();
-            PermissionStatus status = await Permissions.RequestAsync<NotificationPermission>().ContinueWith(OnComplete);
+            /*default*/ base.OnCreate(savedInstanceState);
+            /*timer*/ RegisterTimerMessages();
+            /*deleteFbDocs*/ StartDeleteFbDocsService();
+            /*soundManager*/ _ = SoundManager.Instance.InitializeAsync();
+            /*notifications*/ Permissions.RequestAsync<NotificationPermission>();
         }
         protected override void OnNewIntent(Intent? intent)
         {
             base.OnNewIntent(intent);
             if (intent != null)
-                CreateNotificationFromIntent(intent);
+                ReceiveNotificationFromIntent(intent);
         }
-        static void CreateNotificationFromIntent(Intent intent)
+        static void ReceiveNotificationFromIntent(Intent intent)
         {
             if (intent?.Extras != null)
             {
-                string title = intent.GetStringExtra(NotificationManagerService.TitleKey) ?? string.Empty;
-                string message = intent.GetStringExtra(NotificationManagerService.MessageKey) ?? string.Empty;
+                string title = intent.GetStringExtra(Keys.TitleKey) ?? string.Empty;
+                string message = intent.GetStringExtra(Keys.MessageKey) ?? string.Empty;
                 INotificationManagerService? service = null;
                 if (IPlatformApplication.Current != null)
                     service = IPlatformApplication.Current.Services.GetService<INotificationManagerService>();
@@ -65,10 +65,6 @@ namespace Tetris.Platforms.Android
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));
             StartService(intent);
-        }
-        private PermissionStatus OnComplete(Task<PermissionStatus> task)
-        {
-            return task.Result;
         }
     }
 }

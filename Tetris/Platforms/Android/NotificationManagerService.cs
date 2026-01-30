@@ -8,44 +8,31 @@ using Tetris.Views;
 
 namespace Tetris.Platforms.Android
 {
-    class NotificationManagerService : INotificationManagerService
+    public class NotificationManagerService : NotificationManagerServiceModel
     {
-        const string channelId = "default", channelName = "Default",
-            channelDescription = "The default channel for notifications.";
-        bool channelInitialized = false;
-        int pendingIntentId = 0, messageId;
-        public static NotificationManagerService? Instance { get; private set; }
-        private readonly NotificationManagerCompat? compatManager;
-        public event EventHandler? NotificationReceived;
+        public override event EventHandler? NotificationReceived;
         public NotificationManagerService()
         {
             if (Instance == null)
             {
                 CreateNotificationChannel();
-                compatManager = NotificationManagerCompat.From(Platform.AppContext);
+                notificationManager = NotificationManagerCompat.From(Platform.AppContext);
                 Instance = this;
             }
         }
-        public void ReceiveNotification(string title, string message)
-        {
-            Shell.Current.Navigation.PushAsync(new MainPage());
-        }
-
-        public void SendNotification(string title, string message, DateTime? notifyTime = null)
+        public override void SendNotification(string title, string message, DateTime? notifyTime = null)
         {
             if (!channelInitialized)
-            {
                 CreateNotificationChannel();
-            }
 
             if (notifyTime != null)
             {
-                Intent intent = new(Platform.AppContext, typeof(AlarmHandler));
+                Intent intent = new(Platform.AppContext, typeof(AlarmReceiver));
                 intent.PutExtra(Keys.TitleKey, title);
                 intent.PutExtra(Keys.MessageKey, message);
                 intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
 
-                var pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+                PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
                     ? PendingIntentFlags.CancelCurrent | PendingIntentFlags.Immutable
                     : PendingIntentFlags.CancelCurrent;
 
@@ -56,11 +43,19 @@ namespace Tetris.Platforms.Android
                     alarmManager?.Set(AlarmType.RtcWakeup, triggerTime, pendingIntent);
             }
             else
-            {
                 Show(title, message);
-            }
         }
-        public void Show(string title, string message)
+        public override void ReceiveNotification(string title, string message)
+        {
+            NotificationEventArgs args = new()
+            {
+                Title = title,
+                Message = message,
+            };
+            // Raise the event using the protected member, which is allowed
+            Instance?.NotificationReceived?.Invoke(null, args);
+        }
+        public override void Show(string title, string message)
         {
             Intent intent = new(Platform.AppContext, typeof(MainActivity));
             intent.PutExtra(Keys.TitleKey, title);
@@ -70,25 +65,26 @@ namespace Tetris.Platforms.Android
                 ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
                 : PendingIntentFlags.UpdateCurrent;
             PendingIntent? pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, channelId)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, Keys.NotificationChannelId)
                 .SetContentIntent(pendingIntent)
+                .SetColor(Colors.Blue.ToInt())
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.appiconbig))
                 .SetSmallIcon(Resource.Drawable.appiconsmall);
 
             Notification notification = builder.Build();
-            compatManager?.Notify(messageId++, notification);
+            notificationManager?.Notify(messageId++, notification);
         }
-        private void CreateNotificationChannel()
+        protected override void CreateNotificationChannel()
         {
             // Create the notification channel, but only on API 26+.
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                Java.Lang.String channelNameJava = new(channelName);
-                NotificationChannel channel = new(channelId, channelNameJava, NotificationImportance.Default)
+                Java.Lang.String channelNameJava = new(Keys.NotificationChannelName);
+                NotificationChannel channel = new(Keys.NotificationChannelId, channelNameJava, NotificationImportance.Default)
                 {
-                    Description = channelDescription
+                    Description = Strings.NotificationChannelDescription
                 };
                 // Register the channel
                 NotificationManager? manager = Platform.AppContext.GetSystemService(Context.NotificationService) as NotificationManager;
@@ -96,7 +92,7 @@ namespace Tetris.Platforms.Android
                 channelInitialized = true;
             }
         }
-        private static long GetNotifyTime(DateTime notifyTime)
+        protected override long GetNotifyTime(DateTime notifyTime)
         {
             DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(notifyTime);
             double epochDiff = (new DateTime(1970, 1, 1) - DateTime.MinValue).TotalSeconds;

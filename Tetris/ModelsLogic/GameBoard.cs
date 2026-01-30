@@ -30,7 +30,7 @@ namespace Tetris.ModelsLogic
         }
         public void StartGame()
         {
-            if (!IsOp)
+            if (!IsOp && ConstData.DebugData.StartFallTimer)
             {
                 FallTimer.Elapsed += MoveDownShape;
                 FallTimer.Start();

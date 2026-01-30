@@ -98,5 +98,8 @@
         public const string HighestScoreShort = "hs: ";
         public const string FeelingReady = "Feeling ready???";
         public const string TimeUp = "May the best win!";
+        public const string NotificationChannelDescription = "The default channel for notifications.";
+        public const string AlarmReceiverBroadcastLabel = "Local Notifications Broadcast Receiver";
+        public const string UaUsername = "Username's unavailable";
     }
 }
