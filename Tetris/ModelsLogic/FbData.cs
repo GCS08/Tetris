@@ -439,5 +439,11 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
+
+        public void UpdateUserData(User user)
+        {
+            IDocumentReference dr = fs.Collection(Keys.UsersCollectionName).Document(user.UserID);
+            _ = dr.UpdateAsync(Keys.TotalLinesKey, FieldValue.Increment(user.TotalLines));
+        }
     }
 }

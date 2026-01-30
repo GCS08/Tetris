@@ -70,7 +70,7 @@ namespace Tetris.ViewModels
         private void NavToGameLobby()
         {
             Tetris.Platforms.Android.SoundManager.Instance.PlayLineCleared();
-            Shell.Current.Navigation.PushAsync(new GameLobbyPage());
+            _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
         private void SignOut()
         {

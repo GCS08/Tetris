@@ -209,9 +209,9 @@ namespace Tetris.ModelsLogic
         }
         public override void StartGame()
         {
-            AddGameListener();
-
             if (GameBoard == null || OpGameBoard == null) return;
+
+            AddGameListener();
 
             GameBoard.StartGame();
             OpGameBoard.StartGame();

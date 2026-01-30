@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using Tetris.Models;
 using Tetris.ModelsLogic;
+using Tetris.Views;
 
 namespace Tetris.ViewModels;
 
@@ -8,11 +9,16 @@ public partial class GamePageVM : ObservableObject
 {
     public bool IsReadyVisible { get; set; } = true;
     public bool IsTimerVisible { get; set; } = false;
+    public bool IsGameFinishedVisible { get; set; } = false;
+
+    public Color GameFinishedResultColor => CurrentGame.GameBoard!.IsLost ? Colors.Red : Colors.Green;
+    public string GameFinishedResultText => CurrentGame.GameBoard!.IsLost ? Strings.YouLost : Strings.YouWon;
     public string TimeLeft => CurrentGame.TimeLeftText;
     public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UaUsername;
     public string PlayerName => (Application.Current as App)!.AppUser.UserName;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
+    public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
     public ICommand ReadyCommand => new Command(Ready);
     public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
     public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
@@ -26,9 +32,19 @@ public partial class GamePageVM : ObservableObject
     public GamePageVM(Game game)
     {
         this.CurrentGame = game;
+        if (game.GameBoard == null || game.OpGameBoard == null) return;
         game.OnAllReady += OnAllReadyHandler;
         game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
+        game.GameBoard.OnGameFinished += OnGameFinishedHandler;
+        game.OpGameBoard.OnGameFinished += OnGameFinishedHandler;
     }
+
+    private void OnGameFinishedHandler(object? sender, EventArgs e)
+    {
+        GameBoard lostBoard = (GameBoard)sender!;
+        if (lostBoard.IsOp)
+    }
+
     private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(TimeLeft));
@@ -52,6 +68,10 @@ public partial class GamePageVM : ObservableObject
         CurrentGame.PrepareGame();
     }
 
+    private void NavToGameLobby()
+    {
+        _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
+    }
     private void Ready()
     {
         CurrentGame.Ready();

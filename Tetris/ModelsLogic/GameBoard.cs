@@ -38,14 +38,23 @@ namespace Tetris.ModelsLogic
         }
         private void ShapeAtBottom()
         {
+            if (User == null) return;
             int linesCleared = CheckForLines();
             if (linesCleared > 0 && !IsOp)
+            {
                 SoundManager.Instance.PlayLineCleared();
+                User.TotalLines += linesCleared;
+            }
 
             if (CheckForLose())
             {
                 IsLost = true;
-                FallTimer.Stop();
+                OnGameFinished?.Invoke(this, EventArgs.Empty);
+                if (!IsOp)
+                {
+                    FallTimer.Stop();
+                    fbd.UpdateUserData(User);
+                }
             }
             else
             {

@@ -44,6 +44,28 @@
                 Grid.Row="1"
                 Padding="20"
                 BackgroundColor="Beige"
+                IsVisible="{Binding IsGameFinishedVisible}"
+                RowSpacing="20"
+                ZIndex="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label
+                    FontSize="40"
+                    HorizontalOptions="Center"
+                    Text="{Binding GameFinishedResultText}"
+                    TextColor="{Binding GameFinishedResultColor}" />
+                <Button
+                    Grid.Row="1"
+                    Command="{Binding NavToGameLobbyCommand}"
+                    Text="{x:Static m:Strings.BackToGameLobby}" />
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                Padding="20"
+                BackgroundColor="Beige"
                 IsVisible="{Binding IsTimerVisible}"
                 RowSpacing="20"
                 ZIndex="10">

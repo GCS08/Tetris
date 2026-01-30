@@ -11,8 +11,8 @@
         public const int GameGridRowCount = 20;
         public const double GameGridColumnWidth = 18;
         public const double GameGridRowHeight = 18;
-        public const double OpGameGridColumnWidth = 9;
-        public const double OpGameGridRowHeight = 9;
+        public const double OpGameGridColumnWidth = 10;
+        public const double OpGameGridRowHeight = 10;
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int ShapeFallIntervalS = 1;
@@ -48,7 +48,7 @@
             ];
         public static class DebugData
         {
-            public const bool StartFallTimer = false;
+            public const bool StartFallTimer = true;
         }
         public static class ShapeRotationStates
         {

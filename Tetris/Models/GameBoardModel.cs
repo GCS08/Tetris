@@ -14,7 +14,8 @@ namespace Tetris.Models
         protected System.Timers.Timer FallTimer = new(ConstData.ShapeFallIntervalS * 1000);
         protected FbData fbd = new();
         public EventHandler? OnOpQueueEmpty;
-        protected bool IsLost = false;
+        public EventHandler? OnGameFinished;
+        public bool IsLost = false;
         protected abstract void ShowShape();
         protected abstract void EraseShape();
         public abstract void MoveRightShape();
