@@ -207,14 +207,16 @@ namespace Tetris.ModelsLogic
 
             RemoveReadyListener();
         }
+        private int counter = 0;
         public override void StartGame()
         {
             if (GameBoard == null || OpGameBoard == null) return;
 
             AddGameListener();
 
+            System.Diagnostics.Debug.WriteLine("Game.StartGamer() " + counter);
+            counter++;
             GameBoard.StartGame();
-            OpGameBoard.StartGame();
         }
         public override void MoveRightShape() 
         {

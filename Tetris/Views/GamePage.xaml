@@ -54,6 +54,7 @@
                 <Label
                     FontSize="40"
                     HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
                     Text="{Binding GameFinishedResultText}"
                     TextColor="{Binding GameFinishedResultColor}" />
                 <Button

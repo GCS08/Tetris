@@ -28,10 +28,13 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
+        private int counter = 0;
         public void StartGame()
         {
-            if (!IsOp && ConstData.DebugData.StartFallTimer)
+            if (!FallTimer.Enabled && ConstData.DebugData.StartFallTimer)
             {
+                System.Diagnostics.Debug.WriteLine("Starting Fall Timer" + counter);
+                counter++;
                 FallTimer.Elapsed += MoveDownShape;
                 FallTimer.Start();
             }
