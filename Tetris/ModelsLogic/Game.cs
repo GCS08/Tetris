@@ -207,15 +207,12 @@ namespace Tetris.ModelsLogic
 
             RemoveReadyListener();
         }
-        private int counter = 0;
         public override void StartGame()
         {
-            if (GameBoard == null || OpGameBoard == null) return;
+            if (GameBoard == null || OpGameBoard == null || IsGameStarted) return;
 
             AddGameListener();
-
-            System.Diagnostics.Debug.WriteLine("Game.StartGamer() " + counter);
-            counter++;
+            IsGameStarted = true;
             GameBoard.StartGame();
         }
         public override void MoveRightShape() 
@@ -223,29 +220,24 @@ namespace Tetris.ModelsLogic
             if (GameBoard == null) return;
             
             GameBoard.MoveRightShape();
-            //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.RightKey);
         }
         public override void MoveLeftShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.MoveLeftShape();
-            //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.LeftKey);
         }
         public override async void MoveDownShape() 
         {
             if (GameBoard == null) return;
 
             await GameBoard.MoveDownShape();
-            //if (!isAtBottom)
-                //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.DownKey);
         }
         public override void RotateShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.RotateShape();
-            //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.RotateKey);
         }
         public override void MoveRightOpShape()
         {

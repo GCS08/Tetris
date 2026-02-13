@@ -30,6 +30,7 @@ namespace Tetris.Models
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;
+        protected bool IsGameStarted = false;
         protected string currentMovingOpId = string.Empty;
         protected FbData fbd = new();
         protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);

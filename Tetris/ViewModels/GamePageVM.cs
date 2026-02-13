@@ -42,12 +42,11 @@ public partial class GamePageVM : ObservableObject
     private void OnGameFinishedHandler(object? sender, EventArgs e)
     {
         //GameBoard lostBoard = (GameBoard)sender!;
-            IsGameFinishedVisible = true;
-            OnPropertyChanged(nameof(IsGameFinishedVisible));
-            OnPropertyChanged(nameof(GameFinishedResultColor));
-            OnPropertyChanged(nameof(GameFinishedResultText));
+        IsGameFinishedVisible = true;
+        OnPropertyChanged(nameof(IsGameFinishedVisible));
+        OnPropertyChanged(nameof(GameFinishedResultColor));
+        OnPropertyChanged(nameof(GameFinishedResultText));
     }
-    private int counter = 0;
     private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(TimeLeft));
@@ -56,9 +55,6 @@ public partial class GamePageVM : ObservableObject
         {
             IsTimerVisible = false;
             OnPropertyChanged(nameof(IsTimerVisible));
-            System.Diagnostics.Debug.WriteLine("GamePageVM OnTimerLeftChangedHandler " + counter);
-            System.Diagnostics.Debug.WriteLine("CurrentGame.TimeLeftMs " + CurrentGame.TimeLeftMs);
-            counter++;
             CurrentGame.StartGame();
         }
     }
