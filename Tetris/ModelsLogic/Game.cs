@@ -23,7 +23,19 @@ namespace Tetris.ModelsLogic
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, shape.Duplicate(shape), true);
             OpFallTimer.Elapsed += ApplyOpMove;
+            OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
+
+        private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
+        {
+            if (GameBoard == null || OpGameBoard == null) return;
+            GameBoard.FallTimer.Stop();
+            OpFallTimer.Stop();
+            GameBoard.EnableMoves = false;
+            OpGameBoard.EnableMoves = false;
+            OnGameFinishedUI?.Invoke(this, EventArgs.Empty);
+        }
+
         protected override void RegisterTimer()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>

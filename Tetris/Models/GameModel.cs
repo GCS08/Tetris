@@ -27,6 +27,7 @@ namespace Tetris.Models
         public EventHandler? OnGameFull;
         public EventHandler? OnAllReady;
         public EventHandler? OnTimeLeftChanged;
+        public EventHandler? OnGameFinishedUI;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;

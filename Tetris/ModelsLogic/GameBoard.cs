@@ -51,13 +51,9 @@ namespace Tetris.ModelsLogic
 
             if (CheckForLose())
             {
-                IsLost = true;
-                OnGameFinished?.Invoke(this, EventArgs.Empty);
+                OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
                 if (!IsOp)
-                {
-                    FallTimer.Stop();
                     fbd.UpdateUserData(User);
-                }
             }
             else
             {
@@ -139,7 +135,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveRightShape()
         {
-            if (IsLost || CurrentShape == null || Board == null || MovesQueue == null) return;
+            if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -185,7 +181,7 @@ namespace Tetris.ModelsLogic
         }
         public override void MoveLeftShape()
         {
-            if (IsLost || CurrentShape == null || Board == null || MovesQueue == null) return;
+            if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -271,7 +267,7 @@ namespace Tetris.ModelsLogic
                     canMoveDown = false;
             }
             
-            if (!IsLost)
+            if (EnableMoves)
             {
                 MovesQueue.Insert(Keys.DownKey);
                 // Move or lock
@@ -298,7 +294,7 @@ namespace Tetris.ModelsLogic
         }
         public override void RotateShape()
         {
-            if (CurrentShape == null || CurrentShape.RotationStates == null || IsLost || MovesQueue == null) return;
+            if (CurrentShape == null || CurrentShape.RotationStates == null || !EnableMoves || MovesQueue == null) return;
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];

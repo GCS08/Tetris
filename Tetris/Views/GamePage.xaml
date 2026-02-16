@@ -52,7 +52,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Label
-                    FontSize="40"
+                    FontSize="30"
                     HorizontalOptions="Center"
                     HorizontalTextAlignment="Center"
                     Text="{Binding GameFinishedResultText}"

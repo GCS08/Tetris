@@ -11,11 +11,11 @@ namespace Tetris.Models
         public ModelsLogic.Queue<string>? MovesQueue { get; set; } = new();
         public User? User { get; set; }
         public bool IsOp { get; set; }
-        protected System.Timers.Timer FallTimer = new(ConstData.ShapeFallIntervalS * 1000);
+        public System.Timers.Timer FallTimer = new(ConstData.ShapeFallIntervalS * 1000);
         protected FbData fbd = new();
         public EventHandler? OnOpQueueEmpty;
-        public EventHandler? OnGameFinished;
-        public bool IsLost = false;
+        public EventHandler? OnGameFinishedLogic;
+        public bool EnableMoves = true;
         protected abstract void ShowShape();
         protected abstract void EraseShape();
         public abstract void MoveRightShape();
