@@ -10,7 +10,7 @@ namespace Tetris.ViewModels
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
-        private readonly User user;
+        private User user;
         private bool isLogged;
         private bool IsLogged
         {
@@ -76,7 +76,7 @@ namespace Tetris.ViewModels
         {
             user.SignOut();
             (Application.Current as App)!.AppUser = new();
-            Preferences.Clear();
+            user = (Application.Current as App)!.AppUser;
             RefreshProperties();
         }
     }

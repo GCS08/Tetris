@@ -103,6 +103,7 @@
         public const string UaUsername = "Username's unavailable";
         public const string YouLost = "You lost.\nBetter luck next time!";
         public const string YouWon = "You won.\nGood job!";
+        public const string LoadingResult = "Loading result...\nPlease wait.";
         public const string BackToGameLobby = "Back to game lobby";
     }
 }

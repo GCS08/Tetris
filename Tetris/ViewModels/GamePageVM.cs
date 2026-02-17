@@ -11,8 +11,8 @@ public partial class GamePageVM : ObservableObject
     public bool IsTimerVisible { get; set; } = false;
     public bool IsGameFinishedVisible { get; set; } = false;
 
-    public Color GameFinishedResultColor { get; set; } = Colors.Green;
-    public string GameFinishedResultText { get; set; } = Strings.YouWon;
+    public Color GameFinishedResultColor { get; set; } = Colors.Black;
+    public string GameFinishedResultText { get; set; } = Strings.LoadingResult;
     public string TimeLeft => CurrentGame.TimeLeftText;
     public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UaUsername;
     public string PlayerName => (Application.Current as App)!.AppUser.UserName;

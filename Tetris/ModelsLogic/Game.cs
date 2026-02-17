@@ -29,7 +29,8 @@ namespace Tetris.ModelsLogic
 
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
-            if (GameBoard == null || OpGameBoard == null) return;
+            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null) return;
+            fbd.UpdateTotalLinesCleared(GameBoard.User);
             GameBoard.FallTimer.Stop();
             OpFallTimer.Stop();
             GameBoard.EnableMoves = false;

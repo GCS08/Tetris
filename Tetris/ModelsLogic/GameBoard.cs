@@ -50,11 +50,7 @@ namespace Tetris.ModelsLogic
             }
 
             if (CheckForLose())
-            {
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
-                if (!IsOp)
-                    fbd.UpdateUserData(User);
-            }
             else
             {
                 if (ShapesQueue == null || CurrentShape == null || GameID == null) return;

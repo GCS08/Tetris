@@ -3,7 +3,6 @@ using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
@@ -440,10 +439,10 @@ namespace Tetris.ModelsLogic
             }
         }
 
-        public void UpdateUserData(User user)
+        public void UpdateTotalLinesCleared(User user)
         {
             IDocumentReference dr = fs.Collection(Keys.UsersCollectionName).Document(user.UserID);
-            _ = dr.UpdateAsync(Keys.TotalLinesKey, FieldValue.Increment(user.TotalLines));
+            _ = dr.UpdateAsync(Keys.TotalLinesKey, user.TotalLines);
         }
     }
 }
