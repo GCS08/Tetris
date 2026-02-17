@@ -11,8 +11,8 @@ public partial class GamePageVM : ObservableObject
     public bool IsTimerVisible { get; set; } = false;
     public bool IsGameFinishedVisible { get; set; } = false;
 
-    public Color GameFinishedResultColor => !CurrentGame.GameBoard!.EnableMoves ? Colors.Red : Colors.Green;
-    public string GameFinishedResultText => !CurrentGame.GameBoard!.EnableMoves ? Strings.YouLost : Strings.YouWon;
+    public Color GameFinishedResultColor { get; set; } = Colors.Green;
+    public string GameFinishedResultText { get; set; } = Strings.YouWon;
     public string TimeLeft => CurrentGame.TimeLeftText;
     public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UaUsername;
     public string PlayerName => (Application.Current as App)!.AppUser.UserName;
@@ -40,8 +40,10 @@ public partial class GamePageVM : ObservableObject
 
     private void OnGameFinishedUIHandler(object? sender, EventArgs e)
     {
-        //GameBoard lostBoard = (GameBoard)sender!;
+        bool isOpLost = (sender as GameBoard).IsOp;
         IsGameFinishedVisible = true;
+        GameFinishedResultColor = isOpLost ? Colors.Green : Colors.Red;
+        GameFinishedResultText = isOpLost ? Strings.YouWon : Strings.YouLost;
         OnPropertyChanged(nameof(IsGameFinishedVisible));
         OnPropertyChanged(nameof(GameFinishedResultColor));
         OnPropertyChanged(nameof(GameFinishedResultText));

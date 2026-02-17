@@ -24,6 +24,7 @@ namespace Tetris.ModelsLogic
             this.OpGameBoard = new(GameID, shape.Duplicate(shape), true);
             OpFallTimer.Elapsed += ApplyOpMove;
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
+            GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
 
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
@@ -33,7 +34,7 @@ namespace Tetris.ModelsLogic
             OpFallTimer.Stop();
             GameBoard.EnableMoves = false;
             OpGameBoard.EnableMoves = false;
-            OnGameFinishedUI?.Invoke(this, EventArgs.Empty);
+            OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
         }
 
         protected override void RegisterTimer()
