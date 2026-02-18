@@ -34,7 +34,7 @@ namespace Tetris.Models
         protected bool IsGameStarted = false;
         protected string currentMovingOpId = string.Empty;
         protected FbData fbd = new();
-        protected System.Timers.Timer OpFallTimer = new(ConstData.OpShapeFallIntervalS * 1000);
+        protected IDispatcherTimer? OpFallTimer;
         protected ModelsLogic.Queue<KeyValuePair<string, string>> movesQueue = new();
         protected bool IsMovesQueueSorting { get; set; } = false;
         protected IListenerRegistration? ilr;

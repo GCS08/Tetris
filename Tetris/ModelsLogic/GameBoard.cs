@@ -13,6 +13,10 @@ namespace Tetris.ModelsLogic
             this.IsOp = IsOp;
             this.GameID = gameId;
 
+            FallTimer = Application.Current!.Dispatcher.CreateTimer();
+            FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
+            FallTimer.Tick += async (s, e) => await MoveDownShape();
+
             double cubeWidth = IsOp ? ConstData.OpGameGridColumnWidth : ConstData.GameGridColumnWidth;
             double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
 
@@ -28,16 +32,10 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        private int counter = 0;
         public void StartGame()
         {
-            if (!FallTimer.Enabled && ConstData.DebugData.StartFallTimer)
-            {
-                System.Diagnostics.Debug.WriteLine("Starting Fall Timer" + counter);
-                counter++;
-                FallTimer.Elapsed += MoveDownShape;
+            if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
-            }
         }
         private void ShapeAtBottom()
         {
@@ -122,7 +120,6 @@ namespace Tetris.ModelsLogic
         protected override void EraseShape()
         {
             if (CurrentShape == null || Board == null) return;
-
             for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
                 for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
                     if (CurrentShape.Cells[i, j])
@@ -285,8 +282,6 @@ namespace Tetris.ModelsLogic
         {
             if (GameID == null) return;
             await MoveDownShape();
-            //if (!isAtBottom)
-                //await fbd.PlayerAction(GameID, (Application.Current as App)!.AppUser.UserID, Keys.DownKey);
         }
         public override void RotateShape()
         {

@@ -40,7 +40,7 @@ public partial class GamePageVM : ObservableObject
 
     private void OnGameFinishedUIHandler(object? sender, EventArgs e)
     {
-        bool isOpLost = (sender as GameBoard).IsOp;
+        bool isOpLost = sender is GameBoard gameBoard && gameBoard.IsOp;
         IsGameFinishedVisible = true;
         GameFinishedResultColor = isOpLost ? Colors.Green : Colors.Red;
         GameFinishedResultText = isOpLost ? Strings.YouWon : Strings.YouLost;

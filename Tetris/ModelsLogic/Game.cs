@@ -22,14 +22,14 @@ namespace Tetris.ModelsLogic
             this.GameID = GameID;
             this.GameBoard = new(GameID, shape, false);
             this.OpGameBoard = new(GameID, shape.Duplicate(shape), true);
-            OpFallTimer.Elapsed += ApplyOpMove;
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
 
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
-            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null) return;
+            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null
+                || OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
             fbd.UpdateTotalLinesCleared(GameBoard.User);
             GameBoard.FallTimer.Stop();
             OpFallTimer.Stop();
@@ -108,7 +108,7 @@ namespace Tetris.ModelsLogic
         protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
-                || OpGameBoard == null || OpGameBoard.ShapesQueue == null) return;
+                || OpGameBoard == null || OpGameBoard.ShapesQueue == null || OpFallTimer == null) return;
 
             bool found = false;
             for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
@@ -149,36 +149,13 @@ namespace Tetris.ModelsLogic
                 
                 IsMovesQueueSorting = false;
 
-                if (!OpFallTimer.Enabled)
+                if (!OpFallTimer.IsRunning)
                     OpFallTimer.Start();
             }
         }
         protected override void ApplyOpMove(object? sender, ElapsedEventArgs e)
         {
-            if (GameBoard == null || GameBoard.User == null) return;
-            if (!movesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != currentMovingOpId)
-                // third check is unnecessary since it enters the second if in the
-                // on change game only if its not the player who finished a moved.
-            {
-                string move = movesQueue.Remove().Value;
-                switch (move)
-                {
-                    case Keys.RightKey:
-                        MoveRightOpShape();
-                        break;
-                    case Keys.LeftKey:
-                        MoveLeftOpShape();
-                        break;
-                    case Keys.DownKey:
-                        MoveDownOpShape();
-                        break;
-                    case Keys.RotateKey:
-                        RotateOpShape();
-                        break;
-                }
-            }
-            else
-                OpFallTimer.Stop();
+            
         }
         protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
         {
@@ -225,10 +202,44 @@ namespace Tetris.ModelsLogic
         {
             if (GameBoard == null || OpGameBoard == null || IsGameStarted) return;
 
+            OpFallTimer = Application.Current!.Dispatcher.CreateTimer();
+            OpFallTimer.Interval =
+                TimeSpan.FromSeconds(ConstData.OpShapeFallIntervalS);
+            OpFallTimer.Tick += ApplyOpMove;
+
             AddGameListener();
             IsGameStarted = true;
             GameBoard.StartGame();
         }
+
+        private void ApplyOpMove(object? sender, EventArgs e)
+        {
+            if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
+            if (!movesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != currentMovingOpId)
+            // third check is unnecessary since it enters the second if in the
+            // on change game only if its not the player who finished a moved.
+            {
+                string move = movesQueue.Remove().Value;
+                switch (move)
+                {
+                    case Keys.RightKey:
+                        MoveRightOpShape();
+                        break;
+                    case Keys.LeftKey:
+                        MoveLeftOpShape();
+                        break;
+                    case Keys.DownKey:
+                        MoveDownOpShape();
+                        break;
+                    case Keys.RotateKey:
+                        RotateOpShape();
+                        break;
+                }
+            }
+            else
+                OpFallTimer.Stop();
+        }
+
         public override void MoveRightShape() 
         {
             if (GameBoard == null) return;
