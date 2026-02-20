@@ -22,6 +22,8 @@
         public const int GameTimeIntervalS = 1;
         public const long FinishedSignal = 0;
         public const int TimePassedToDeleteFbDocS = 60 * 60 * 5;
+        public const int ScorePerLine = 100;
+
         public static readonly List<bool[,]>[] ShapeRotationState =
             [
                 ShapeRotationStates.IShape,

@@ -15,7 +15,9 @@ namespace Tetris.Models
         protected FbData fbd = new();
         public EventHandler? OnOpQueueEmpty;
         public EventHandler? OnGameFinishedLogic;
-        public bool EnableMoves = true;
+        public bool EnableMoves { get; set; } = false;
+        public int Score { get; set; } = 0;
+        protected int ComboCount { get; set; } = 1;
         protected abstract void ShowShape();
         protected abstract void EraseShape();
         public abstract void MoveRightShape();

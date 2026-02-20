@@ -36,6 +36,7 @@ namespace Tetris.ModelsLogic
         {
             if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
+            EnableMoves = true;
         }
         private void ShapeAtBottom()
         {
@@ -45,14 +46,18 @@ namespace Tetris.ModelsLogic
             {
                 SoundManager.Instance.PlayLineCleared();
                 User.TotalLines += linesCleared;
+                Score += linesCleared * ConstData.ScorePerLine * ComboCount;
+                ComboCount++;
             }
+            else
+                ComboCount = 1;
 
-            if (CheckForLose())
+            if (CheckForLose() && !IsOp)
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {
                 if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
-                
+
                 ShapesQueue.Remove();
                 if (ShapesQueue.IsEmpty() && !IsOp)
                 {

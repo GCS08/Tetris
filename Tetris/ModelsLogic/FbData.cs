@@ -439,10 +439,16 @@ namespace Tetris.ModelsLogic
             }
         }
 
-        public void UpdateTotalLinesCleared(User user)
+        public void UpdateUserPostGame(User user)
         {
             IDocumentReference dr = fs.Collection(Keys.UsersCollectionName).Document(user.UserID);
-            _ = dr.UpdateAsync(Keys.TotalLinesKey, user.TotalLines);
+            Dictionary<string, object> updates = new()
+            {
+                { Keys.GamesPlayedKey, user.GamesPlayed },
+                { Keys.HighestScoreKey, user.HighestScore },
+                { Keys.TotalLinesKey, user.TotalLines }
+            };
+            _ = dr.UpdateAsync(updates);
         }
     }
 }

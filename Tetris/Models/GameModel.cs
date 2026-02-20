@@ -51,7 +51,7 @@ namespace Tetris.Models
         public abstract void RemoveReadyListener();
         protected abstract void OnChangeReady(IDocumentSnapshot snapshot, Exception error);
         protected abstract void OnChangeGame(IDocumentSnapshot snapshot, Exception error);
-        protected abstract void ApplyOpMove(object? sender, ElapsedEventArgs e);
+        protected abstract void ApplyOpMove(object? sender, EventArgs e);
         protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
         protected abstract void OnCompleteChange(ObservableCollection<User> users);
         public abstract void PrepareGame();

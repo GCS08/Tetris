@@ -28,9 +28,12 @@ namespace Tetris.ModelsLogic
 
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
-            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null
-                || OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
-            fbd.UpdateTotalLinesCleared(GameBoard.User);
+            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null
+                || GameBoard.FallTimer == null || OpFallTimer == null) return;
+            if ((Application.Current as App)!.AppUser.HighestScore < GameBoard.Score)
+                    (Application.Current as App)!.AppUser.HighestScore = GameBoard.Score;
+            (Application.Current as App)!.AppUser.GamesPlayed++;
+            fbd.UpdateUserPostGame((Application.Current as App)!.AppUser);
             GameBoard.FallTimer.Stop();
             OpFallTimer.Stop();
             GameBoard.EnableMoves = false;
@@ -153,10 +156,6 @@ namespace Tetris.ModelsLogic
                     OpFallTimer.Start();
             }
         }
-        protected override void ApplyOpMove(object? sender, ElapsedEventArgs e)
-        {
-            
-        }
         protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
@@ -212,7 +211,7 @@ namespace Tetris.ModelsLogic
             GameBoard.StartGame();
         }
 
-        private void ApplyOpMove(object? sender, EventArgs e)
+        protected override void ApplyOpMove(object? sender, EventArgs e)
         {
             if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
             if (!movesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != currentMovingOpId)
