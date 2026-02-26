@@ -52,7 +52,7 @@ namespace Tetris.ModelsLogic
             else
                 ComboCount = 1;
 
-            if (CheckForLose() && !IsOp)
+            if (CheckForLose())
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {

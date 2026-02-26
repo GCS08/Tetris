@@ -32,6 +32,7 @@ namespace Tetris.Models
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;
         protected bool IsGameStarted = false;
+        protected bool IsStatsUpdatedOnceOnGameFinished = false;
         protected string currentMovingOpId = string.Empty;
         protected FbData fbd = new();
         protected IDispatcherTimer? OpFallTimer;

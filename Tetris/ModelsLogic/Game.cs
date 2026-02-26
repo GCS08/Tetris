@@ -30,10 +30,15 @@ namespace Tetris.ModelsLogic
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null
                 || GameBoard.FallTimer == null || OpFallTimer == null) return;
-            if ((Application.Current as App)!.AppUser.HighestScore < GameBoard.Score)
-                    (Application.Current as App)!.AppUser.HighestScore = GameBoard.Score;
-            (Application.Current as App)!.AppUser.GamesPlayed++;
-            fbd.UpdateUserPostGame((Application.Current as App)!.AppUser);
+            System.Diagnostics.Debug.WriteLine(GameBoard.User == (Application.Current as App)!.AppUser);
+            if (!IsStatsUpdatedOnceOnGameFinished)
+            {
+                if ((Application.Current as App)!.AppUser.HighestScore < GameBoard.Score)
+                        (Application.Current as App)!.AppUser.HighestScore = GameBoard.Score;
+                (Application.Current as App)!.AppUser.GamesPlayed++;
+                fbd.UpdateUserPostGame((Application.Current as App)!.AppUser);
+                IsStatsUpdatedOnceOnGameFinished = true;
+            }
             GameBoard.FallTimer.Stop();
             OpFallTimer.Stop();
             GameBoard.EnableMoves = false;
@@ -209,6 +214,7 @@ namespace Tetris.ModelsLogic
             AddGameListener();
             IsGameStarted = true;
             GameBoard.StartGame();
+            OpGameBoard.EnableMoves = true;
         }
 
         protected override void ApplyOpMove(object? sender, EventArgs e)
