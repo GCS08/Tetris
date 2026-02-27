@@ -12,6 +12,7 @@ namespace Tetris.Models
         public string CreatorName { get; set; } = string.Empty;
         public int CurrentPlayersCount { get; set; }
         public int MaxPlayersCount { get; set; }
+        public int PrivateJoinCode { get; set; }
         public bool IsFull => CurrentPlayersCount == MaxPlayersCount;
         public string UsersInGameSum => string.Empty + MaxPlayersCount
             + TechnicalConsts.SpaceSign + TechnicalConsts.SlashSign
@@ -28,6 +29,7 @@ namespace Tetris.Models
         public EventHandler? OnAllReady;
         public EventHandler? OnTimeLeftChanged;
         public EventHandler? OnGameFinishedUI;
+        public EventHandler? OnCodeReady;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
         protected int desiredIndex = 0;
@@ -67,5 +69,7 @@ namespace Tetris.Models
         public abstract void RotateOpShape();
         public abstract void Ready();
         public abstract void NavToWR();
+        public abstract void CreateCode();
+        public abstract Task<Game> GetGameByCode(int code);
     }
 }

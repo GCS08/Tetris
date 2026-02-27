@@ -54,7 +54,19 @@
                 <Button
                     BorderColor="Blue"
                     BorderWidth="2"
+                    Command="{Binding NavToRemindersCommand}"
+                    FontSize="17"
+                    HorizontalOptions="Center"
+                    IsVisible="{Binding RemindersVisibility}"
+                    Text="{x:Static m:Strings.RemindersButtonText}"
+                    VerticalOptions="Center"
+                    WidthRequest="150">
+                </Button>
+                <Button
+                    BorderColor="Blue"
+                    BorderWidth="2"
                     Command="{Binding SignOutCommand}"
+                    FontSize="15"
                     HorizontalOptions="Center"
                     IsVisible="{Binding SignOutVisibility}"
                     Text="{x:Static m:Strings.SignOutButton}"

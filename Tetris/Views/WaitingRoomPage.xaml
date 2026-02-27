@@ -80,6 +80,13 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                <Label
+                    Text="{Binding PrivateJoinCode}"
+                    HorizontalTextAlignment="Center"
+                    FontSize="20"
+                    HeightRequest="300"
+                    VerticalTextAlignment="Center"
+                    VerticalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

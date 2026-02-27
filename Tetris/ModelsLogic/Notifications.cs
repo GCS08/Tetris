@@ -33,5 +33,30 @@ namespace Tetris.ModelsLogic
             }
             return sent;
         }
+
+        public override bool ScheduleReminder(DateTime selectedDate, TimeSpan selectedTime, string selectedSeconds)
+        {
+            if (!int.TryParse(selectedSeconds, out int seconds) || seconds < 0 || seconds > 59)
+                seconds = 0;
+
+            DateTime finalTime = new(
+                selectedDate.Year,
+                selectedDate.Month,
+                selectedDate.Day,
+                selectedTime.Hours,
+                selectedTime.Minutes,
+                seconds
+            );
+
+            if (finalTime <= DateTime.Now)
+                return false;
+
+            PushNotification(
+                Strings.NotificationTitle,
+                Strings.NotificationContent,
+                finalTime
+            );
+            return true;
+        }
     }
 }

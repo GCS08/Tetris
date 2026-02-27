@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using Tetris.Models;
-using static Tetris.Models.ConstData;
 
 namespace Tetris.ModelsLogic
 {
@@ -34,9 +33,6 @@ namespace Tetris.ModelsLogic
             TotalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
             GamesPlayed = await fbd.GetUserDataAsync<int>(Keys.GamesPlayedKey);
             HighestScore = await fbd.GetUserDataAsync<int>(Keys.HighestScoreKey);
-            Settings0 = await fbd.GetUserDataAsync<bool>(Keys.Settings0Key);
-            Settings1 = await fbd.GetUserDataAsync<bool>(Keys.Settings1Key);
-            Settings2 = await fbd.GetUserDataAsync<bool>(Keys.Settings2Key);
             DateJoined = await fbd.GetUserDataAsync<string>(Keys.DateJoinedKey);
 
             SaveToPreferences();
@@ -75,9 +71,6 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.TotalLinesKey, TotalLines);
             Preferences.Set(Keys.GamesPlayedKey, GamesPlayed);
             Preferences.Set(Keys.HighestScoreKey, HighestScore);
-            Preferences.Set(Keys.Settings0Key, Settings0);
-            Preferences.Set(Keys.Settings1Key, Settings1);
-            Preferences.Set(Keys.Settings2Key, Settings2);
             Preferences.Set(Keys.DateJoinedKey, DateJoined);
         }
         public override void SignOut()
@@ -112,7 +105,7 @@ namespace Tetris.ModelsLogic
         }
         protected override bool IsEmailValid()
         {
-            if (Email.Length < MinCharacterInEmail)
+            if (Email.Length < ConstData.MinCharacterInEmail)
             {
                 Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
                 return false;
@@ -126,7 +119,7 @@ namespace Tetris.ModelsLogic
         }
         protected override bool IsPasswordValid()
         {
-            if (Password.Length < MinCharacterInPW)
+            if (Password.Length < ConstData.MinCharacterInPW)
             {
                 Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
                 return false;
@@ -150,7 +143,7 @@ namespace Tetris.ModelsLogic
         }
         protected override bool IsUserNameValid()
         {
-            if (UserName.Length < MinCharacterInUN)
+            if (UserName.Length < ConstData.MinCharacterInUN)
             {
                 Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
                 return false;

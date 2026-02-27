@@ -156,63 +156,6 @@
                     </CollectionView>
                 </Border>
 
-                <Border
-                    Stroke="Yellow"
-                    StrokeShape="RoundRectangle 8"
-                    StrokeThickness="2">
-                    <!--  Color Picker (CollectionView)  -->
-                    <CollectionView
-                        FlowDirection="LeftToRight"
-                        SelectedItem="{Binding SelectedMaxPlayers, Mode=TwoWay}"
-                        SelectionMode="Single">
-
-                        <CollectionView.ItemsLayout>
-                            <GridItemsLayout Orientation="Vertical" Span="3" />
-                        </CollectionView.ItemsLayout>
-
-                        <CollectionView.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>2</x:String>
-                                <x:String>3</x:String>
-                                <x:String>4</x:String>
-                            </x:Array>
-                        </CollectionView.ItemsSource>
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Border Padding="5" Stroke="Transparent">
-                                    <Label
-                                        FontSize="20"
-                                        HorizontalOptions="Center"
-                                        Text="{Binding .}"
-                                        TextColor="White"
-                                        VerticalOptions="Center"
-                                        VerticalTextAlignment="Center" />
-
-                                    <!--  correct way to declare VisualState groups  -->
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup Name="CommonStates">
-                                            <VisualState Name="Normal">
-                                                <VisualState.Setters>
-                                                    <!--  Border.Background is a Brush; using Transparent for Normal  -->
-                                                    <Setter Property="Background" Value="Transparent" />
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                            <VisualState Name="Selected">
-                                                <VisualState.Setters>
-                                                    <!--  light gray selected background  -->
-                                                    <Setter Property="Background" Value="#AAAAAA" />
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-
-                    </CollectionView>
-                </Border>
-
                 <Button
                     Command="{Binding CreateGameCommand}"
                     FontSize="20"

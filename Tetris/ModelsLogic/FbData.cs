@@ -26,9 +26,6 @@ namespace Tetris.ModelsLogic
                     dateJoined = DateTime.Now.ToString(TechnicalConsts.DateFormat),
                     gamesPlayed = 0,
                     highestScore = 0,
-                    settings0 = true,
-                    settings1 = true,
-                    settings2 = true,
                     totalLinesCleared = 0,
                 });
                 
@@ -322,10 +319,7 @@ namespace Tetris.ModelsLogic
                 DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
                 GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
                 HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
-                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey),
-                Settings0 = docSnap.Get<bool>(Keys.Settings0Key),
-                Settings1 = docSnap.Get<bool>(Keys.Settings1Key),
-                Settings2 = docSnap.Get<bool>(Keys.Settings2Key)
+                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey)
             };
             return user;
         }
@@ -441,6 +435,10 @@ namespace Tetris.ModelsLogic
 
         public void UpdateUserPostGame(User user)
         {
+            Preferences.Set(Keys.GamesPlayedKey, user.GamesPlayed);
+            Preferences.Set(Keys.HighestScoreKey, user.HighestScore);
+            Preferences.Set(Keys.TotalLinesKey, user.TotalLines);
+
             IDocumentReference dr = fs.Collection(Keys.UsersCollectionName).Document(user.UserID);
             Dictionary<string, object> updates = new()
             {
@@ -449,6 +447,36 @@ namespace Tetris.ModelsLogic
                 { Keys.TotalLinesKey, user.TotalLines }
             };
             _ = dr.UpdateAsync(updates);
+        }
+
+        public override async Task<bool> SetPrivateJoinCode(string gameID, int code)
+        {
+            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
+            IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
+            if (snapshot.Documents.Any())
+                return false;
+            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            _ = dr.UpdateAsync(Keys.PrivateJoinCodeKey, code);
+            return true;
+        }
+        public override async Task<Game> GetGameByCode(int code)
+        {
+            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
+            IQuerySnapshot querySnap = await collectionRef.WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
+            IDocumentSnapshot? docSnap = querySnap.Documents.FirstOrDefault();
+            if (docSnap == null)
+                return null!;
+            return new Game(
+                docSnap.Get<string>(Keys.CubeColorKey)!,
+                docSnap.Get<string>(Keys.CreatorNameKey)!,
+                docSnap.Get<int>(Keys.CurrentPlayersCountKey),
+                docSnap.Get<int>(Keys.MaxPlayersCountKey),
+                docSnap.Get<bool>(Keys.IsPublicGameKey),
+                new Shape(docSnap.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
+                    docSnap.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
+                    docSnap.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
+                docSnap.Id
+            );
         }
     }
 }

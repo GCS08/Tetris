@@ -9,6 +9,7 @@ namespace Tetris.ViewModels
     {
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
+        public ICommand NavToRemindersCommand { get => new Command(NavToReminders); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
         private User user;
         private bool isLogged;
@@ -26,6 +27,7 @@ namespace Tetris.ViewModels
         }
         public bool SignOutVisibility => IsLogged;
         public bool PlayVisibility => IsLogged;
+        public bool RemindersVisibility => IsLogged;
         public bool LoginVisibility => !IsLogged;
         private string? welcomeUserName;
         public string? WelcomeUserName
@@ -63,14 +65,17 @@ namespace Tetris.ViewModels
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
             IsLogged = user.UserID != string.Empty;
         }
+        private void NavToReminders()
+        {
+            Shell.Current.Navigation.PushAsync(new RemindersPage());
+        }
         private void NavToLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage());
         }
         private void NavToGameLobby()
         {
-            Tetris.Platforms.Android.SoundManager.Instance.PlayLineCleared();
-            _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
+            Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
         private void SignOut()
         {

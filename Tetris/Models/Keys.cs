@@ -8,9 +8,6 @@
         public const string TotalLinesKey = "totalLinesCleared";
         public const string GamesPlayedKey = "gamesPlayed";
         public const string HighestScoreKey = "highestScore";
-        public const string Settings0Key = "settings0";
-        public const string Settings1Key = "settings1";
-        public const string Settings2Key = "settings2";
         public const string DateJoinedKey = "dateJoined";
         public const string FbApiKey = "AIzaSyA7bPSAvpotJs-gSNvMTmwitXrjD-yed_I";
         public const string FbAppDomainKey = "com.meitar.tetris";
@@ -70,5 +67,6 @@
         public const string MessageKey = "message";
         public const string NotificationChannelId = "default";
         public const string NotificationChannelName = "Default";
+        public const string PrivateJoinCodeKey = "PrivateJoinCode";
     }
 }

@@ -25,7 +25,14 @@ namespace Tetris.ModelsLogic
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
-
+        public Game() { }
+        public override async Task<Game> GetGameByCode(int code)
+        {
+            Game currentGame = await fbd.GetGameByCode(code);
+            if (currentGame != null)
+                return currentGame;
+            return null!;
+        }
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null
@@ -292,6 +299,20 @@ namespace Tetris.ModelsLogic
         public override void Ready()
         {
             fbd.SetPlayerReady(GameID, MaxPlayersCount, (Application.Current as App)!.AppUser.UserID);
+        }
+
+        public override async void CreateCode()
+        {
+            Random rnd = new();
+            int code = 0;
+            bool success = false;
+            while (!success)
+            {
+                code = rnd.Next(100000, 1000000);
+                success = await fbd.SetPrivateJoinCode(GameID, code);
+            }
+            PrivateJoinCode = code;
+            OnCodeReady?.Invoke(this, EventArgs.Empty);
         }
     }
 }

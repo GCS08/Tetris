@@ -28,17 +28,30 @@
             <VerticalStackLayout>
                 <Button
                     Margin="0,100,0,20"
-                    Command="{Binding SendNotificationCommand}"
-                    FontSize="30"
-                    HorizontalOptions="Center"
-                    Text="{x:Static m:Strings.PlaySoloButtonText}" />
-                <Button
-                    Margin="10"
                     Command="{Binding NavToNewGameConfigCommand}"
                     FontSize="30"
                     HorizontalOptions="Center"
                     LineBreakMode="WordWrap"
                     Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
+                <Grid WidthRequest="350">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Entry
+                        Keyboard="Numeric"
+                        FontSize="40"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding EnteredCode, Mode=TwoWay}"
+                        Grid.Column="1"/>
+                    <Button
+                        Grid.Column="0"
+                        Margin="10"
+                        Command="{Binding EnterPrivateGameCommand}"
+                        FontSize="30"
+                        HorizontalOptions="Center"
+                        Text="{x:Static m:Strings.JoinGameButtonText}" />
+                </Grid>
                 <CollectionView Margin="20" ItemsSource="{Binding Games}">
                     <CollectionView.Header>
                         <Label

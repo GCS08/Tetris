@@ -58,8 +58,6 @@ namespace Tetris.Platforms.Android
         public override void Show(string title, string message)
         {
             Intent intent = new(Platform.AppContext, typeof(MainActivity));
-            intent.PutExtra(Keys.TitleKey, title);
-            intent.PutExtra(Keys.MessageKey, message);
             intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
             PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
                 ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable

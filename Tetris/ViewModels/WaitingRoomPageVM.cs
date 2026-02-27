@@ -9,6 +9,8 @@ namespace Tetris.ViewModels
 {
     public partial class WaitingRoomPageVM : ObservableObject
     {
+        public string PrivateJoinCode => !CurrentGame.IsPublicGame ? 
+            Strings.CodeInterview + CurrentGame.PrivateJoinCode.ToString() : string.Empty;
         private Game CurrentGame { get; set; }
         public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
         public ObservableCollection<User> PlayersInGame => CurrentGame.UsersInGame;
@@ -22,6 +24,14 @@ namespace Tetris.ViewModels
             CurrentGame = game;
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
+            CurrentGame.OnCodeReady += OnCodeReady;
+            if (!CurrentGame.IsPublicGame && CurrentGame.PrivateJoinCode == 0)
+                CurrentGame.CreateCode();
+        }
+
+        private void OnCodeReady(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(PrivateJoinCode));
         }
 
         private void OnGameFull(object? sender, EventArgs e)

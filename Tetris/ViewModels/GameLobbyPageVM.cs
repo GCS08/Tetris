@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using CommunityToolkit.Maui.Alerts;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 using Tetris.Views;
@@ -8,32 +9,43 @@ namespace Tetris.ViewModels
 {
     public partial class GameLobbyPageVM : ObservableObject
     {
-        private readonly Notifications notifications;
         private JoinableGamesList? JoinableGamesList { get; set; } = new();
         public ObservableCollection<Game>? Games { get; private set; }
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavHome);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
-        public ICommand SendNotificationCommand { get; private set; }
+        public ICommand EnterPrivateGameCommand { get; private set; }
+        private int enteredCode;
+        public int EnteredCode
+        {
+            get => enteredCode;
+            set
+            {
+                if (enteredCode != value)
+                    enteredCode = value;
+            }
+        }
         public GameLobbyPageVM()
         {
-            notifications = new Notifications();
-            notifications.NotificationReceived += OnNotificationReceived;
-            SendNotificationCommand = new Command(SendNotification);
+            EnterPrivateGameCommand = new Command(EnterPrivateGame);
         }
-        private void OnNotificationReceived(object? sender, NotificationEventArgs e)
+        private async void EnterPrivateGame()
         {
-            //Will run when a user taps on a notification
-            //Enter here the code to navigate to a specific game
-
-            //NotificationTitle = e.Title;
-            //NotificationMessage = e.Message;
-            //OnPropertyChanged(nameof(NotificationTitle));
-            //OnPropertyChanged(nameof(NotificationMessage));
-        }
-        private void SendNotification()
-        {
-            notifications.PushNotification("Notification", "My notification message... ");
+            Game currentGame = new();
+            currentGame = await currentGame.GetGameByCode(EnteredCode);
+            if (currentGame != null)
+            {
+                currentGame.PrivateJoinCode = EnteredCode;
+                currentGame.NavToWR();
+            }
+            else
+            {
+                _ = Toast.Make(Strings.FalseCode,
+                    CommunityToolkit.Maui.Core.ToastDuration.Long,
+                    ConstData.ToastFontSize - 4).Show();
+                EnteredCode = 0;
+                OnPropertyChanged(nameof(EnteredCode));
+            }
         }
         private void OnGamesChanged(object? sender, EventArgs e)
         {

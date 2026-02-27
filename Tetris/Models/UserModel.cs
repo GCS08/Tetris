@@ -14,9 +14,6 @@ namespace Tetris.Models
         public int HighestScore { get; set; } = Preferences.Get(Keys.HighestScoreKey, 0);
         public string HighestScoreDisplay =>
             Strings.HighestScoreShort + HighestScore.ToString();
-        public bool Settings0 { get; set; } = Preferences.Get(Keys.Settings0Key, true);
-        public bool Settings1 { get; set; } = Preferences.Get(Keys.Settings1Key, true);
-        public bool Settings2 { get; set; } = Preferences.Get(Keys.Settings2Key, true);
         public string DateJoined { get; set; } = Preferences.Get(Keys.DateJoinedKey,
             DateTime.Now.ToString(TechnicalConsts.DateFormat));
         public string Email { get; set; } = Preferences.Get(Keys.EmailKey, string.Empty);

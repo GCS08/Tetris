@@ -15,7 +15,8 @@
         public const string Register = "Register!";
         public const string Login = "Login!";
         public const string LoginOrRegisterButton = "Login/Register? Click me!";
-        public const string SignOutButton = "Sign out.\nHope to see you soon!";
+        public const string SignOutButton = "Sign out";
+        public const string RemindersTitleText = "Set a Play Reminder!";
         public const string Welcome = "Welcome";
         public const string EmailExistsError = "The email address is already in use by another account.";
         public const string OperationNotAllowedError = "Unable to create an account in this method.";
@@ -78,6 +79,12 @@
         public string UserNameShortErrorMessage = "The username you provided is too short.\n" +
             "Your username's minimum length must be " + ConstData.MinCharacterInUN + " characters.\n" +
             "Please re-check it and try again.";
+        public const string NotificationSuccess = "Notification created successfully.";
+        public const string NotificationFail = "Notification creation has failed.";
+        public const string NotificationTitle = "Your Tetris misses you!";
+        public const string NotificationContent = "Come on! Align those blocks before they stack to the top of the board :(";
+        public const string FalseCode = "False code. Check your spell and try again.";
+        public const string CodeInterview = "Your room code is:\n";
         public const string UserNameShortErrorButton = "FineThenOkay!";
         public const string UserNameNumberErrorTitle = "Username doesn't have a number:";
         public const string UserNameNumberErrorMessage = "Your username must contain at least one number.\n" +
@@ -105,5 +112,6 @@
         public const string YouWon = "You won.\nGood job!";
         public const string LoadingResult = "Loading result...\nPlease wait.";
         public const string BackToGameLobby = "Back to game lobby";
+        public const string RemindersButtonText = "Reminders";
     }
 }
