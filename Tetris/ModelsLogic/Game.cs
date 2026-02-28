@@ -3,6 +3,7 @@ using Plugin.CloudFirestore;
 using System;
 using System.Collections.ObjectModel;
 using System.Timers;
+using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.Views;
 
@@ -37,13 +38,12 @@ namespace Tetris.ModelsLogic
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null
                 || GameBoard.FallTimer == null || OpFallTimer == null) return;
-            System.Diagnostics.Debug.WriteLine(GameBoard.User == (Application.Current as App)!.AppUser);
             if (!IsStatsUpdatedOnceOnGameFinished)
             {
-                if ((Application.Current as App)!.AppUser.HighestScore < GameBoard.Score)
-                        (Application.Current as App)!.AppUser.HighestScore = GameBoard.Score;
-                (Application.Current as App)!.AppUser.GamesPlayed++;
-                fbd.UpdateUserPostGame((Application.Current as App)!.AppUser);
+                GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
+                    ? GameBoard.Score : GameBoard.User.HighestScore;
+                GameBoard.User.GamesPlayed++;
+                fbd.UpdateUserPostGame(GameBoard.User);
                 IsStatsUpdatedOnceOnGameFinished = true;
             }
             GameBoard.FallTimer.Stop();
@@ -77,10 +77,9 @@ namespace Tetris.ModelsLogic
             }
             else
             {
-                await fbd.OnPlayerLeaveWR(GameID,
-                    (Application.Current as App)!.AppUser.UserID);
+                await fbd.OnPlayerLeaveWR(GameID, User.UserID);
                 CurrentPlayersCount--;
-                UsersInGame.Remove((Application.Current as App)!.AppUser);
+                UsersInGame.Remove(User);
             }            
         }
         public override void AddWaitingRoomListener()
@@ -146,7 +145,7 @@ namespace Tetris.ModelsLogic
                     OpGameBoard.ShapesQueue.Insert(newShape2);
             }
             else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.PlayerIdKey) != (Application.Current as App)!.AppUser.UserID)// Op player has moved
+                    + Keys.PlayerIdKey) != User.UserID)// Op player has moved
             {
                 desiredIndex--;
                 Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
@@ -183,21 +182,22 @@ namespace Tetris.ModelsLogic
                 OnPlayersChange?.Invoke(this, EventArgs.Empty);
             else
             {
-                if (GameBoard == null || OpGameBoard == null) return;
+                if (GameBoard == null || OpGameBoard == null || User == null) return;
                 fbd.SetGameIsFull(GameID);
                 GameBoard.GameID = GameID;
                 OpGameBoard.GameID = GameID;
-                GameBoard.User = (Application.Current as App)!.AppUser;
+                GameBoard.User = User;
                 foreach (User user in UsersInGame)
-                    if (user.UserID != (Application.Current as App)!.AppUser.UserID)
+                    if (user.UserID != User.UserID)
                         OpGameBoard.User = user;
                 OnGameFull?.Invoke(this, EventArgs.Empty);
             }
         }
         public override async void NavToWR()
         {
-            await fbd.OnPlayerJoinWR(GameID,
-                (Application.Current as App)!.AppUser.UserID);
+            if (User == null) return;
+
+            await fbd.OnPlayerJoinWR(GameID, User.UserID);
             CurrentPlayersCount++;
 
             _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
@@ -298,7 +298,8 @@ namespace Tetris.ModelsLogic
         }
         public override void Ready()
         {
-            fbd.SetPlayerReady(GameID, MaxPlayersCount, (Application.Current as App)!.AppUser.UserID);
+            if (User == null) return;
+            fbd.SetPlayerReady(GameID, MaxPlayersCount, User.UserID);
         }
 
         public override async void CreateCode()

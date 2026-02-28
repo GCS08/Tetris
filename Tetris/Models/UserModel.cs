@@ -1,10 +1,11 @@
-﻿using Tetris.ModelsLogic;
+﻿using Tetris.Interfaces;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
     public abstract class UserModel()
     {
-        protected FbData fbd = new();
+        protected FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
         public string UserID { get; set; } = Preferences.Get(Keys.UserIDKey, string.Empty);
         public string UserName { get; set; } = Preferences.Get(Keys.UserNameKey, string.Empty);
         public int TotalLines { get; set; } = Preferences.Get(Keys.TotalLinesKey, 0);
@@ -31,6 +32,7 @@ namespace Tetris.Models
         protected abstract void OnCompleteSendEmail(Task task);
         public abstract bool CanLogin();
         public abstract bool CanRegister(string repeatPassword);
+        public abstract void Reset();
         protected abstract bool IsEmailValid();
         protected abstract bool IsPasswordValid();
         protected abstract bool IsUserNameValid();

@@ -1,9 +1,10 @@
 ﻿using CommunityToolkit.Maui.Alerts;
+using Tetris.Interfaces;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    public class User : UserModel
+    public class User : UserModel, IUser
     {        
         public override async Task<bool> Login()
         {
@@ -77,6 +78,7 @@ namespace Tetris.ModelsLogic
         {
             fbd.SignOut();
             Preferences.Clear();
+            Reset();
         }
         public override async Task ResetPassword() 
         {
@@ -102,6 +104,18 @@ namespace Tetris.ModelsLogic
         public override bool CanRegister(string repeatPassword)
         {
             return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
+        }
+        public override void Reset()
+        {
+            UserID = Preferences.Get(Keys.UserIDKey, string.Empty);
+            UserName = Preferences.Get(Keys.UserNameKey, string.Empty);
+            TotalLines = Preferences.Get(Keys.TotalLinesKey, 0);
+            GamesPlayed = Preferences.Get(Keys.GamesPlayedKey, 0);
+            HighestScore = Preferences.Get(Keys.HighestScoreKey, 0);
+            DateJoined = Preferences.Get(Keys.DateJoinedKey,
+            DateTime.Now.ToString(TechnicalConsts.DateFormat));
+            Email = Preferences.Get(Keys.EmailKey, string.Empty);
+            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
         }
         protected override bool IsEmailValid()
         {

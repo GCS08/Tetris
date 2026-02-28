@@ -1,4 +1,4 @@
-﻿namespace Tetris.Models
+﻿namespace Tetris.Interfaces
 {
     public interface INotificationManagerService
     {

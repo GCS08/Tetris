@@ -1,4 +1,5 @@
-﻿using Tetris.Models;
+﻿using Tetris.Interfaces;
+using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {

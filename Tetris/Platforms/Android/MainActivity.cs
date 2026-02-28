@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using CommunityToolkit.Mvvm.Messaging;
+using Tetris.Interfaces;
 using Tetris.Models;
 
 namespace Tetris.Platforms.Android

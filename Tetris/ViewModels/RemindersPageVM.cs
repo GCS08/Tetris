@@ -8,11 +8,9 @@ using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
-    public class RemindersPageVM : INotifyPropertyChanged
+    public class RemindersPageVM
     {
         private readonly Notifications notifications;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand ScheduleReminderCommand => new Command(ScheduleReminder);

@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 using Tetris.Views;
@@ -7,35 +8,36 @@ namespace Tetris.ViewModels
 {
     public partial class LoginPageVM : ObservableObject
     {
+        public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand LoginCommand { get; }
         public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
         public bool LoginEnable { get; set; } = true;
-        private readonly User user;
         public bool IsBusy { get; set; } = false;
         public string Email
         {
-            get => user.Email;
+            get => User?.Email ?? Strings.EmailUa;
             set
             {
-                user.Email = value;
+                if (User != null && User.Email != value)
+                    User.Email = value;
             }
         }
         public string Password
         {
-            get => user.Password;
+            get => User?.Password ?? Strings.PasswordUa;
             set
             {
-                user.Password = value;
+                if (User != null && User.Password != value)
+                    User.Password = value;
             }
         }
         public bool IsPassword { get; set; } = true;
         public LoginPageVM()
         {
             RefreshProperties();
-            user = (Application.Current as App)!.AppUser;
             LoginCommand = new Command(async () => await Login());
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
@@ -48,17 +50,18 @@ namespace Tetris.ViewModels
         }
         private bool CanLogin()
         {
-            return user.CanLogin();
+            if (User == null) return false;
+            return User.CanLogin();
         }
         private async Task Login()
         {
-            if (CanLogin())
+            if (User != null && CanLogin())
             {
                 IsBusy = true;
                 OnPropertyChanged(nameof(IsBusy));
                 LoginEnable = false;
                 OnPropertyChanged(nameof(LoginEnable));
-                bool successfullyLogged = await user.Login();
+                bool successfullyLogged = await User.Login();
                 if (successfullyLogged)
                     _ = Shell.Current.Navigation.PushAsync(new MainPage());
                 IsBusy = false;
@@ -69,9 +72,10 @@ namespace Tetris.ViewModels
         }
         private async Task ForgotPassword()
         {
+            if (User == null) return;
             IsBusy = true;
             OnPropertyChanged(nameof(IsBusy));
-            await user.ResetPassword();
+            await User.ResetPassword();
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
         }

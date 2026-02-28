@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Tetris.Interfaces;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris
 {
@@ -23,9 +25,10 @@ namespace Tetris
             builder.Logging.AddDebug();
 #endif
 
-#if ANDROID
             builder.Services.AddSingleton<INotificationManagerService, Tetris.Platforms.Android.NotificationManagerService>();
-#endif
+            builder.Services.AddSingleton<IFbData, FbData>();
+            builder.Services.AddSingleton<IUser, User>();
+
             return builder.Build();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 using Tetris.Views;
@@ -16,38 +17,32 @@ namespace Tetris.ViewModels
         public ICommand ToggleIsPassword2Command { get; }
         public bool RegisterEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
-        private readonly User user;
+        private readonly User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
         public string UserName
         {
-            get => user.UserName;
+            get => User?.UserName ?? Strings.UsernameUa;
             set
             {
-                if (value != user.UserName)
-                {
-                    user.UserName = value;
-                }
+                if (User != null && User.UserName != value)
+                    User.UserName = value;
             }
         }
         public string Email
         {
-            get => user.Email;
+            get => User?.Email ?? Strings.EmailUa;
             set
             {
-                if (value != user.Email)
-                {
-                    user.Email = value;
-                }
+                if (User != null && User.Email != value)
+                    User.Email = value;
             }
         }
         public string Password
         {
-            get => user.Password;
+            get => User?.Password ?? Strings.PasswordUa;
             set
             {
-                if (value != user.Password)
-                {
-                    user.Password = value;
-                }
+                if (User != null && User.Password != value)
+                    User.Password = value;
             }
         }
         private string passwordRepeat;
@@ -67,7 +62,6 @@ namespace Tetris.ViewModels
         public RegisterPageVM()
         {
             RefreshProperties();
-            user = (Application.Current as App)!.AppUser;
             passwordRepeat = string.Empty;
             RegisterCommand = new Command(async () => await Register());
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);
@@ -85,7 +79,7 @@ namespace Tetris.ViewModels
         }
         private bool CanRegister()
         {
-            return user.CanRegister(passwordRepeat);
+            return User.CanRegister(passwordRepeat);
         }
         private async Task Register()
         {
@@ -95,7 +89,7 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(IsBusy));
                 RegisterEnable = false;
                 OnPropertyChanged(nameof(RegisterEnable));
-                bool successfullyRegistered = await user.Register();
+                bool successfullyRegistered = await User.Register();
                 if (successfullyRegistered)
                     _ = Shell.Current.Navigation.PushAsync(new MainPage());
                 IsBusy = false;

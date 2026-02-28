@@ -1,5 +1,6 @@
 ﻿using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
+using Tetris.Interfaces;
 using Tetris.ModelsLogic;
 
 namespace Tetris.Models
@@ -9,7 +10,7 @@ namespace Tetris.Models
         public ObservableCollection<Game>? gamesObsCollection;
         public EventHandler? OnGamesChanged;
         protected IListenerRegistration? ilr;
-        protected readonly FbData fbd = new();
+        protected readonly FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
         public abstract Task<JoinableGamesList> CreateAsync();
         public abstract void AddGamesCollectionListener();
         protected abstract void OnChange(IQuerySnapshot snapshot, Exception error);

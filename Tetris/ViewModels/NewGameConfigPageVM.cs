@@ -1,7 +1,8 @@
 ﻿using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.Models;
-using Tetris.Views;
 using Tetris.ModelsLogic;
+using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
@@ -13,11 +14,10 @@ namespace Tetris.ViewModels
         private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
         public bool IsCreateEnabled { get; set; } = true;
-        private readonly User user;
+        private readonly User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
-            user = (Application.Current as App)!.AppUser;
-            currentNewGame = new(Keys.RedKey, user.UserName, 1, 2, true, new(0), string.Empty);
+            currentNewGame = new(Keys.RedKey, User?.UserName ?? Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
         public string SelectedColor
@@ -49,9 +49,9 @@ namespace Tetris.ViewModels
         }
         private void CreateGame()
         {
+            if (User == null) return;
             UpdatePropertiesByBusy(true);
-            gamesList.AddGameToDB(currentNewGame,
-                (Application.Current as App)!.AppUser);
+            gamesList.AddGameToDB(currentNewGame, User);
             UpdatePropertiesByBusy(false);
             Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));

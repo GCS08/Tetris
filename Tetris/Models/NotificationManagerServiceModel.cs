@@ -1,4 +1,5 @@
 ﻿using AndroidX.Core.App;
+using Tetris.Interfaces;
 using Tetris.Platforms.Android;
 
 namespace Tetris.Models

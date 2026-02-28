@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 using Tetris.Views;
@@ -12,10 +13,11 @@ public partial class GamePageVM : ObservableObject
     public bool IsGameFinishedVisible { get; set; } = false;
 
     public Color GameFinishedResultColor { get; set; } = Colors.Black;
+    public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
     public string GameFinishedResultText { get; set; } = Strings.LoadingResult;
     public string TimeLeft => CurrentGame.TimeLeftText;
-    public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UaUsername;
-    public string PlayerName => (Application.Current as App)!.AppUser.UserName;
+    public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UsernameUa;
+    public string PlayerName => User?.UserName ?? Strings.UsernameUa;
     public GridLength UserScreenHeight => ConstData.UserScreenHeight;
 
     public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);

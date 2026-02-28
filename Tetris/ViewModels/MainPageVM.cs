@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.ModelsLogic;
 using Tetris.Views;
@@ -11,7 +12,7 @@ namespace Tetris.ViewModels
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand NavToRemindersCommand { get => new Command(NavToReminders); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
-        private User user;
+        public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
         private bool isLogged;
         private bool IsLogged
         {
@@ -45,25 +46,24 @@ namespace Tetris.ViewModels
 
         public MainPageVM()
         {
-            user = (Application.Current as App)!.AppUser;
             //SignOut();
             RefreshProperties();
         }
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = [nameof(LoginVisibility), nameof(SignOutVisibility), nameof(PlayVisibility)];
+            string[] nameOfs = [nameof(LoginVisibility), nameof(RemindersVisibility), nameof(SignOutVisibility), nameof(PlayVisibility)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
         private void RefreshProperties()
         {
-            if (user.UserName != string.Empty)
+            if (User != null && User.UserName != string.Empty)
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign + 
-                    user.UserName + TechnicalConsts.ExclamationSign;
+                    User.UserName + TechnicalConsts.ExclamationSign;
             else
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign +
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
-            IsLogged = user.UserID != string.Empty;
+            IsLogged = User != null && User.UserID != string.Empty;
         }
         private void NavToReminders()
         {
@@ -79,9 +79,8 @@ namespace Tetris.ViewModels
         }
         private void SignOut()
         {
-            user.SignOut();
-            (Application.Current as App)!.AppUser = new();
-            user = (Application.Current as App)!.AppUser;
+            if (User == null) return;
+            User.SignOut();
             RefreshProperties();
         }
     }

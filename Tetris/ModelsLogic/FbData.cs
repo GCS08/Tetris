@@ -3,11 +3,12 @@ using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Tetris.Interfaces;
 using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
-    public class FbData : FbDataModel
+    public class FbData : FbDataModel, IFbData
     {
         public override async Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, bool> OnCompleteRegister)
         {
@@ -432,8 +433,7 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-
-        public void UpdateUserPostGame(User user)
+        public override void UpdateUserPostGame(User user)
         {
             Preferences.Set(Keys.GamesPlayedKey, user.GamesPlayed);
             Preferences.Set(Keys.HighestScoreKey, user.HighestScore);
@@ -448,7 +448,6 @@ namespace Tetris.ModelsLogic
             };
             _ = dr.UpdateAsync(updates);
         }
-
         public override async Task<bool> SetPrivateJoinCode(string gameID, int code)
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);

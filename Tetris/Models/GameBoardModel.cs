@@ -1,4 +1,6 @@
-﻿using Tetris.ModelsLogic;
+﻿using Microsoft.Maui;
+using Tetris.Interfaces;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
@@ -12,7 +14,7 @@ namespace Tetris.Models
         public User? User { get; set; }
         public bool IsOp { get; set; }
         public IDispatcherTimer? FallTimer;
-        protected FbData fbd = new();
+        protected FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
         public EventHandler? OnOpQueueEmpty;
         public EventHandler? OnGameFinishedLogic;
         public bool EnableMoves { get; set; } = false;

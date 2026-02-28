@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Timers;
 using System.Windows.Input;
+using Tetris.Interfaces;
 using Tetris.ModelsLogic;
 
 namespace Tetris.Models
@@ -32,11 +33,12 @@ namespace Tetris.Models
         public EventHandler? OnCodeReady;
         public GameBoard? GameBoard;
         public GameBoard? OpGameBoard;
+        protected User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
         protected int desiredIndex = 0;
         protected bool IsGameStarted = false;
         protected bool IsStatsUpdatedOnceOnGameFinished = false;
         protected string currentMovingOpId = string.Empty;
-        protected FbData fbd = new();
+        protected FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
         protected IDispatcherTimer? OpFallTimer;
         protected ModelsLogic.Queue<KeyValuePair<string, string>> movesQueue = new();
         protected bool IsMovesQueueSorting { get; set; } = false;

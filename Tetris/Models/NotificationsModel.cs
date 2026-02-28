@@ -1,4 +1,6 @@
-﻿namespace Tetris.Models
+﻿using Tetris.Interfaces;
+
+namespace Tetris.Models
 {
     public abstract class NotificationsModel
     {
