@@ -39,7 +39,7 @@ namespace Tetris.Models
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
         public abstract void ResetIsShapeAtBottom(string gameID, int desiredIndex);
-        public abstract void DeleteFbDocs();
+        public abstract Task DeleteFbDocsAsync();
         public abstract void UpdateUserPostGame(ModelsLogic.User user);
         public abstract Task<Game> GetGameByCode(int code);
         public abstract Task<bool> SetPrivateJoinCode(string gameID, int code);

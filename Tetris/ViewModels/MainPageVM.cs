@@ -43,7 +43,6 @@ namespace Tetris.ViewModels
                 }
             }
         }
-
         public MainPageVM()
         {
             //SignOut();

@@ -34,7 +34,7 @@ namespace Tetris.Interfaces
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public void SetPlayerReady(string gameID, int maxPlayersCount, string userID);
         public void ResetIsShapeAtBottom(string gameID, int desiredIndex);
-        public void DeleteFbDocs();
+        public Task DeleteFbDocsAsync();
         public void UpdateUserPostGame(ModelsLogic.User user);
         public Task<Game> GetGameByCode(int code);
         public Task<bool> SetPrivateJoinCode(string gameID, int code);

@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Tetris.Interfaces;
 using Tetris.Models;
+using static Xamarin.Io.OpenCensus.Metrics.Export.Summary;
 
 namespace Tetris.ModelsLogic
 {
@@ -331,7 +332,6 @@ namespace Tetris.ModelsLogic
         }
         public override void AddShape(Shape currentShape, string gameId)
         {
-            System.Diagnostics.Debug.WriteLine("FbData.AddShape start");
             if (currentShape.Color == null) return;
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
             docRef.UpdateAsync(Keys.CurrentShapeMapKey, new Dictionary<string, object>
@@ -341,7 +341,6 @@ namespace Tetris.ModelsLogic
                 { Keys.CurrentShapeColorKey, Converters.
                 StringAndColorConverter.ColorToColorName(currentShape.Color) }
             });
-            System.Diagnostics.Debug.WriteLine("FbData.AddShape end");
         }
         public override Shape CreateShape(IDocumentSnapshot snapshot)
         {
@@ -413,24 +412,29 @@ namespace Tetris.ModelsLogic
             dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
                 + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
         }
-        public override async void DeleteFbDocs()
+        public override async Task DeleteFbDocsAsync()
         {
-            ICollectionReference collectionRef =
-                fs.Collection(Keys.GamesCollectionName);
-
-            IQuerySnapshot snapshot = await collectionRef.GetAsync();
-
-            foreach (IDocumentSnapshot docSnap in snapshot.Documents)
+            try
             {
-                DateTime timeCreated =
-                    DateTime.Parse(docSnap.Get<string>(Keys.TimeCreatedKey)!);
+                ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
 
-                TimeSpan timeDiff = DateTime.UtcNow - timeCreated;
+                // Calculate the cutoff time
+                DateTime cutoffTime = DateTime.Now - TimeSpan.FromSeconds(ConstData.TimePassedToDeleteFbDocS);
 
-                if (timeDiff.TotalSeconds >= ConstData.TimePassedToDeleteFbDocS)
+                // If your TimeCreatedKey is stored as a Firestore Timestamp, you can query directly
+                IQuery query = collectionRef.WhereLessThan(Keys.TimeCreatedKey, cutoffTime);
+                Android.Util.Log.Debug("try", "hey");
+                IQuerySnapshot snapshot = await query.GetAsync();
+                Android.Util.Log.Debug("DeleteFbDocs", $"Retrieved {snapshot.Documents.Chunk} documents");
+                foreach (IDocumentSnapshot docSnap in snapshot.Documents)
                 {
-                    _ = docSnap.Reference.DeleteAsync();
+                    try { await docSnap.Reference.DeleteAsync(); }
+                    catch { }
                 }
+            }
+            catch (Exception ex)
+            {
+                Android.Util.Log.Debug("exception", ex.Message);
             }
         }
         public override void UpdateUserPostGame(User user)

@@ -20,6 +20,26 @@ namespace Tetris.Platforms.Android
                 Instance = this;
             }
         }
+        public Notification BuildForegroundNotification(string title, string message)
+        {
+            Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
+            intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
+
+            PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+                ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
+                : PendingIntentFlags.UpdateCurrent;
+
+            PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, 0, intent, pendingIntentFlags);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, Keys.NotificationChannelId)
+                .SetContentIntent(pendingIntent)
+                .SetContentTitle(title)
+                .SetContentText(message)
+                .SetSmallIcon(Resource.Drawable.appiconsmall)
+                .SetColor(Colors.Blue.ToInt());
+
+            return builder.Build();
+        }
         public override void SendNotification(string title, string message, DateTime? notifyTime = null)
         {
             if (!channelInitialized)

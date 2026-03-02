@@ -5,6 +5,7 @@ using Android.OS;
 using CommunityToolkit.Mvvm.Messaging;
 using Tetris.Interfaces;
 using Tetris.Models;
+using Tetris.ModelsLogic;
 
 namespace Tetris.Platforms.Android
 {
@@ -12,13 +13,16 @@ namespace Tetris.Platforms.Android
     public class MainActivity : MauiAppCompatActivity
     {
         StartGameTimer? startGameTimer;
-        protected override void OnCreate(Bundle? savedInstanceState)
+        protected override async void OnCreate(Bundle? savedInstanceState)
         {
             /*default*/ base.OnCreate(savedInstanceState);
             /*timer*/ RegisterTimerMessages();
             /*deleteFbDocs*/ StartDeleteFbDocsService();
-            /*soundManager*/ _ = SoundManager.Instance.InitializeAsync();
-            /*notifications*/ Permissions.RequestAsync<NotificationPermission>();
+            /*notifications*/ _ = Permissions.RequestAsync<NotificationPermission>();
+            //sound manager:
+            if (IPlatformApplication.Current?.Services
+                .GetService<ISoundManager>() is SoundManager soundManager)
+                await soundManager.InitializeAsync();
         }
         protected override void OnNewIntent(Intent? intent)
         {
@@ -65,7 +69,14 @@ namespace Tetris.Platforms.Android
         private void StartDeleteFbDocsService()
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));
-            StartService(intent);
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                StartForegroundService(intent);
+            }
+            else
+            {
+                this.StartService(intent);
+            }
         }
     }
 }

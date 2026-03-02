@@ -84,6 +84,7 @@
                     Text="{Binding PrivateJoinCode}"
                     HorizontalTextAlignment="Center"
                     FontSize="20"
+                    TextColor="White"
                     HeightRequest="300"
                     VerticalTextAlignment="Center"
                     VerticalOptions="Center"/>

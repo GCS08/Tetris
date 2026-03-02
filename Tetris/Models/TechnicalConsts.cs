@@ -9,6 +9,8 @@
         public const string MaterialSymbolsFontPath = "MaterialSymbolsOutlined.ttf";
         public const string OpenSansRegular = "OpenSans-Regular.ttf";
         public const string OpenSansSemiBold = "OpenSans-Semibold.ttf";
+        public const string lineClearedPath = "Sounds/lineCleared.mp3";
+        public const string shapeDownPath = "Sounds/shapeDown.mp3";
         public const string ResultsJson = "results";
         public const string LoginJson = "login";
         public const string UsernameJson = "username";

@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Tetris.Interfaces;
@@ -8,39 +9,45 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.Platforms.Android
 {
+    [Service(
+    Name = "tetris.platforms.android.DeleteFbDocsService",
+    Exported = true,
+    ForegroundServiceType = ForegroundService.TypeDataSync)]
     public class DeleteFbDocsService : Service
     {
         private bool isRunning = true;
         private readonly FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
-        [return: GeneratedEnum]
+        private readonly NotificationManagerService? notificationManager = IPlatformApplication.
+            Current?.Services.GetService<INotificationManagerService>() as NotificationManagerService;
         public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
-            ThreadStart threadStart = new(DeleteFbDocs);
-            Thread thread = new(threadStart);
-            thread.Start();
-            return base.OnStartCommand(intent, flags, startId);
-        }
-
-        private void DeleteFbDocs()
-        {
-            while (isRunning)
+            if (notificationManager != null)
             {
-                fbd.DeleteFbDocs();
-                Thread.Sleep(ConstData.DeleteFbDocsIntervalS * 1000); // 1 hour
+                var notification = notificationManager.BuildForegroundNotification(
+                    "Tetris Service",
+                    "Deleting old Firebase docs..."
+                );
+                StartForeground(1, notification);
             }
-            StopSelf();
-        }
 
+            Task.Run(async () =>
+            {
+                while (isRunning)
+                {
+                    await fbd.DeleteFbDocsAsync();
+                    await Task.Delay(ConstData.DeleteFbDocsIntervalS * 1000);
+                }
+                StopSelf();
+            });
+
+            return StartCommandResult.Sticky;
+        }
         public override void OnDestroy()
         {
             isRunning = false;
             base.OnDestroy();
         }
-        
-        public override IBinder? OnBind(Intent? intent)
-        {
-            // We don't use it
-            return null;
-        }
+
+        public override IBinder? OnBind(Intent? intent) => null;
     }
 }

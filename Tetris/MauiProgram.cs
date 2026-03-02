@@ -28,6 +28,7 @@ namespace Tetris
             builder.Services.AddSingleton<INotificationManagerService, Tetris.Platforms.Android.NotificationManagerService>();
             builder.Services.AddSingleton<IFbData, FbData>();
             builder.Services.AddSingleton<IUser, User>();
+            builder.Services.AddSingleton<ISoundManager, SoundManager>();
 
             return builder.Build();
         }

@@ -1,6 +1,5 @@
 ﻿using System.Timers;
 using Tetris.Models;
-using Tetris.Platforms.Android;
 
 namespace Tetris.ModelsLogic
 {
@@ -44,7 +43,7 @@ namespace Tetris.ModelsLogic
             int linesCleared = CheckForLines();
             if (linesCleared > 0 && !IsOp)
             {
-                SoundManager.Instance.PlayLineCleared();
+                SoundManager.PlayLineCleared();
                 User.TotalLines += linesCleared;
                 Score += linesCleared * ConstData.ScorePerLine * ComboCount;
                 ComboCount++;
@@ -274,6 +273,8 @@ namespace Tetris.ModelsLogic
                     EraseShape();
                     CurrentShape.TopLeftY++;
                     ShowShape();
+                    if (!IsOp)
+                        SoundManager.PlayMoveDown();
                 }
                 else
                 {

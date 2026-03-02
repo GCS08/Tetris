@@ -40,6 +40,7 @@
                     </Grid.ColumnDefinitions>
                     <Entry
                         Keyboard="Numeric"
+                        TextColor="White"
                         FontSize="40"
                         HorizontalTextAlignment="Center"
                         Text="{Binding EnteredCode, Mode=TwoWay}"
