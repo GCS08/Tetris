@@ -10,6 +10,7 @@ namespace Tetris.ModelsLogic
         {
             audioManager = AudioManager.Current;
         }
+   
         public override async Task InitializeAsync()
         {
             if (audioManager == null) return;

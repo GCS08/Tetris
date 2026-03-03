@@ -50,6 +50,7 @@ public partial class GamePageVM : ObservableObject
         OnPropertyChanged(nameof(GameFinishedResultColor));
         OnPropertyChanged(nameof(GameFinishedResultText));
     }
+  
     private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(TimeLeft));
@@ -77,36 +78,47 @@ public partial class GamePageVM : ObservableObject
     {
         _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
     }
+   
     private void Ready()
     {
         CurrentGame.Ready();
     }
+  
     private void MoveRightShape()
     {
         CurrentGame.MoveRightShape();
     }
+   
     private void MoveLeftShape()
     {
         CurrentGame.MoveLeftShape();
     }
+  
     private void MoveDownShape()
     {
         CurrentGame.MoveDownShape();
     }
+ 
     private void RotateShape()
     {
         CurrentGame.RotateShape();
     }
+   
     public void InitializeGrid()
     {
-        if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null || GameBoardGrid == null || OpGameBoardGrid == null) return;
-        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+        if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null
+            || GameBoardGrid == null || OpGameBoardGrid == null) return;
+        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, 
+            ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
+        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, 
+            ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
+   
     public void AddReadyListener()
     {
         CurrentGame.AddReadyListener();
     }
+  
     public void RemoveGameListener()
     {
         CurrentGame.RemoveGameListener();

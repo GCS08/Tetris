@@ -7,22 +7,28 @@ namespace Tetris.ModelsLogic
     {
         public Notifications()
         {
-            Permissions.CheckStatusAsync<Permissions.PostNotifications>().ContinueWith(SetPermissionStatus);
+            Permissions.CheckStatusAsync<Permissions.PostNotifications>().
+                ContinueWith(SetPermissionStatus);
             // Get the notification manager service from the MAUI context.
-            // Obviously the app doesn't send notification, the maui does on command from the app, called from notification manager service.
-            notificationManager = Application.Current?.MainPage?.Handler?.MauiContext?.Services.GetService<INotificationManagerService>();
+            // Obviously the app doesn't send notification, the maui does on
+            // command from the app, called from notification manager service.
+            notificationManager = Application.Current?.MainPage?.Handler?.
+                MauiContext?.Services.GetService<INotificationManagerService>();
             if (notificationManager != null)
                 notificationManager.NotificationReceived += OnNotificationReceived;
         }
+      
         protected override void SetPermissionStatus(Task<PermissionStatus> task)
         {
             if (task.IsCompletedSuccessfully)
                 PermissionStatus = task.Result;
         }
+       
         protected override void OnNotificationReceived(object? sender, EventArgs e)
         {
             NotificationReceived?.Invoke(this, (NotificationEventArgs)e);
         }
+      
         public override bool PushNotification(string title, string message, DateTime? notifyTime = null)
         {
             bool sent = false;
@@ -35,7 +41,8 @@ namespace Tetris.ModelsLogic
             return sent;
         }
 
-        public override bool ScheduleReminder(DateTime selectedDate, TimeSpan selectedTime, string selectedSeconds)
+        public override bool ScheduleReminder(DateTime selectedDate, 
+            TimeSpan selectedTime, string selectedSeconds)
         {
             if (!int.TryParse(selectedSeconds, out int seconds) || seconds < 0 || seconds > 59)
                 seconds = 0;

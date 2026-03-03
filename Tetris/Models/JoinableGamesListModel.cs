@@ -10,7 +10,8 @@ namespace Tetris.Models
         public ObservableCollection<Game>? gamesObsCollection;
         public EventHandler? OnGamesChanged;
         protected IListenerRegistration? ilr;
-        protected readonly FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
+        protected readonly FbData fbd = IPlatformApplication.
+            Current?.Services.GetService<IFbData>() as FbData ?? new();
         public abstract Task<JoinableGamesList> CreateAsync();
         public abstract void AddGamesCollectionListener();
         protected abstract void OnChange(IQuerySnapshot snapshot, Exception error);

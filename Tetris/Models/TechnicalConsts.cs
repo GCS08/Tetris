@@ -6,7 +6,8 @@
         public const string ResponseText = "Response:";
         public const string ErrorJson = "error";
         public const string MessageJson = "message";
-        public const string MaterialSymbolsFontPath = "MaterialSymbolsOutlined.ttf";
+        public const string MaterialSymbolsFontPath = 
+            "MaterialSymbolsOutlined.ttf";
         public const string OpenSansRegular = "OpenSans-Regular.ttf";
         public const string OpenSansSemiBold = "OpenSans-Semibold.ttf";
         public const string lineClearedPath = "Sounds/lineCleared.mp3";

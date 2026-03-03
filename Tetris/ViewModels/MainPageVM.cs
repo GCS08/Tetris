@@ -43,17 +43,21 @@ namespace Tetris.ViewModels
                 }
             }
         }
+   
         public MainPageVM()
         {
             //SignOut();
             RefreshProperties();
         }
+      
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = [nameof(LoginVisibility), nameof(RemindersVisibility), nameof(SignOutVisibility), nameof(PlayVisibility)];
+            string[] nameOfs = [nameof(LoginVisibility), nameof(RemindersVisibility)
+                , nameof(SignOutVisibility), nameof(PlayVisibility)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
+    
         private void RefreshProperties()
         {
             if (User != null && User.UserName != string.Empty)
@@ -64,18 +68,22 @@ namespace Tetris.ViewModels
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
             IsLogged = User != null && User.UserID != string.Empty;
         }
+     
         private void NavToReminders()
         {
             Shell.Current.Navigation.PushAsync(new RemindersPage());
         }
+      
         private void NavToLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage());
         }
+      
         private void NavToGameLobby()
         {
             Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
+    
         private void SignOut()
         {
             if (User == null) return;

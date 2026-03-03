@@ -25,7 +25,9 @@ namespace Tetris.ModelsLogic
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
+      
         public Game() { }
+        
         public override async Task<Game> GetGameByCode(int code)
         {
             Game currentGame = await fbd.GetGameByCode(code);
@@ -33,10 +35,11 @@ namespace Tetris.ModelsLogic
                 return currentGame;
             return null!;
         }
+   
         private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
-            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || OpGameBoard.User == null
-                || GameBoard.FallTimer == null || OpFallTimer == null) return;
+            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
+                OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
             if (!IsStatsUpdatedOnceOnGameFinished)
             {
                 GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
@@ -65,6 +68,7 @@ namespace Tetris.ModelsLogic
         {
             WeakReferenceMessenger.Default.Unregister<AppMessage<long>>(this);
         }
+    
         protected override void OnMessageReceived(long timeLeft)
         {
             TimeLeftMs = timeLeft;
@@ -73,6 +77,7 @@ namespace Tetris.ModelsLogic
                 OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
             });
         }
+    
         public override async Task OnPlayerLeaveWR() 
         {
             if (CurrentPlayersCount <= 1)
@@ -87,18 +92,22 @@ namespace Tetris.ModelsLogic
                 UsersInGame.Remove(User);
             }            
         }
+    
         public override void AddWaitingRoomListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom);
         }
+    
         public override void RemoveWaitingRoomListener()
         {
             ilr?.Remove();
         }
+  
         public override void AddGameListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeGame);
         }
+   
         public override void RemoveGameListener()
         {
             ilr?.Remove();
@@ -107,10 +116,12 @@ namespace Tetris.ModelsLogic
         {
             ilr = fbd.AddGameListener(GameID, OnChangeReady);
         }
+    
         public override void RemoveReadyListener()
         {
             ilr?.Remove();
         }
+    
         protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
@@ -124,6 +135,7 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
+    
         protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
@@ -156,7 +168,8 @@ namespace Tetris.ModelsLogic
                 Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
                     (Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
 
-                currentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+                currentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
 
                 fbd.ResetIsShapeAtBottom(GameID, desiredIndex);
 
@@ -172,12 +185,14 @@ namespace Tetris.ModelsLogic
                     OpFallTimer.Start();
             }
         }
+     
         protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
         }
+  
         protected override void OnCompleteChange(ObservableCollection<User> users)
         {
             UsersInGame.Clear();
@@ -198,6 +213,7 @@ namespace Tetris.ModelsLogic
                 OnGameFull?.Invoke(this, EventArgs.Empty);
             }
         }
+     
         public override async void NavToWR()
         {
             if (User == null) return;
@@ -207,6 +223,7 @@ namespace Tetris.ModelsLogic
 
             _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
         }
+      
         public override void PrepareGame()
         {
             WeakReferenceMessenger.Default.Send(
@@ -214,6 +231,7 @@ namespace Tetris.ModelsLogic
 
             RemoveReadyListener();
         }
+   
         public override void StartGame()
         {
             if (GameBoard == null || OpGameBoard == null || IsGameStarted) return;
@@ -263,44 +281,52 @@ namespace Tetris.ModelsLogic
             
             GameBoard.MoveRightShape();
         }
+      
         public override void MoveLeftShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.MoveLeftShape();
         }
+     
         public override async void MoveDownShape() 
         {
             if (GameBoard == null) return;
 
             await GameBoard.MoveDownShape();
         }
+   
         public override void RotateShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.RotateShape();
         }
+    
         public override void MoveRightOpShape()
         {
             if (OpGameBoard == null) return;
             OpGameBoard.MoveRightShape();
         }
+   
         public override void MoveLeftOpShape()
         {
             if (OpGameBoard == null) return; 
             OpGameBoard.MoveLeftShape();
         }
+     
         public override async void MoveDownOpShape() 
         {
             if (OpGameBoard == null) return;
             await OpGameBoard.MoveDownShape();
         }
+     
         public override void RotateOpShape()
         {
             if (OpGameBoard == null) return;
             OpGameBoard.RotateShape();
         }
+     
         public override void Ready()
         {
             if (User == null) return;

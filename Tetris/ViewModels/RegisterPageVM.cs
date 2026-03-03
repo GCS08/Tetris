@@ -17,7 +17,9 @@ namespace Tetris.ViewModels
         public ICommand ToggleIsPassword2Command { get; }
         public bool RegisterEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
-        private readonly User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
+        private readonly User User = IPlatformApplication.Current?.
+            Services.GetService<IUser>() as User ?? new();
+     
         public string UserName
         {
             get => User?.UserName ?? Strings.UsernameUa;
@@ -27,6 +29,7 @@ namespace Tetris.ViewModels
                     User.UserName = value;
             }
         }
+    
         public string Email
         {
             get => User?.Email ?? Strings.EmailUa;
@@ -36,6 +39,7 @@ namespace Tetris.ViewModels
                     User.Email = value;
             }
         }
+     
         public string Password
         {
             get => User?.Password ?? Strings.PasswordUa;
@@ -45,7 +49,9 @@ namespace Tetris.ViewModels
                     User.Password = value;
             }
         }
+      
         private string passwordRepeat;
+    
         public string PasswordRepeat
         {
             get => passwordRepeat;
@@ -59,6 +65,7 @@ namespace Tetris.ViewModels
         }
         public bool IsPassword1 { get; set; } = true;
         public bool IsPassword2 { get; set; } = true;
+      
         public RegisterPageVM()
         {
             RefreshProperties();
@@ -67,20 +74,24 @@ namespace Tetris.ViewModels
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);
             ToggleIsPassword2Command = new Command(ToggleIsPassword2);
         }
+      
         private void ToggleIsPassword1()
         {
             IsPassword1 = !IsPassword1;
             OnPropertyChanged(nameof(IsPassword1));
         }
+    
         private void ToggleIsPassword2()
         {
             IsPassword2 = !IsPassword2;
             OnPropertyChanged(nameof(IsPassword2));
         }
+    
         private bool CanRegister()
         {
             return User.CanRegister(passwordRepeat);
         }
+     
         private async Task Register()
         {
             if (CanRegister())
@@ -98,29 +109,35 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(RegisterEnable));
             }
         }
-        private async void GetRandomUsername(object obj)// cannot be sync because of http method
+      
+        private async void GetRandomUsername(object obj)
         {
             // Create an instance of RandomUsername to call the instance method GetAsync
             RandomUsername randomUsername = new();
             UserName = await randomUsername.GetAsync();
             OnPropertyChanged(nameof(UserName));
         }
+ 
         private void RefreshProperties()
         {
             IsPassword1 = true;
             IsPassword2 = true;
             SeveralPropertiesChange();
         }
+    
         private void SeveralPropertiesChange()
         {
-            string[] nameOfs = [nameof(UserName), nameof(Email), nameof(Password), nameof(IsPassword1), nameof(IsPassword2)];
+            string[] nameOfs = [nameof(UserName), nameof(Email), 
+                nameof(Password), nameof(IsPassword1), nameof(IsPassword2)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
+       
         private void NavToLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage());
         }
+       
         private void NavHome()
         {
             Shell.Current.Navigation.PushAsync(new MainPage());

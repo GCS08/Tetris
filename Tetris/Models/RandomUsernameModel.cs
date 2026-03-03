@@ -3,7 +3,7 @@ namespace Tetris.Models
 {
     public abstract class RandomUsernameModel
     {
-        protected string apiUrl = "https://randomuser.me/api/?results=1";
+        protected string apiUrl = Keys.RandomUsernameApiUrl;
         protected HttpClient client = new();
         protected HttpResponseMessage? response;
         protected string? json;

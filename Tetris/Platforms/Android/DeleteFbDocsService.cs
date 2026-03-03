@@ -16,10 +16,12 @@ namespace Tetris.Platforms.Android
     public class DeleteFbDocsService : Service
     {
         private bool isRunning = true;
-        private readonly FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
+        private readonly FbData fbd = IPlatformApplication.Current?.
+            Services.GetService<IFbData>() as FbData ?? new();
         private readonly NotificationManagerService? notificationManager = IPlatformApplication.
             Current?.Services.GetService<INotificationManagerService>() as NotificationManagerService;
-        public override StartCommandResult OnStartCommand(Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
+        public override StartCommandResult OnStartCommand(
+            Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
             if (notificationManager != null)
             {
@@ -42,6 +44,7 @@ namespace Tetris.Platforms.Android
 
             return StartCommandResult.Sticky;
         }
+      
         public override void OnDestroy()
         {
             isRunning = false;

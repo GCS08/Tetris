@@ -8,7 +8,8 @@ namespace Tetris.ViewModels
 {
     public partial class LoginPageVM : ObservableObject
     {
-        public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
+        public User User = IPlatformApplication.Current?.
+            Services.GetService<IUser>() as User ?? new();
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand LoginCommand { get; }
@@ -35,6 +36,7 @@ namespace Tetris.ViewModels
             }
         }
         public bool IsPassword { get; set; } = true;
+        
         public LoginPageVM()
         {
             RefreshProperties();
@@ -48,11 +50,13 @@ namespace Tetris.ViewModels
             IsPassword = !IsPassword;
             OnPropertyChanged(nameof(IsPassword));
         }
+     
         private bool CanLogin()
         {
             if (User == null) return false;
             return User.CanLogin();
         }
+      
         private async Task Login()
         {
             if (User != null && CanLogin())
@@ -70,6 +74,7 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(LoginEnable));
             }
         }
+      
         private async Task ForgotPassword()
         {
             if (User == null) return;
@@ -79,21 +84,25 @@ namespace Tetris.ViewModels
             IsBusy = false;
             OnPropertyChanged(nameof(IsBusy));
         }
+      
         private void RefreshProperties()
         {
             IsPassword = true;
             SeveralPropertiesChange();
         }
+      
         private void SeveralPropertiesChange()
         {
             string[] nameOfs = [nameof(Email), nameof(Password), nameof(IsPassword)];
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
+       
         private void NavToRegister()
         {
             Shell.Current.Navigation.PushAsync(new RegisterPage());
         }
+    
         private void NavHome()
         {
             Shell.Current.Navigation.PushAsync(new MainPage());

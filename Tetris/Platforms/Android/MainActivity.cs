@@ -9,7 +9,10 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.Platforms.Android
 {
-    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode
+        = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize 
+        | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout 
+        | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity
     {
         StartGameTimer? startGameTimer;
@@ -24,13 +27,15 @@ namespace Tetris.Platforms.Android
                 .GetService<ISoundManager>() is SoundManager soundManager)
                 await soundManager.InitializeAsync();
         }
+    
         protected override void OnNewIntent(Intent? intent)
         {
             base.OnNewIntent(intent);
             if (intent != null)
                 ReceiveNotificationFromIntent(intent);
         }
-        static void ReceiveNotificationFromIntent(Intent intent)
+   
+        private static void ReceiveNotificationFromIntent(Intent intent)
         {
             if (intent?.Extras != null)
             {
@@ -42,6 +47,7 @@ namespace Tetris.Platforms.Android
                 service?.ReceiveNotification(title, message);
             }
         }
+    
         private void RegisterTimerMessages()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<StartGameTimerSettings>>(this, (r, m) =>
@@ -53,11 +59,13 @@ namespace Tetris.Platforms.Android
                 OnMessageReceived(m.Value);
             });
         }
+     
         private void OnMessageReceived(StartGameTimerSettings value)
         {
             startGameTimer = new StartGameTimer(value.TotalTimeInMilliseconds, value.IntervalInMilliseconds);
             startGameTimer.Start();
         }
+     
         private void OnMessageReceived(bool value)
         {
             if (value)
@@ -66,6 +74,7 @@ namespace Tetris.Platforms.Android
                 startGameTimer = null;
             }
         }
+      
         private void StartDeleteFbDocsService()
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));

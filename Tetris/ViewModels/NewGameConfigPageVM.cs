@@ -14,12 +14,8 @@ namespace Tetris.ViewModels
         private readonly JoinableGamesList gamesList;
         public bool IsBusy { get; set; } = false;
         public bool IsCreateEnabled { get; set; } = true;
-        private readonly User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
-        public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
-        {
-            currentNewGame = new(Keys.RedKey, User?.UserName ?? Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
-            gamesList = joinableGamesList;
-        }
+        private readonly User User = IPlatformApplication.Current?.
+            Services.GetService<IUser>() as User ?? new();
         public string SelectedColor
         {
             get => currentNewGame.CubeColor;
@@ -38,7 +34,8 @@ namespace Tetris.ViewModels
             get => !currentNewGame.IsPublicGame ? Keys.PrivateKey : Keys.PublicKey;
             set
             {
-                string PublicOrProtected = currentNewGame.IsPublicGame ? Keys.PublicKey : Keys.PrivateKey;
+                string PublicOrProtected = currentNewGame.IsPublicGame
+                    ? Keys.PublicKey : Keys.PrivateKey;
                 if (PublicOrProtected != value)
                 {
                     currentNewGame.IsPublicGame = (value == Keys.PublicKey);
@@ -47,6 +44,14 @@ namespace Tetris.ViewModels
                 }
             }
         }
+       
+        public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
+        {
+            currentNewGame = new(Keys.RedKey, User?.UserName ?? 
+                Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
+            gamesList = joinableGamesList;
+        }
+      
         private void CreateGame()
         {
             if (User == null) return;
@@ -56,6 +61,7 @@ namespace Tetris.ViewModels
             Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));
         }
+    
         private void UpdatePropertiesByBusy(bool value)
         {
             IsBusy = value;
@@ -63,6 +69,7 @@ namespace Tetris.ViewModels
             IsCreateEnabled = !value;
             OnPropertyChanged(nameof(IsCreateEnabled));
         }
+      
         private void NavGameLobby()
         {
             Shell.Current.Navigation.PushAsync(new GameLobbyPage());

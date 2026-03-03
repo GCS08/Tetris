@@ -11,12 +11,14 @@ namespace Tetris.ModelsLogic
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
+     
         protected override async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
-                _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
+                _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.
+                    Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
@@ -26,6 +28,7 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
+     
         protected override async Task LoginSaveToPreferencesAsync()
         {
             // Await all async Firebase reads
@@ -38,11 +41,13 @@ namespace Tetris.ModelsLogic
 
             SaveToPreferences();
         }
+     
         public override async Task<bool> Register()
         {
             bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
             return success;
         }
+    
         protected override bool OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
@@ -62,6 +67,7 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
+    
         protected override void SaveToPreferences()
         {
             // Now store everything in Preferences
@@ -74,12 +80,14 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.HighestScoreKey, HighestScore);
             Preferences.Set(Keys.DateJoinedKey, DateJoined);
         }
+    
         public override void SignOut()
         {
             fbd.SignOut();
             Preferences.Clear();
             Reset();
         }
+    
         public override async Task ResetPassword() 
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
@@ -97,14 +105,17 @@ namespace Tetris.ModelsLogic
                 _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
         }
+      
         public override bool CanLogin()
         {
             return IsEmailValid() && IsPasswordValid();
         }
+     
         public override bool CanRegister(string repeatPassword)
         {
             return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
         }
+    
         public override void Reset()
         {
             UserID = Preferences.Get(Keys.UserIDKey, string.Empty);
@@ -117,58 +128,70 @@ namespace Tetris.ModelsLogic
             Email = Preferences.Get(Keys.EmailKey, string.Empty);
             Password = Preferences.Get(Keys.PasswordKey, string.Empty);
         }
+      
         protected override bool IsEmailValid()
         {
             if (Email.Length < ConstData.MinCharacterInEmail)
             {
-                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, 
+                    dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
                 return false;
             }
             if (!HasAtSign(Email) || !HasDot(Email))
             {
-                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
+                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, 
+                    Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
                 return false;
             }
             return true;
         }
+      
         protected override bool IsPasswordValid()
         {
             if (Password.Length < ConstData.MinCharacterInPW)
             {
-                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, 
+                    dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
                 return false;
             }
             if (!HasNumber(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, 
+                    Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
                 return false;
             }
             if (!HasLowerCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, 
+                    Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
                 return false;
             }
             if (!HasUpperCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, 
+                    Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
                 return false;
             }
             return true;
         }
+    
         protected override bool IsUserNameValid()
         {
             if (UserName.Length < ConstData.MinCharacterInUN)
             {
-                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, 
+                    dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
                 return false;
             }
             if (!HasNumber(UserName))
             {
-                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
+                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, 
+                    Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
                 return false;
             }
             return true;
         }
+    
         protected override bool HasAtSign(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -176,6 +199,7 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+      
         protected override bool HasDot(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -183,6 +207,7 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+     
         protected override bool HasNumber(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -190,6 +215,7 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+     
         protected override bool HasLowerCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -197,6 +223,7 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+       
         protected override bool HasUpperCase(string str)
         {
             for (int i = 0; i < str.Length; i++)

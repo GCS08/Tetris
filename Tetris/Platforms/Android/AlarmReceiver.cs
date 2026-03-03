@@ -12,7 +12,8 @@ namespace Tetris.Platforms.Android
             {
                 string title = intent?.GetStringExtra(Keys.TitleKey) ?? string.Empty;
                 string message = intent?.GetStringExtra(Keys.MessageKey) ?? string.Empty;
-                NotificationManagerService manager = NotificationManagerService.Instance ?? new NotificationManagerService();
+                NotificationManagerService manager = NotificationManagerService.Instance 
+                    ?? new NotificationManagerService();
                 manager.Show(title, message);
             }
         }

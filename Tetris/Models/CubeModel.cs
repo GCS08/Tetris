@@ -2,8 +2,8 @@
 
 namespace Tetris.Models;
 
-public class CubeModel(double width, double height,
-    Color? color) : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+public class CubeModel(double width, double height, Color? color) : 
+    CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
     public double Width { get; } = width;
     public double Height { get; } = height;

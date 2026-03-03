@@ -13,6 +13,7 @@ namespace Tetris.ModelsLogic
         {
             return first == null;
         }
+     
         public override void Insert(T value)
         {
             Node<T> oldLast = last!;
@@ -22,10 +23,12 @@ namespace Tetris.ModelsLogic
             else
                 oldLast.SetNext(last);
         }
+      
         public override T GetTail()
         {
             return last == null || IsEmpty() ? default! : last.GetValue();
         }
+      
         public override T Remove()
         {
             if (first == null || IsEmpty())
@@ -36,10 +39,12 @@ namespace Tetris.ModelsLogic
                 last = null;
             return value;
         }
+    
         public override T Head()
         {
             return first == null || IsEmpty() ? default! : first.GetValue();
         }
+      
         public override string PrintQueue(out int counter)
         {
             counter = 0;
@@ -58,6 +63,7 @@ namespace Tetris.ModelsLogic
                 Insert(temp.Remove());
             return output;
         }
+   
         public override async Task SortByUnixTimestampKeyAsync()
         {
             // This method only makes sense for this specific T

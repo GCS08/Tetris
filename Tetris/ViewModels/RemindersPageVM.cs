@@ -27,9 +27,12 @@ namespace Tetris.ViewModels
 
         private void ScheduleReminder()
         {
-            IToast toast = notifications.ScheduleReminder(SelectedDate, SelectedTime, SelectedSeconds)
-                ? Toast.Make(Strings.NotificationSuccess, CommunityToolkit.Maui.Core.ToastDuration.Long, ConstData.ToastFontSize)
-                : Toast.Make(Strings.NotificationFail, CommunityToolkit.Maui.Core.ToastDuration.Long, ConstData.ToastFontSize);
+            IToast toast = notifications.ScheduleReminder(SelectedDate,
+                SelectedTime, SelectedSeconds)
+                ? Toast.Make(Strings.NotificationSuccess, CommunityToolkit.
+                Maui.Core.ToastDuration.Long, ConstData.ToastFontSize)
+                : Toast.Make(Strings.NotificationFail, CommunityToolkit.Maui
+                .Core.ToastDuration.Long, ConstData.ToastFontSize);
             toast.Show();
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui;
+﻿using System.Timers;
+using Microsoft.Maui;
 using Tetris.Interfaces;
 using Tetris.ModelsLogic;
 
@@ -23,7 +24,14 @@ namespace Tetris.Models
         protected SoundManager SoundManager = IPlatformApplication.
             Current?.Services.GetService<ISoundManager>() as SoundManager ?? new();
         protected int ComboCount { get; set; } = 1;
+        public abstract void StartGame();
+        protected abstract void ShapeAtBottom();
+        protected abstract bool CheckForLose();
         protected abstract void ShowShape();
+        protected abstract int CheckForLines();
+        protected abstract void MoveDownShape(object? sender, ElapsedEventArgs e);
+        protected abstract bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY);
+        public abstract void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight);
         protected abstract void EraseShape();
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();

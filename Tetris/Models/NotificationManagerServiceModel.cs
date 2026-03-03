@@ -12,7 +12,8 @@ namespace Tetris.Models
         protected NotificationManagerCompat? notificationManager;
         public static NotificationManagerService? Instance { get; set; }
         public abstract event EventHandler? NotificationReceived;
-        public abstract void SendNotification(string title, string message, DateTime? notifyTime = null);
+        public abstract void SendNotification(string title, 
+            string message, DateTime? notifyTime = null);
         public abstract void ReceiveNotification(string title, string message);
         public abstract Notification BuildNotification(string title, string message);
         public abstract void Show(string title, string message);

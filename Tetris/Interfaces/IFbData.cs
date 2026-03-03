@@ -6,8 +6,10 @@ namespace Tetris.Interfaces
 {
     public interface IFbData
     {
-        public Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, bool> OnCompleteRegister);
-        public Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin);
+        public Task<bool> CreateUserWithEmailAndPWAsync(string email, string password,
+            string userName, Func<Task, bool> OnCompleteRegister);
+        public Task<bool> SignInWithEmailAndPWAsync(string email, string password, 
+            Func<Task, Task<bool>> OnCompleteLogin);
         public void SignOut();
         public string GetCurrentUserID();
         public Task SendPasswordResetEmailAsync(string email, Action<Task> OnCompleteSendEmail);
@@ -29,7 +31,8 @@ namespace Tetris.Interfaces
         public void SetGameIsFull(string gameID);
         public void AddShape(Shape currentShape, string gameId);
         public Shape CreateShape(IDocumentSnapshot snapshot);
-        public Task FinishRound(string userID, string gameID, ModelsLogic.Queue<string> movesQueue);
+        public Task FinishRound(string userID, string gameID, 
+            ModelsLogic.Queue<string> movesQueue);
         public IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public void SetPlayerReady(string gameID, int maxPlayersCount, string userID);

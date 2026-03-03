@@ -13,7 +13,8 @@
         public const string FbAppDomainKey = "com.meitar.tetris";
         public const string EmailExistsErrorKey = "EMAIL_EXISTS";
         public const string OperationNotAllowedErrorKey = "OPERATION_NOT_ALLOWED";
-        public const string WeakPasswordErrorKey = "WEAK_PASSWORD : Password should be at least 6 characters";
+        public const string WeakPasswordErrorKey =
+            "WEAK_PASSWORD : Password should be at least 6 characters";
         public const string MissingEmailErrorKey = "MISSING_EMAIL";
         public const string MissingPasswordErrorKey = "MISSING_PASSWORD";
         public const string InvalidEmailErrorKey = "INVALID_EMAIL";
@@ -21,7 +22,10 @@
         public const string UserDisabledErrorKey = "USER_DISABLED";
         public const string ManyAttemptsErrorKey = "TOO_MANY_ATTEMPTS_TRY_LATER";
         public const string VerifyEmailKey = "VERIFY_EMAIL";
-        public const string FbPostRequest = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=";
+        public const string FbPostRequest = 
+            "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=";
+        public const string RandomUsernameApiUrl =
+            "https://randomuser.me/api/?results=1";
         public const string UsersCollectionName = "users";
         public const string GamesCollectionName = "games";
         public const string CubeColorKey = "CubeColor";

@@ -10,9 +10,11 @@ namespace Tetris.ModelsLogic
 {
     public class FbData : FbDataModel, IFbData
     {
-        public override async Task<bool> CreateUserWithEmailAndPWAsync(string email, string password, string userName, Func<Task, bool> OnCompleteRegister)
+        public override async Task<bool> CreateUserWithEmailAndPWAsync(
+            string email, string password, string userName, Func<Task, bool> OnCompleteRegister)
         {
-            Task<Firebase.Auth.UserCredential> firebaseTask = facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
+            Task<Firebase.Auth.UserCredential> firebaseTask = 
+                facl.CreateUserWithEmailAndPasswordAsync(email, password, userName);
             bool success;
             try
             {
@@ -55,9 +57,12 @@ namespace Tetris.ModelsLogic
             }
             return success;
         }
-        public override async Task<bool> SignInWithEmailAndPWAsync(string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
+        
+        public override async Task<bool> SignInWithEmailAndPWAsync(
+            string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
-            Task<UserCredential> firebaseTask = facl.SignInWithEmailAndPasswordAsync(email, password);
+            Task<UserCredential> firebaseTask =
+                facl.SignInWithEmailAndPasswordAsync(email, password);
 
             try
             {
@@ -77,12 +82,15 @@ namespace Tetris.ModelsLogic
             }
             return await OnCompleteLogin(firebaseTask);
         }
+        
         public override void SignOut()
         {
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }
-        public override async Task SendPasswordResetEmailAsync(string email, Action<Task> OnCompleteSendEmail)
+        
+        public override async Task SendPasswordResetEmailAsync(
+            string email, Action<Task> OnCompleteSendEmail)
         {
             // Start Firebase sign-in
             Task firebaseTask = facl.ResetEmailPasswordAsync(email);
@@ -104,15 +112,18 @@ namespace Tetris.ModelsLogic
                 OnCompleteSendEmail(firebaseTask);
             }
         }
+        
         public override string GetCurrentUserID()
         {
             return facl.User?.Uid ?? string.Empty;
         }
+        
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))
                 return default!;
-            IDocumentSnapshot snapshot = await fs.Collection(Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
+            IDocumentSnapshot snapshot = await fs.Collection(
+                Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
             if (!snapshot.Exists)
                 return default!;
 
@@ -120,6 +131,7 @@ namespace Tetris.ModelsLogic
             T? value = snapshot.Get<T>(key);
             return value != null ? value : default!;
         }
+       
         public override string IdentifyFireBaseError(Task task)
         {
             Exception ex = task.Exception!.InnerException!;
@@ -133,7 +145,8 @@ namespace Tetris.ModelsLogic
                     if (responseIndex >= 0)
                     {
                         // Take everything after "Response:"
-                        string jsonPart = ex.Message[(responseIndex + TechnicalConsts.ResponseText.Length)..].Trim();
+                        string jsonPart = ex.Message[(responseIndex + 
+                            TechnicalConsts.ResponseText.Length)..].Trim();
 
                         // Some Firebase responses might have extra closing braces, remove trailing stuff
                         int lastBrace = jsonPart.LastIndexOf(TechnicalConsts.ClosingBraceSign);
@@ -143,8 +156,10 @@ namespace Tetris.ModelsLogic
                         // Parse JSON
                         JsonDocument json = JsonDocument.Parse(jsonPart);
 
-                        JsonElement errorElem = json.RootElement.GetProperty(TechnicalConsts.ErrorJson);
-                        string firebaseMessage = errorElem.GetProperty(TechnicalConsts.MessageJson).ToString();
+                        JsonElement errorElem = json.RootElement.
+                            GetProperty(TechnicalConsts.ErrorJson);
+                        string firebaseMessage = errorElem.
+                            GetProperty(TechnicalConsts.MessageJson).ToString();
 
                         errorMessage = firebaseMessage switch
                         {
@@ -168,6 +183,7 @@ namespace Tetris.ModelsLogic
             }
             return errorMessage;
         }
+        
         public override string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
             int currentShapeInGameId, string currentShapeColor, bool isPublicGame)
@@ -218,17 +234,20 @@ namespace Tetris.ModelsLogic
             // Return the auto-generated document ID as a Task<string>
             return docRef.Id;
         }
+        
         public override IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange)
         {
             ICollectionReference cr = fs.Collection(Keys.GamesCollectionName);
             return cr.AddSnapshotListener(OnChange);
         }
+      
         public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
             ObservableCollection<Game> newList = await GetAvailGamesList();
             onCompleteChange(newList);
         }
+      
         public override async Task<ObservableCollection<Game>> GetAvailGamesList()
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
@@ -244,24 +263,31 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.CurrentPlayersCountKey),
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
-                        doc.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
-                        doc.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
+                    TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
+                        doc.Get<int>(Keys.CurrentShapeMapKey + 
+                        TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
+                        doc.Get<string>(Keys.CurrentShapeMapKey + 
+                        TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
                     doc.Id
                 );
                 newList.Add(game);
             }
             return newList;
         }
+    
         public override async Task OnPlayerLeaveWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             _ = docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(-1));
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey); i++)
-                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == leavingUserID)
-                    _ = docRef.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey, string.Empty);
+                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) == leavingUserID)
+                    _ = docRef.UpdateAsync(Keys.PlayerDetailsKey + i + 
+                        TechnicalConsts.DotSign + Keys.PlayerIdKey, string.Empty);
         }
+  
         public override async Task OnPlayerJoinWR(string id, string joiningUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
@@ -269,17 +295,21 @@ namespace Tetris.ModelsLogic
             _ = docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
             bool addedOnce = false;
             for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey) && !addedOnce; i++)
-                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
+                if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
                 {
                     addedOnce = true;
-                    _ = docRef.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID);
+                    _ = docRef.UpdateAsync(Keys.PlayerDetailsKey + i + 
+                        TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID);
                 }
         }
+     
         public override void DeleteGameFromDB(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             docRef.DeleteAsync();
         }
+   
         public override async void GetPlayersFromDocument(string gameID, 
             Action<ObservableCollection<User>> onCompleteChange)
         {
@@ -290,7 +320,8 @@ namespace Tetris.ModelsLogic
             List<string> playerIds = [];
             for (int i = 0; i < maxPlayersCount; i++)
             {
-                string playerIdScheme = Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey;
+                string playerIdScheme = Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey;
                 playerIds.Add(docSnap.Get<string>(playerIdScheme)!);
             }
             for (int i = 0; i < maxPlayersCount; i++)
@@ -303,15 +334,18 @@ namespace Tetris.ModelsLogic
             }
             onCompleteChange(newList);
         }
+     
         public override async Task<int> GetCurrentPlayersCount(string gameID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
         }
+     
         protected override async Task<User> UserIDToObject(string id)
         {
-            IDocumentSnapshot docSnap = await fs.Collection(Keys.UsersCollectionName).Document(id).GetAsync();
+            IDocumentSnapshot docSnap = await fs.Collection(
+                Keys.UsersCollectionName).Document(id).GetAsync();
             User user = new()
             {
                 UserID = id,
@@ -324,11 +358,14 @@ namespace Tetris.ModelsLogic
             };
             return user;
         }
+ 
         public override void SetGameIsFull(string gameID)
         {
-            IDocumentReference documentReference = fs.Collection(Keys.GamesCollectionName).Document(gameID);
+            IDocumentReference documentReference = fs.Collection(
+                Keys.GamesCollectionName).Document(gameID);
             documentReference.UpdateAsync(Keys.IsFullKey, true);
         }
+    
         public override void AddShape(Shape currentShape, string gameId)
         {
             if (currentShape.Color == null) return;
@@ -341,14 +378,20 @@ namespace Tetris.ModelsLogic
                 StringAndColorConverter.ColorToColorName(currentShape.Color) }
             });
         }
+ 
         public override Shape CreateShape(IDocumentSnapshot snapshot)
         {
             return new Shape(
-                snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeIdKey)!,
-                snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
-                snapshot.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
+                snapshot.Get<int>(Keys.CurrentShapeMapKey +
+                TechnicalConsts.DotSign + Keys.CurrentShapeIdKey)!,
+                snapshot.Get<int>(Keys.CurrentShapeMapKey + 
+                TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
+                snapshot.Get<string>(Keys.CurrentShapeMapKey +
+                TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
         }
-        public override async Task FinishRound(string userID, string gameID, Queue<string> movesQueue)
+  
+        public override async Task FinishRound(
+            string userID, string gameID, Queue<string> movesQueue)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
@@ -358,7 +401,8 @@ namespace Tetris.ModelsLogic
             bool found = false;
 
             for (int i = 0; i < maxPlayers; i++)// 1
-                ids.Add(currentSnapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
+                ids.Add(currentSnapshot.Get<string>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
             for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)// 2
                 if (ids[desiredIndex] == userID)
                     found = true;
@@ -377,40 +421,46 @@ namespace Tetris.ModelsLogic
 
             Dictionary<string, object> updates = new()
             {
-                {
-                    Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves
-                },
-                {
-                    Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, true
-                }
+                { Keys.PlayerDetailsKey + desiredIndex + 
+                TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves },
+                { Keys.PlayerDetailsKey + desiredIndex + 
+                TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, true }
             };
 
-            _ = fs.Collection(Keys.GamesCollectionName).Document(gameID).UpdateAsync(updates);
+            _ = fs.Collection(Keys.GamesCollectionName).
+                Document(gameID).UpdateAsync(updates);
         }
+     
         public override IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             return dr.AddSnapshotListener(OnChange);
         }
-        public override async void SetPlayerReady(string gameID, int maxPlayersCount, string userID)
+  
+        public override async void SetPlayerReady(
+            string gameID, int maxPlayersCount, string userID)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot snapshot = await dr.GetAsync();
             bool changed = false;
             for (int i = 0; i < maxPlayersCount && !changed; i++)
-                if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
+                if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
                 {
-                    _ = dr.UpdateAsync(Keys.PlayerDetailsKey + i + TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true);
+                    _ = dr.UpdateAsync(Keys.PlayerDetailsKey + i + 
+                        TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true);
                     changed = true;
                 }
         }
+   
         public override void ResetIsShapeAtBottom(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
                 + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
         }
+    
         public override async Task DeleteFbDocsAsync()
         {
             try
@@ -418,7 +468,8 @@ namespace Tetris.ModelsLogic
                 ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
 
                 // Calculate the cutoff time
-                DateTime cutoffTime = DateTime.UtcNow - TimeSpan.FromSeconds(ConstData.TimePassedToDeleteFbDocS);
+                DateTime cutoffTime = DateTime.UtcNow - 
+                    TimeSpan.FromSeconds(ConstData.TimePassedToDeleteFbDocS);
 
                 // If your TimeCreatedKey is stored as a Firestore Timestamp, you can query directly
                 IQuery query = collectionRef.WhereLessThan(Keys.TimeCreatedKey, cutoffTime);
@@ -439,7 +490,8 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.HighestScoreKey, user.HighestScore);
             Preferences.Set(Keys.TotalLinesKey, user.TotalLines);
 
-            IDocumentReference dr = fs.Collection(Keys.UsersCollectionName).Document(user.UserID);
+            IDocumentReference dr = fs.Collection(
+                Keys.UsersCollectionName).Document(user.UserID);
             Dictionary<string, object> updates = new()
             {
                 { Keys.GamesPlayedKey, user.GamesPlayed },
@@ -448,20 +500,25 @@ namespace Tetris.ModelsLogic
             };
             _ = dr.UpdateAsync(updates);
         }
+
         public override async Task<bool> SetPrivateJoinCode(string gameID, int code)
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot snapshot = await collectionRef.WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
+            IQuerySnapshot snapshot = await collectionRef.
+                WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
             if (snapshot.Documents.Any())
                 return false;
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             _ = dr.UpdateAsync(Keys.PrivateJoinCodeKey, code);
             return true;
         }
+   
         public override async Task<Game> GetGameByCode(int code)
         {
-            ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot querySnap = await collectionRef.WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
+            ICollectionReference collectionRef = fs.Collection
+                (Keys.GamesCollectionName);
+            IQuerySnapshot querySnap = await collectionRef
+                .WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
             IDocumentSnapshot? docSnap = querySnap.Documents.FirstOrDefault();
             if (docSnap == null)
                 return null!;
@@ -471,9 +528,12 @@ namespace Tetris.ModelsLogic
                 docSnap.Get<int>(Keys.CurrentPlayersCountKey),
                 docSnap.Get<int>(Keys.MaxPlayersCountKey),
                 docSnap.Get<bool>(Keys.IsPublicGameKey),
-                new Shape(docSnap.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
-                    docSnap.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
-                    docSnap.Get<string>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
+                new Shape(docSnap.Get<int>(Keys.CurrentShapeMapKey + 
+                TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
+                    docSnap.Get<int>(Keys.CurrentShapeMapKey + 
+                    TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
+                    docSnap.Get<string>(Keys.CurrentShapeMapKey +
+                    TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
                 docSnap.Id
             );
         }

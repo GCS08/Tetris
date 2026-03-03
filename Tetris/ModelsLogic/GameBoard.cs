@@ -31,13 +31,15 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        public void StartGame()
+   
+        public override void StartGame()
         {
             if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
             EnableMoves = true;
         }
-        private void ShapeAtBottom()
+        
+        protected override void ShapeAtBottom()
         {
             if (User == null) return;
             int linesCleared = CheckForLines();
@@ -70,7 +72,8 @@ namespace Tetris.ModelsLogic
                 ShowShape();
             }
         }
-        private bool CheckForLose()
+      
+        protected override bool CheckForLose()
         {
             if (Board == null) return false;
             for (int col = 0; col < ConstData.GameGridColumnCount; col++)
@@ -78,7 +81,8 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-        private int CheckForLines()
+      
+        protected override int CheckForLines()
         {
             if (Board == null) return 0;
             int linesCleared = 0;
@@ -112,6 +116,7 @@ namespace Tetris.ModelsLogic
 
             return linesCleared;
         }
+     
         protected override void ShowShape()
         {
             if (CurrentShape == null || Board == null) return;
@@ -121,6 +126,7 @@ namespace Tetris.ModelsLogic
                         Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
         }
+ 
         protected override void EraseShape()
         {
             if (CurrentShape == null || Board == null) return;
@@ -130,6 +136,7 @@ namespace Tetris.ModelsLogic
                         Board[i + CurrentShape.TopLeftY, j +
                             CurrentShape.TopLeftX].Color = Colors.Transparent;
         }
+       
         public override void MoveRightShape()
         {
             if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
@@ -176,6 +183,7 @@ namespace Tetris.ModelsLogic
                 MovesQueue.Insert(Keys.RightKey);
             }
         }
+     
         public override void MoveLeftShape()
         {
             if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
@@ -222,6 +230,7 @@ namespace Tetris.ModelsLogic
                 MovesQueue.Insert(Keys.LeftKey);
             }
         }
+      
         public override async Task MoveDownShape() 
         {
             if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null || MovesQueue == null) return;
@@ -284,14 +293,17 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-        private async void MoveDownShape(object? sender, ElapsedEventArgs e) 
+    
+        protected override async void MoveDownShape(object? sender, ElapsedEventArgs e) 
         {
             if (GameID == null) return;
             await MoveDownShape();
         }
+     
         public override void RotateShape()
         {
-            if (CurrentShape == null || CurrentShape.RotationStates == null || !EnableMoves || MovesQueue == null) return;
+            if (CurrentShape == null || CurrentShape.RotationStates == null
+                || !EnableMoves || MovesQueue == null) return;
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];
@@ -299,7 +311,8 @@ namespace Tetris.ModelsLogic
             EraseShape();
 
             // Try rotation at the original position first, then small shifts
-            if (TryPlaceRotation(nextCells, CurrentShape.TopLeftX, CurrentShape.TopLeftY, out int newX, out int newY))
+            if (TryPlaceRotation(nextCells, CurrentShape.TopLeftX, 
+                CurrentShape.TopLeftY, out int newX, out int newY))
             {
                 CurrentShape.TopLeftX = newX;
                 CurrentShape.TopLeftY = newY;
@@ -309,7 +322,8 @@ namespace Tetris.ModelsLogic
             MovesQueue.Insert(Keys.RotateKey);
             ShowShape();
         }
-        private bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)
+    
+        protected override bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)
         {
             if (Board == null)
             {
@@ -364,7 +378,8 @@ namespace Tetris.ModelsLogic
 
             return false; // No valid position found
         }
-        public void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
+     
+        public override void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
         {
             if (gameBoardGrid == null || Board == null) return;
 

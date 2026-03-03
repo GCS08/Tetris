@@ -20,6 +20,7 @@ namespace Tetris.Platforms.Android
                 Instance = this;
             }
         }
+     
         public override Notification BuildNotification(string title, string message)
         {
             Intent intent = new(Platform.AppContext, typeof(MainActivity));
@@ -44,10 +45,12 @@ namespace Tetris.Platforms.Android
 
             return builder?.Build() ?? null!;
         }
+      
         public override void Show(string title, string message)
         {
             notificationManager?.Notify(messageId++, BuildNotification(title, message));
         }
+    
         public override void SendNotification(string title, string message, DateTime? notifyTime = null)
         {
             if (!channelInitialized)
@@ -64,7 +67,8 @@ namespace Tetris.Platforms.Android
                     ? PendingIntentFlags.CancelCurrent | PendingIntentFlags.Immutable
                     : PendingIntentFlags.CancelCurrent;
 
-                PendingIntent? pendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
+                PendingIntent? pendingIntent = PendingIntent.GetBroadcast(
+                    Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
                 long triggerTime = GetNotifyTime(notifyTime.Value);
                 AlarmManager? alarmManager = Platform.AppContext.GetSystemService(Context.AlarmService) as AlarmManager;
                 if (pendingIntent != null)
@@ -73,6 +77,7 @@ namespace Tetris.Platforms.Android
             else
                 Show(title, message);
         }
+     
         public override void ReceiveNotification(string title, string message)
         {
             NotificationEventArgs args = new()
@@ -83,6 +88,7 @@ namespace Tetris.Platforms.Android
             // Raise the event using the protected member, which is allowed
             Instance?.NotificationReceived?.Invoke(null, args);
         }
+        
         protected override void CreateNotificationChannel()
         {
             // Create the notification channel, but only on API 26+.
@@ -99,6 +105,7 @@ namespace Tetris.Platforms.Android
                 channelInitialized = true;
             }
         }
+      
         protected override long GetNotifyTime(DateTime notifyTime)
         {
             DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(notifyTime);

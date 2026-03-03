@@ -21,8 +21,8 @@ namespace Tetris.Models
         public bool IsPublicGame { get; set; }
         public string GameID { get; set; } = string.Empty;
         public long TimeLeftMs { get; protected set; }
-        public string TimeLeftText => (TimeLeftMs / 1000).ToString() == 
-            TechnicalConsts.ZeroSignString ? Strings.TimeUp : (TimeLeftMs / 1000).ToString();
+        public string TimeLeftText => (TimeLeftMs / 1000).ToString() == TechnicalConsts.
+            ZeroSignString ? Strings.TimeUp : (TimeLeftMs / 1000).ToString();
         public ObservableCollection<User> UsersInGame { get; set; } = [];
         public ICommand JoinGameCommand => new Command(NavToWR);
         public EventHandler? OnPlayersChange;

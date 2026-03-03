@@ -25,10 +25,12 @@ namespace Tetris.ViewModels
                     enteredCode = value;
             }
         }
+       
         public GameLobbyPageVM()
         {
             EnterPrivateGameCommand = new Command(EnterPrivateGame);
         }
+        
         private async void EnterPrivateGame()
         {
             Game currentGame = new();
@@ -47,29 +49,35 @@ namespace Tetris.ViewModels
                 OnPropertyChanged(nameof(EnteredCode));
             }
         }
+      
         private void OnGamesChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Games));
         }
+      
         public void AddGamesCollectionListener()
         {
             if (JoinableGamesList == null) return;
             JoinableGamesList.AddGamesCollectionListener();
         }
+     
         public void RemoveGamesCollectionListener()
         {
             if (JoinableGamesList == null) return;
             JoinableGamesList.RemoveGamesCollectionListener();
         }
+     
         private void NavHome()
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
+    
         private void NavToNewGameConfigGame()
         {
             if (JoinableGamesList == null) return;
             Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList));
         }
+     
         public async Task LoadGamesList() 
         {
             if (JoinableGamesList == null) return;

@@ -10,7 +10,9 @@ namespace Tetris.Models
             = Permissions.CheckStatusAsync<Permissions.PostNotifications>().Result;
         protected abstract void SetPermissionStatus(Task<PermissionStatus> task);
         protected abstract void OnNotificationReceived(object? sender, EventArgs e);
-        public abstract bool PushNotification(string title, string message, DateTime? notifyTime = null);
-        public abstract bool ScheduleReminder(DateTime selectedDate, TimeSpan selectedTime, string selectedSeconds);
+        public abstract bool PushNotification(string title, 
+            string message, DateTime? notifyTime = null);
+        public abstract bool ScheduleReminder(DateTime selectedDate,
+            TimeSpan selectedTime, string selectedSeconds);
     }
 }
