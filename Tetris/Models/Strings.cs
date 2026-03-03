@@ -115,5 +115,7 @@
         public const string LoadingResult = "Loading result...\nPlease wait.";
         public const string BackToGameLobby = "Back to game lobby";
         public const string RemindersButtonText = "Reminders";
+        public const string TetrisServiceTitle = "Tetris";
+        public const string DeleteDocsDesc = "Deleting old Firebase docs...";
     }
 }

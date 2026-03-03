@@ -23,9 +23,9 @@ namespace Tetris.Platforms.Android
         {
             if (notificationManager != null)
             {
-                var notification = notificationManager.BuildForegroundNotification(
-                    "Tetris Service",
-                    "Deleting old Firebase docs..."
+                Notification notification = notificationManager.BuildNotification(
+                    Strings.TetrisServiceTitle,
+                    Strings.DeleteDocsDesc
                 );
                 StartForeground(1, notification);
             }

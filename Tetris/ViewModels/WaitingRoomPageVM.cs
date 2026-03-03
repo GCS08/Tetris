@@ -22,6 +22,7 @@ namespace Tetris.ViewModels
                 return;
             }
             CurrentGame = game;
+            game.RegisterTimer();
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
             CurrentGame.OnCodeReady += OnCodeReady;

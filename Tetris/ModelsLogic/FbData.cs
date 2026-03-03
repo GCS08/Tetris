@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Tetris.Interfaces;
 using Tetris.Models;
-using static Xamarin.Io.OpenCensus.Metrics.Export.Summary;
 
 namespace Tetris.ModelsLogic
 {
@@ -184,7 +183,7 @@ namespace Tetris.ModelsLogic
                 MaxPlayersCount = maxPlayersCount,
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
-                TimeCreated = DateTime.UtcNow.ToString()
+                TimeCreated = DateTime.UtcNow
             });
 
             docRef.UpdateAsync(new Dictionary<string, object>
@@ -419,22 +418,19 @@ namespace Tetris.ModelsLogic
                 ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
 
                 // Calculate the cutoff time
-                DateTime cutoffTime = DateTime.Now - TimeSpan.FromSeconds(ConstData.TimePassedToDeleteFbDocS);
+                DateTime cutoffTime = DateTime.UtcNow - TimeSpan.FromSeconds(ConstData.TimePassedToDeleteFbDocS);
 
                 // If your TimeCreatedKey is stored as a Firestore Timestamp, you can query directly
                 IQuery query = collectionRef.WhereLessThan(Keys.TimeCreatedKey, cutoffTime);
-                Android.Util.Log.Debug("try", "hey");
                 IQuerySnapshot snapshot = await query.GetAsync();
-                Android.Util.Log.Debug("DeleteFbDocs", $"Retrieved {snapshot.Documents.Chunk} documents");
                 foreach (IDocumentSnapshot docSnap in snapshot.Documents)
                 {
                     try { await docSnap.Reference.DeleteAsync(); }
                     catch { }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Android.Util.Log.Debug("exception", ex.Message);
             }
         }
         public override void UpdateUserPostGame(User user)

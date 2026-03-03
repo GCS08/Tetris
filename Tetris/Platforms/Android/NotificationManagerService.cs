@@ -20,25 +20,33 @@ namespace Tetris.Platforms.Android
                 Instance = this;
             }
         }
-        public Notification BuildForegroundNotification(string title, string message)
+        public override Notification BuildNotification(string title, string message)
         {
-            Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
+            Intent intent = new(Platform.AppContext, typeof(MainActivity));
             intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
 
             PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
                 ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
                 : PendingIntentFlags.UpdateCurrent;
 
-            PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, 0, intent, pendingIntentFlags);
+            PendingIntent? pendingIntent = PendingIntent.GetActivity(
+                Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, Keys.NotificationChannelId)
-                .SetContentIntent(pendingIntent)
-                .SetContentTitle(title)
-                .SetContentText(message)
-                .SetSmallIcon(Resource.Drawable.appiconsmall)
+            NotificationCompat.Builder? builder = new NotificationCompat.
+                Builder(Platform.AppContext, Keys.NotificationChannelId)
+                .SetContentIntent(pendingIntent)!
+                .SetContentTitle(title)!
+                .SetContentText(message)!
+                .SetSmallIcon(Resource.Drawable.appiconsmall)!
+                .SetLargeIcon(BitmapFactory.DecodeResource(
+                    Platform.AppContext.Resources, Resource.Drawable.appiconbig))!
                 .SetColor(Colors.Blue.ToInt());
 
-            return builder.Build();
+            return builder?.Build() ?? null!;
+        }
+        public override void Show(string title, string message)
+        {
+            notificationManager?.Notify(messageId++, BuildNotification(title, message));
         }
         public override void SendNotification(string title, string message, DateTime? notifyTime = null)
         {
@@ -74,25 +82,6 @@ namespace Tetris.Platforms.Android
             };
             // Raise the event using the protected member, which is allowed
             Instance?.NotificationReceived?.Invoke(null, args);
-        }
-        public override void Show(string title, string message)
-        {
-            Intent intent = new(Platform.AppContext, typeof(MainActivity));
-            intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
-            PendingIntentFlags pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
-                ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
-                : PendingIntentFlags.UpdateCurrent;
-            PendingIntent? pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, Keys.NotificationChannelId)
-                .SetContentIntent(pendingIntent)
-                .SetColor(Colors.Blue.ToInt())
-                .SetContentTitle(title)
-                .SetContentText(message)
-                .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.appiconbig))
-                .SetSmallIcon(Resource.Drawable.appiconsmall);
-
-            Notification notification = builder.Build();
-            notificationManager?.Notify(messageId++, notification);
         }
         protected override void CreateNotificationChannel()
         {

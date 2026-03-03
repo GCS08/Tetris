@@ -47,7 +47,8 @@ namespace Tetris.Models
         protected IListenerRegistration? ilr;
         protected StartGameTimerSettings startGameTimerSettings = 
             new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
-        protected abstract void RegisterTimer();
+        public abstract void RegisterTimer();
+        protected abstract void UnregisterTimer();
         protected abstract void OnMessageReceived(long timeLeft);
         public abstract Task OnPlayerLeaveWR();
         public abstract void AddWaitingRoomListener();

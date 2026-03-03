@@ -14,7 +14,6 @@ namespace Tetris.ModelsLogic
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
         {
-            RegisterTimer();
             this.CubeColor = CubeColor;
             this.CreatorName = CreatorName;
             this.CurrentPlayersCount = CurrentPlayersCount;
@@ -46,6 +45,7 @@ namespace Tetris.ModelsLogic
                 fbd.UpdateUserPostGame(GameBoard.User);
                 IsStatsUpdatedOnceOnGameFinished = true;
             }
+            UnregisterTimer();
             GameBoard.FallTimer.Stop();
             OpFallTimer.Stop();
             GameBoard.EnableMoves = false;
@@ -53,12 +53,17 @@ namespace Tetris.ModelsLogic
             OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
         }
 
-        protected override void RegisterTimer()
+        public override void RegisterTimer()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
             {
                 OnMessageReceived(m.Value);
             });
+        }
+
+        protected override void UnregisterTimer()
+        {
+            WeakReferenceMessenger.Default.Unregister<AppMessage<long>>(this);
         }
         protected override void OnMessageReceived(long timeLeft)
         {

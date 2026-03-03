@@ -1,4 +1,5 @@
-﻿using AndroidX.Core.App;
+﻿using Android.App;
+using AndroidX.Core.App;
 using Tetris.Interfaces;
 using Tetris.Platforms.Android;
 
@@ -13,6 +14,7 @@ namespace Tetris.Models
         public abstract event EventHandler? NotificationReceived;
         public abstract void SendNotification(string title, string message, DateTime? notifyTime = null);
         public abstract void ReceiveNotification(string title, string message);
+        public abstract Notification BuildNotification(string title, string message);
         public abstract void Show(string title, string message);
         protected abstract void CreateNotificationChannel();
         protected abstract long GetNotifyTime(DateTime notifyTime);

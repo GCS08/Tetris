@@ -53,6 +53,11 @@ namespace Tetris.Platforms.Android
                 OnMessageReceived(m.Value);
             });
         }
+        private void OnMessageReceived(StartGameTimerSettings value)
+        {
+            startGameTimer = new StartGameTimer(value.TotalTimeInMilliseconds, value.IntervalInMilliseconds);
+            startGameTimer.Start();
+        }
         private void OnMessageReceived(bool value)
         {
             if (value)
@@ -61,22 +66,13 @@ namespace Tetris.Platforms.Android
                 startGameTimer = null;
             }
         }
-        private void OnMessageReceived(StartGameTimerSettings value)
-        {
-            startGameTimer = new StartGameTimer(value.TotalTimeInMilliseconds, value.IntervalInMilliseconds);
-            startGameTimer.Start();
-        }
         private void StartDeleteFbDocsService()
         {
             Intent intent = new(this, typeof(DeleteFbDocsService));
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            {
                 StartForegroundService(intent);
-            }
             else
-            {
-                this.StartService(intent);
-            }
+                StartService(intent);
         }
     }
 }
