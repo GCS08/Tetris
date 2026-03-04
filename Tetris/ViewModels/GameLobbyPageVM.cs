@@ -9,13 +9,20 @@ namespace Tetris.ViewModels
 {
     public partial class GameLobbyPageVM : ObservableObject
     {
-        private JoinableGamesList? JoinableGamesList { get; set; } = new();
-        public ObservableCollection<Game>? Games { get; private set; }
+        #region Fields
+        private int enteredCode;
+        #endregion
+
+        #region ICommands
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand NavToGameCommand => new Command(NavHome);
         public ICommand NavToNewGameConfigCommand => new Command(NavToNewGameConfigGame);
         public ICommand EnterPrivateGameCommand { get; private set; }
-        private int enteredCode;
+        #endregion
+
+        #region Properties
+        private JoinableGamesList? JoinableGamesList { get; set; } = new();
+        public ObservableCollection<Game>? Games { get; private set; }
         public int EnteredCode
         {
             get => enteredCode;
@@ -25,12 +32,39 @@ namespace Tetris.ViewModels
                     enteredCode = value;
             }
         }
-       
+        #endregion
+
+        #region Constructors
         public GameLobbyPageVM()
         {
             EnterPrivateGameCommand = new Command(EnterPrivateGame);
         }
-        
+        #endregion
+
+        #region Public Methods
+        public void AddGamesCollectionListener()
+        {
+            if (JoinableGamesList == null) return;
+            JoinableGamesList.AddGamesCollectionListener();
+        }
+     
+        public void RemoveGamesCollectionListener()
+        {
+            if (JoinableGamesList == null) return;
+            JoinableGamesList.RemoveGamesCollectionListener();
+        }
+     
+        public async Task LoadGamesList() 
+        {
+            if (JoinableGamesList == null) return;
+            JoinableGamesList = await JoinableGamesList.CreateAsync();
+            JoinableGamesList.OnGamesChanged += OnGamesChanged;
+            Games = JoinableGamesList.gamesObsCollection;
+            OnPropertyChanged(nameof(Games));
+        }
+        #endregion
+
+        #region Private Methods
         private async void EnterPrivateGame()
         {
             Game currentGame = new();
@@ -55,18 +89,6 @@ namespace Tetris.ViewModels
             OnPropertyChanged(nameof(Games));
         }
       
-        public void AddGamesCollectionListener()
-        {
-            if (JoinableGamesList == null) return;
-            JoinableGamesList.AddGamesCollectionListener();
-        }
-     
-        public void RemoveGamesCollectionListener()
-        {
-            if (JoinableGamesList == null) return;
-            JoinableGamesList.RemoveGamesCollectionListener();
-        }
-     
         private void NavHome()
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
@@ -77,14 +99,6 @@ namespace Tetris.ViewModels
             if (JoinableGamesList == null) return;
             Shell.Current.Navigation.PushAsync(new NewGameConfigPage(JoinableGamesList));
         }
-     
-        public async Task LoadGamesList() 
-        {
-            if (JoinableGamesList == null) return;
-            JoinableGamesList = await JoinableGamesList.CreateAsync();
-            JoinableGamesList.OnGamesChanged += OnGamesChanged;
-            Games = JoinableGamesList.gamesObsCollection;
-            OnPropertyChanged(nameof(Games));
-        }
+        #endregion
     }
 }

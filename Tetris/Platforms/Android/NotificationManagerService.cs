@@ -4,13 +4,16 @@ using Android.Graphics;
 using Android.OS;
 using AndroidX.Core.App;
 using Tetris.Models;
-using Tetris.Views;
 
 namespace Tetris.Platforms.Android
 {
     public class NotificationManagerService : NotificationManagerServiceModel
     {
+        #region Events
         public override event EventHandler? NotificationReceived;
+        #endregion
+
+        #region Constructors
         public NotificationManagerService()
         {
             if (Instance == null)
@@ -20,7 +23,9 @@ namespace Tetris.Platforms.Android
                 Instance = this;
             }
         }
-     
+        #endregion
+
+        #region Public Methods
         public override Notification BuildNotification(string title, string message)
         {
             Intent intent = new(Platform.AppContext, typeof(MainActivity));
@@ -88,7 +93,9 @@ namespace Tetris.Platforms.Android
             // Raise the event using the protected member, which is allowed
             Instance?.NotificationReceived?.Invoke(null, args);
         }
-        
+        #endregion
+
+        #region Protected Methods
         protected override void CreateNotificationChannel()
         {
             // Create the notification channel, but only on API 26+.
@@ -113,5 +120,6 @@ namespace Tetris.Platforms.Android
             long utcAlarmTime = utcTime.AddSeconds(-epochDiff).Ticks / 10000;
             return utcAlarmTime; // milliseconds
         }
+        #endregion
     }
 }

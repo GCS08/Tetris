@@ -5,6 +5,7 @@ namespace Tetris.ModelsLogic
 {
     public class Notifications : NotificationsModel
     {
+        #region Constructors
         public Notifications()
         {
             Permissions.CheckStatusAsync<Permissions.PostNotifications>().
@@ -17,18 +18,9 @@ namespace Tetris.ModelsLogic
             if (notificationManager != null)
                 notificationManager.NotificationReceived += OnNotificationReceived;
         }
-      
-        protected override void SetPermissionStatus(Task<PermissionStatus> task)
-        {
-            if (task.IsCompletedSuccessfully)
-                PermissionStatus = task.Result;
-        }
-       
-        protected override void OnNotificationReceived(object? sender, EventArgs e)
-        {
-            NotificationReceived?.Invoke(this, (NotificationEventArgs)e);
-        }
-      
+        #endregion
+
+        #region Public Methods
         public override bool PushNotification(string title, string message, DateTime? notifyTime = null)
         {
             bool sent = false;
@@ -66,5 +58,19 @@ namespace Tetris.ModelsLogic
             );
             return true;
         }
+        #endregion
+
+        #region Protected Methods
+        protected override void SetPermissionStatus(Task<PermissionStatus> task)
+        {
+            if (task.IsCompletedSuccessfully)
+                PermissionStatus = task.Result;
+        }
+       
+        protected override void OnNotificationReceived(object? sender, EventArgs e)
+        {
+            NotificationReceived?.Invoke(this, (NotificationEventArgs)e);
+        }
+        #endregion
     }
 }

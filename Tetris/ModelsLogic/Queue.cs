@@ -4,11 +4,15 @@ namespace Tetris.ModelsLogic
 {
     public class Queue<T> : QueueModel<T>
     {
+        #region Constructors
         public Queue()
         {
             first = null;
             last = null;
         }
+        #endregion
+
+        #region Public Methods
         public override bool IsEmpty()
         {
             return first == null;
@@ -96,6 +100,6 @@ namespace Tetris.ModelsLogic
                 }
             });
         }
-
+        #endregion
     }
 }

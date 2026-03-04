@@ -3,9 +3,18 @@ using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
+    /// <summary>
+    /// Represents an abstract user model providing properties for user information and methods for authentication,
+    /// registration, and validation.
+    /// </summary>
     public abstract class UserModel()
     {
+        #region Fields
         protected FbData fbd = IPlatformApplication.Current?.Services.GetService<IFbData>() as FbData ?? new();
+        protected readonly Strings dynamicStrings = new();
+        #endregion
+
+        #region Properties
         public string UserID { get; set; } = Preferences.Get(Keys.UserIDKey, string.Empty);
         public string UserName { get; set; } = Preferences.Get(Keys.UserNameKey, string.Empty);
         public int TotalLines { get; set; } = Preferences.Get(Keys.TotalLinesKey, 0);
@@ -19,20 +28,24 @@ namespace Tetris.Models
             DateTime.Now.ToString(TechnicalConsts.DateFormat));
         public string Email { get; set; } = Preferences.Get(Keys.EmailKey, string.Empty);
         public string Password { get; set; } = Preferences.Get(Keys.PasswordKey, string.Empty);
-        protected readonly Strings dynamicStrings = new();
+        #endregion
 
+        #region Public Methods
         public abstract Task<bool> Login();
-        protected abstract Task<bool> OnCompleteLogin(Task task);
-        protected abstract Task LoginSaveToPreferencesAsync();
         public abstract Task<bool> Register();
-        protected abstract bool OnCompleteRegister(Task task);
-        protected abstract void SaveToPreferences();
         public abstract void SignOut();
         public abstract Task ResetPassword();
-        protected abstract void OnCompleteSendEmail(Task task);
         public abstract bool CanLogin();
         public abstract bool CanRegister(string repeatPassword);
         public abstract void Reset();
+        #endregion
+
+        #region Protected Methods
+        protected abstract Task<bool> OnCompleteLogin(Task task);
+        protected abstract Task LoginSaveToPreferencesAsync();
+        protected abstract bool OnCompleteRegister(Task task);
+        protected abstract void SaveToPreferences();
+        protected abstract void OnCompleteSendEmail(Task task);
         protected abstract bool IsEmailValid();
         protected abstract bool IsPasswordValid();
         protected abstract bool IsUserNameValid();
@@ -41,6 +54,6 @@ namespace Tetris.Models
         protected abstract bool HasNumber(string str);
         protected abstract bool HasLowerCase(string str);
         protected abstract bool HasUpperCase(string str);
-
+        #endregion
     }
 }

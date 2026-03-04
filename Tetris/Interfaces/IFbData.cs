@@ -6,6 +6,7 @@ namespace Tetris.Interfaces
 {
     public interface IFbData
     {
+        #region Public Methods
         public Task<bool> CreateUserWithEmailAndPWAsync(string email, string password,
             string userName, Func<Task, bool> OnCompleteRegister);
         public Task<bool> SignInWithEmailAndPWAsync(string email, string password, 
@@ -41,5 +42,6 @@ namespace Tetris.Interfaces
         public void UpdateUserPostGame(ModelsLogic.User user);
         public Task<Game> GetGameByCode(int code);
         public Task<bool> SetPrivateJoinCode(string gameID, int code);
+        #endregion
     }
 }

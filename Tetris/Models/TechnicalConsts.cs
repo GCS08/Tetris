@@ -1,7 +1,12 @@
 ﻿namespace Tetris.Models
 {
+    /// <summary>
+    /// Provides constant values used throughout the application, including default strings, file paths, JSON keys, date
+    /// formats, and common character symbols.
+    /// </summary>
     public class TechnicalConsts
     {
+        #region Fields
         public const string DefaultUserName = "Guest";
         public const string ResponseText = "Response:";
         public const string ErrorJson = "error";
@@ -30,5 +35,6 @@
         public const char CapitalASign = 'A';
         public const char CapitalZSign = 'Z';
         public const char ExclamationSign = '!';
+        #endregion
     }
 }

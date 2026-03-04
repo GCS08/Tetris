@@ -8,8 +8,24 @@ using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
+    /// <summary>
+    /// Provides methods for user authentication, user data management, and multiplayer game session handling using
+    /// Firebase services.
+    /// </summary>
     public class FbData : FbDataModel, IFbData
     {
+        #region Public Methods
+
+        /// <summary>
+        /// Creates a new user with the specified email, password, and username, registers the user in Firebase, stores
+        /// user data in Firestore, sends a verification email, and invokes a callback upon completion.
+        /// </summary>
+        /// <param name="email">The email address for the new user.</param>
+        /// <param name="password">The password for the new user.</param>
+        /// <param name="userName">The username for the new user.</param>
+        /// <param name="OnCompleteRegister">A callback function invoked when registration
+        /// is complete, receiving the registration task.</param>
+        /// <returns>True if the user was created and registered successfully; otherwise, false.</returns>
         public override async Task<bool> CreateUserWithEmailAndPWAsync(
             string email, string password, string userName, Func<Task, bool> OnCompleteRegister)
         {
@@ -58,6 +74,16 @@ namespace Tetris.ModelsLogic
             return success;
         }
         
+        /// <summary>
+        /// Attempts to sign in a user with the specified email and password, verifying email status and invoking a
+        /// completion callback.
+        /// </summary>
+        /// <param name="email">The user's email address.</param>
+        /// <param name="password">The user's password.</param>
+        /// <param name="OnCompleteLogin">A callback function invoked upon completion
+        /// of the sign-in attempt, receiving the sign-in task.</param>
+        /// <returns>A task representing the asynchronous operation, containing true 
+        /// if sign-in was successful; otherwise, false.</returns>
         public override async Task<bool> SignInWithEmailAndPWAsync(
             string email, string password, Func<Task, Task<bool>> OnCompleteLogin)
         {
@@ -83,12 +109,21 @@ namespace Tetris.ModelsLogic
             return await OnCompleteLogin(firebaseTask);
         }
         
+        /// <summary>
+        /// Signs out the current user if a user is present.
+        /// </summary>
         public override void SignOut()
         {
             if (facl != null && facl.User != null)
                 facl.SignOut();
         }
         
+        /// <summary>
+        /// Sends a password reset email to the specified address and invokes a callback upon completion.
+        /// </summary>
+        /// <param name="email">The email address to which the password reset email will be sent.</param>
+        /// <param name="OnCompleteSendEmail">A callback action to be invoked when the email sending task completes.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task SendPasswordResetEmailAsync(
             string email, Action<Task> OnCompleteSendEmail)
         {
@@ -113,11 +148,22 @@ namespace Tetris.ModelsLogic
             }
         }
         
+        /// <summary>
+        /// Retrieves the unique identifier of the current user.
+        /// </summary>
+        /// <returns>The user ID if available; otherwise, an empty string.</returns>
         public override string GetCurrentUserID()
         {
             return facl.User?.Uid ?? string.Empty;
         }
         
+        /// <summary>
+        /// Asynchronously retrieves user data of the specified type from Firestore using the given key.
+        /// </summary>
+        /// <typeparam name="T">The type of the user data to retrieve.</typeparam>
+        /// <param name="key">The key identifying the user data to retrieve.</param>
+        /// <returns>A task representing the asynchronous operation, with the user data of type T if found; otherwise, the
+        /// default value for type T.</returns>
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(facl.User?.Uid))
@@ -132,6 +178,11 @@ namespace Tetris.ModelsLogic
             return value != null ? value : default!;
         }
        
+        /// <summary>
+        /// Extracts and interprets Firebase error messages from a failed Task, mapping them to user-friendly messages.
+        /// </summary>
+        /// <param name="task">The Task containing the Firebase operation result and potential error information.</param>
+        /// <returns>A user-friendly error message corresponding to the Firebase error.</returns>
         public override string IdentifyFireBaseError(Task task)
         {
             Exception ex = task.Exception!.InnerException!;
@@ -184,6 +235,20 @@ namespace Tetris.ModelsLogic
             return errorMessage;
         }
         
+        /// <summary>
+        /// Adds a new game entry to the database with the specified game and player details.
+        /// </summary>
+        /// <param name="userID">The user ID of the player creating the game.</param>
+        /// <param name="creatorName">The name of the game creator.</param>
+        /// <param name="cubeColor">The color of the cube for the game.</param>
+        /// <param name="currentPlayersCount">The current number of players in the game.</param>
+        /// <param name="maxPlayersCount">The maximum number of players allowed in the game.</param>
+        /// <param name="isFull">Indicates whether the game is full.</param>
+        /// <param name="currentShapeId">The ID of the current shape.</param>
+        /// <param name="currentShapeInGameId">The in-game ID of the current shape.</param>
+        /// <param name="currentShapeColor">The color of the current shape.</param>
+        /// <param name="isPublicGame">Indicates whether the game is public.</param>
+        /// <returns>The auto-generated document ID of the newly created game entry.</returns>
         public override string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
             int currentShapeInGameId, string currentShapeColor, bool isPublicGame)
@@ -235,6 +300,11 @@ namespace Tetris.ModelsLogic
             return docRef.Id;
         }
         
+        /// <summary>
+        /// Adds a listener to the games collection that triggers when the collection changes.
+        /// </summary>
+        /// <param name="OnChange">Handler invoked when the games collection snapshot changes.</param>
+        /// <returns>A registration object for managing the listener's lifecycle.</returns>
         public override IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange)
         {
@@ -242,12 +312,21 @@ namespace Tetris.ModelsLogic
             return cr.AddSnapshotListener(OnChange);
         }
       
+        /// <summary>
+        /// Asynchronously retrieves the available games and invokes the specified callback with the resulting
+        /// collection.
+        /// </summary>
+        /// <param name="onCompleteChange">Callback invoked with the updated collection of available games.</param>
         public override async void GetAvailGames(Action<ObservableCollection<Game>> onCompleteChange)
         {
             ObservableCollection<Game> newList = await GetAvailGamesList();
             onCompleteChange(newList);
         }
       
+        /// <summary>
+        /// Retrieves a list of available public games that are not full from the database.
+        /// </summary>
+        /// <returns>An observable collection of Game objects representing available games.</returns>
         public override async Task<ObservableCollection<Game>> GetAvailGamesList()
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
@@ -276,6 +355,13 @@ namespace Tetris.ModelsLogic
             return newList;
         }
     
+        /// <summary>
+        /// Handles the logic for when a player leaves a game room by decrementing the current player count and clearing
+        /// the player's details.
+        /// </summary>
+        /// <param name="id">The unique identifier of the game room.</param>
+        /// <param name="leavingUserID">The user ID of the player who is leaving.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task OnPlayerLeaveWR(string id, string leavingUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
@@ -288,6 +374,13 @@ namespace Tetris.ModelsLogic
                         TechnicalConsts.DotSign + Keys.PlayerIdKey, string.Empty);
         }
   
+        /// <summary>
+        /// Handles a player joining a game by incrementing the current player count and assigning the joining user's ID
+        /// to the first available player slot.
+        /// </summary>
+        /// <param name="id">The unique identifier of the game document.</param>
+        /// <param name="joiningUserID">The user ID of the player joining the game.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task OnPlayerJoinWR(string id, string joiningUserID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
@@ -304,12 +397,22 @@ namespace Tetris.ModelsLogic
                 }
         }
      
+        /// <summary>
+        /// Removes a game document from the database using the specified identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the game to delete.</param>
         public override void DeleteGameFromDB(string id)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             docRef.DeleteAsync();
         }
    
+        /// <summary>
+        /// Retrieves the list of players for the specified game from the database and invokes the callback with the
+        /// resulting collection.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game whose players are to be retrieved.</param>
+        /// <param name="onCompleteChange">The callback to invoke with the collection of retrieved users.</param>
         public override async void GetPlayersFromDocument(string gameID, 
             Action<ObservableCollection<User>> onCompleteChange)
         {
@@ -335,30 +438,22 @@ namespace Tetris.ModelsLogic
             onCompleteChange(newList);
         }
      
+        /// <summary>
+        /// Asynchronously retrieves the current number of players for the specified game.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game.</param>
+        /// <returns>A task representing the asynchronous operation, containing the current player count.</returns>
         public override async Task<int> GetCurrentPlayersCount(string gameID)
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
             return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
         }
-     
-        protected override async Task<User> UserIDToObject(string id)
-        {
-            IDocumentSnapshot docSnap = await fs.Collection(
-                Keys.UsersCollectionName).Document(id).GetAsync();
-            User user = new()
-            {
-                UserID = id,
-                UserName = docSnap.Get<string>(Keys.UserNameKey)!,
-                Email = docSnap.Get<string>(Keys.EmailKey)!,
-                DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
-                GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
-                HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
-                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey)
-            };
-            return user;
-        }
  
+        /// <summary>
+        /// Marks the specified game as full in the database.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game to update.</param>
         public override void SetGameIsFull(string gameID)
         {
             IDocumentReference documentReference = fs.Collection(
@@ -366,6 +461,11 @@ namespace Tetris.ModelsLogic
             documentReference.UpdateAsync(Keys.IsFullKey, true);
         }
     
+        /// <summary>
+        /// Updates the current shape information for a specified game in the database.
+        /// </summary>
+        /// <param name="currentShape">The shape to add to the game.</param>
+        /// <param name="gameId">The identifier of the game to update.</param>
         public override void AddShape(Shape currentShape, string gameId)
         {
             if (currentShape.Color == null) return;
@@ -379,6 +479,11 @@ namespace Tetris.ModelsLogic
             });
         }
  
+        /// <summary>
+        /// Creates a Shape instance using data retrieved from the provided document snapshot.
+        /// </summary>
+        /// <param name="snapshot">The document snapshot containing shape data.</param>
+        /// <returns>A new Shape object initialized with values from the snapshot.</returns>
         public override Shape CreateShape(IDocumentSnapshot snapshot)
         {
             return new Shape(
@@ -390,6 +495,14 @@ namespace Tetris.ModelsLogic
                 TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
         }
   
+        /// <summary>
+        /// Finalizes the current round for a player by recording their moves and updating their game state in the
+        /// database.
+        /// </summary>
+        /// <param name="userID">The unique identifier of the player finishing the round.</param>
+        /// <param name="gameID">The unique identifier of the game.</param>
+        /// <param name="movesQueue">A queue containing the moves made by the player during the round.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task FinishRound(
             string userID, string gameID, Queue<string> movesQueue)
         {
@@ -484,6 +597,7 @@ namespace Tetris.ModelsLogic
             {
             }
         }
+       
         public override void UpdateUserPostGame(User user)
         {
             Preferences.Set(Keys.GamesPlayedKey, user.GamesPlayed);
@@ -537,5 +651,25 @@ namespace Tetris.ModelsLogic
                 docSnap.Id
             );
         }
+        #endregion
+
+        #region Protected Methods
+        protected override async Task<User> UserIDToObject(string id)
+        {
+            IDocumentSnapshot docSnap = await fs.Collection(
+                Keys.UsersCollectionName).Document(id).GetAsync();
+            User user = new()
+            {
+                UserID = id,
+                UserName = docSnap.Get<string>(Keys.UserNameKey)!,
+                Email = docSnap.Get<string>(Keys.EmailKey)!,
+                DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
+                GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
+                HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
+                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey)
+            };
+            return user;
+        }
+        #endregion
     }
 }

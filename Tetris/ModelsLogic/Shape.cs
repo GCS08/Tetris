@@ -5,6 +5,7 @@ namespace Tetris.ModelsLogic
 {
     public class Shape : ShapeModel
     {
+        #region Constructors
         public Shape(int inGameId)
         {
             this.Id = rnd.Next(ConstData.ShapesCount);
@@ -24,12 +25,15 @@ namespace Tetris.ModelsLogic
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }
-     
+        #endregion
+
+        #region Public Methods
         public override Shape Duplicate(Shape shape)
         {
             if (shape.Color == null) return null!;
             return new Shape(shape.Id, shape.InGameId, 
                 StringAndColorConverter.ColorToColorName(shape.Color));
         }
+        #endregion
     }
 }

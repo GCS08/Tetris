@@ -4,6 +4,7 @@ namespace Tetris.Platforms.Android
 {
     public class NotificationPermission : Permissions.BasePlatformPermission
     {
+        #region Properties
         public override (string androidPermission, bool isRuntime)[] RequiredPermissions
         {
             get
@@ -14,5 +15,6 @@ namespace Tetris.Platforms.Android
                 return [.. result]; //result.ToArray();
             }
         }
+        #endregion
     }
 }

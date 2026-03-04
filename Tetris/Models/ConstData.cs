@@ -1,13 +1,16 @@
 ﻿namespace Tetris.Models
 {
+    /// <summary>
+    /// Provides constant values and static data used throughout the application, including game configuration, shape
+    /// definitions, and color settings.
+    /// </summary>
     public static class ConstData
     {
+        #region Fields
         public const int MinCharacterInUN = 5;
         public const int MinCharacterInPW = 8;
         public const int MinCharacterInEmail = 5;
         public const int ToastFontSize = 14;
-        public static readonly GridLength UserScreenHeight 
-            = new(1.9, GridUnitType.Star);
         public const int GameGridColumnCount = 10;
         public const int GameGridRowCount = 20;
         public const double GameGridColumnWidth = 18;
@@ -49,12 +52,24 @@
                 Colors.Violet,
                 Colors.LightBlue
             ];
+        #endregion
+
+        /// <summary>
+        /// Provides debug-related constants for controlling application behavior during development.
+        /// </summary>
         public static class DebugData
         {
+            #region Fields
             public const bool StartFallTimer = true;
+            #endregion
         }
+
+        /// <summary>
+        /// Provides predefined rotation states for various Tetris-like shapes as lists of boolean matrices.
+        /// </summary>
         public static class ShapeRotationStates
         {
+            #region Fields
             public static readonly List<bool[,]> IShape =
             [
                 new bool[,] {
@@ -194,6 +209,7 @@
                     { true, true, true }
                 }
             ];
+            #endregion
         }
     }
 }

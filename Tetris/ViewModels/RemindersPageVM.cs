@@ -10,21 +10,30 @@ namespace Tetris.ViewModels
 {
     public class RemindersPageVM
     {
+        #region Fields
         private readonly Notifications notifications;
+        #endregion
 
+        #region ICommands
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand ScheduleReminderCommand => new Command(ScheduleReminder);
+        #endregion
 
+        #region Properties
         public DateTime SelectedDate { get; set; } = DateTime.Now.Date;
         public TimeSpan SelectedTime { get; set; } = DateTime.Now.TimeOfDay;
         public string SelectedSeconds { get; set; } = TechnicalConsts.ZeroSignString;
+        #endregion
 
+        #region Constructors
         public RemindersPageVM()
         {
             notifications = new Notifications();
             notifications.NotificationReceived += OnNotificationReceived;
         }
+        #endregion
 
+        #region Private Methods
         private void ScheduleReminder()
         {
             IToast toast = notifications.ScheduleReminder(SelectedDate,
@@ -45,5 +54,6 @@ namespace Tetris.ViewModels
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
+        #endregion
     }
 }

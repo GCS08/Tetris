@@ -2,9 +2,14 @@
 {
     public interface INotificationManagerService
     {
+        #region Events
         event EventHandler NotificationReceived;
-        void SendNotification(string title, string message, 
+        #endregion
+
+        #region Public Methods
+        public void SendNotification(string title, string message, 
             DateTime? notifyTime = null);
-        void ReceiveNotification(string title, string message);
+        public void ReceiveNotification(string title, string message);
+        #endregion
     }
 }

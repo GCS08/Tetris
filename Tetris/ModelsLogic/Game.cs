@@ -1,9 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Plugin.CloudFirestore;
-using System;
-using System.Collections.ObjectModel;
-using System.Timers;
-using Tetris.Interfaces;
 using Tetris.Models;
 using Tetris.Views;
 
@@ -11,6 +8,8 @@ namespace Tetris.ModelsLogic
 {
     public class Game : GameModel
     {
+        #region Constructors
+        public Game() { }
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
         {
@@ -25,9 +24,9 @@ namespace Tetris.ModelsLogic
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
-      
-        public Game() { }
-        
+        #endregion
+
+        #region Public Methods
         public override async Task<Game> GetGameByCode(int code)
         {
             Game currentGame = await fbd.GetGameByCode(code);
@@ -35,46 +34,12 @@ namespace Tetris.ModelsLogic
                 return currentGame;
             return null!;
         }
-   
-        private void OnGameFinishedLogicHandler(object? sender, EventArgs e)
-        {
-            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
-                OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
-            if (!IsStatsUpdatedOnceOnGameFinished)
-            {
-                GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
-                    ? GameBoard.Score : GameBoard.User.HighestScore;
-                GameBoard.User.GamesPlayed++;
-                fbd.UpdateUserPostGame(GameBoard.User);
-                IsStatsUpdatedOnceOnGameFinished = true;
-            }
-            UnregisterTimer();
-            GameBoard.FallTimer.Stop();
-            OpFallTimer.Stop();
-            GameBoard.EnableMoves = false;
-            OpGameBoard.EnableMoves = false;
-            OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
-        }
 
         public override void RegisterTimer()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
             {
                 OnMessageReceived(m.Value);
-            });
-        }
-
-        protected override void UnregisterTimer()
-        {
-            WeakReferenceMessenger.Default.Unregister<AppMessage<long>>(this);
-        }
-    
-        protected override void OnMessageReceived(long timeLeft)
-        {
-            TimeLeftMs = timeLeft;
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
             });
         }
     
@@ -112,6 +77,7 @@ namespace Tetris.ModelsLogic
         {
             ilr?.Remove();
         }
+ 
         public override void AddReadyListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeReady);
@@ -120,98 +86,6 @@ namespace Tetris.ModelsLogic
         public override void RemoveReadyListener()
         {
             ilr?.Remove();
-        }
-    
-        protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
-        {
-            if (snapshot == null) return;
-            bool allReady = true;
-            for (int i = 0; i < MaxPlayersCount && allReady; i++)
-            {
-                if (!snapshot.Get<bool>(Keys.PlayerDetailsKey + i + 
-                    TechnicalConsts.DotSign + Keys.IsPlayerReadyKey))
-                    allReady = false;
-            }
-            if (allReady)
-                OnAllReady?.Invoke(this, EventArgs.Empty);
-        }
-    
-        protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
-        {
-            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
-                || OpGameBoard == null || OpGameBoard.ShapesQueue == null || OpFallTimer == null) return;
-
-            bool found = false;
-            for (desiredIndex = 0; desiredIndex < MaxPlayersCount && !found; desiredIndex++)
-                if (snapshot.Get<bool>(Keys.PlayerDetailsKey + desiredIndex + 
-                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
-                    found = true;
-
-            if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId ||
-                OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)// Shape has changed
-            {
-                Shape newShape = fbd.CreateShape(snapshot);
-                Shape newShape2 = fbd.CreateShape(snapshot);
-                if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId)
-                    GameBoard.ShapesQueue.Insert(newShape);
-                if (OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)
-                    OpGameBoard.ShapesQueue.Insert(newShape2);
-            }
-            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (desiredIndex - 1) + TechnicalConsts.DotSign
-                    + Keys.PlayerIdKey) != User.UserID)// Op player has moved
-            {
-                desiredIndex--;
-                Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
-                    (Keys.PlayerDetailsKey + desiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
-
-                currentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + desiredIndex + 
-                    TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
-
-                fbd.ResetIsShapeAtBottom(GameID, desiredIndex);
-
-                IsMovesQueueSorting = true;
-
-                foreach (KeyValuePair<string, string> move in playerMoveMap)
-                    movesQueue.Insert(move);
-                await movesQueue.SortByUnixTimestampKeyAsync();
-                
-                IsMovesQueueSorting = false;
-
-                if (!OpFallTimer.IsRunning)
-                    OpFallTimer.Start();
-            }
-        }
-     
-        protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
-        {
-            if (snapshot == null) return;
-            CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
-            fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
-        }
-  
-        protected override void OnCompleteChange(ObservableCollection<User> users)
-        {
-            UsersInGame.Clear();
-            foreach (User user in users) { UsersInGame.Add(user); }
-
-            if (!IsFull)
-                OnPlayersChange?.Invoke(this, EventArgs.Empty);
-            else
-            {
-                if (GameBoard == null || OpGameBoard == null || User == null) return;
-                fbd.SetGameIsFull(GameID);
-                GameBoard.GameID = GameID;
-                OpGameBoard.GameID = GameID;
-                GameBoard.User = User;
-                foreach (User user in UsersInGame)
-                    if (user.UserID != User.UserID)
-                        OpGameBoard.User = user;
-                OnGameFull?.Invoke(this, EventArgs.Empty);
-            }
         }
      
         public override async void NavToWR()
@@ -245,34 +119,6 @@ namespace Tetris.ModelsLogic
             IsGameStarted = true;
             GameBoard.StartGame();
             OpGameBoard.EnableMoves = true;
-        }
-
-        protected override void ApplyOpMove(object? sender, EventArgs e)
-        {
-            if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
-            if (!movesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != currentMovingOpId)
-            // third check is unnecessary since it enters the second if in the
-            // on change game only if its not the player who finished a moved.
-            {
-                string move = movesQueue.Remove().Value;
-                switch (move)
-                {
-                    case Keys.RightKey:
-                        MoveRightOpShape();
-                        break;
-                    case Keys.LeftKey:
-                        MoveLeftOpShape();
-                        break;
-                    case Keys.DownKey:
-                        MoveDownOpShape();
-                        break;
-                    case Keys.RotateKey:
-                        RotateOpShape();
-                        break;
-                }
-            }
-            else
-                OpFallTimer.Stop();
         }
 
         public override void MoveRightShape() 
@@ -346,5 +192,162 @@ namespace Tetris.ModelsLogic
             PrivateJoinCode = code;
             OnCodeReady?.Invoke(this, EventArgs.Empty);
         }
+        #endregion
+
+        #region Protected Methods
+        protected override void OnGameFinishedLogicHandler(object? sender, EventArgs e)
+        {
+            if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
+                OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
+            if (!IsStatsUpdatedOnceOnGameFinished)
+            {
+                GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
+                    ? GameBoard.Score : GameBoard.User.HighestScore;
+                GameBoard.User.GamesPlayed++;
+                fbd.UpdateUserPostGame(GameBoard.User);
+                IsStatsUpdatedOnceOnGameFinished = true;
+            }
+            UnregisterTimer();
+            GameBoard.FallTimer.Stop();
+            OpFallTimer.Stop();
+            GameBoard.EnableMoves = false;
+            OpGameBoard.EnableMoves = false;
+            OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
+        }
+
+        protected override void UnregisterTimer()
+        {
+            WeakReferenceMessenger.Default.Unregister<AppMessage<long>>(this);
+        }
+    
+        protected override void OnMessageReceived(long timeLeft)
+        {
+            TimeLeftMs = timeLeft;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
+            });
+        }
+    
+        protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
+        {
+            if (snapshot == null) return;
+            bool allReady = true;
+            for (int i = 0; i < MaxPlayersCount && allReady; i++)
+            {
+                if (!snapshot.Get<bool>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.IsPlayerReadyKey))
+                    allReady = false;
+            }
+            if (allReady)
+                OnAllReady?.Invoke(this, EventArgs.Empty);
+        }
+    
+        protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
+        {
+            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
+                || OpGameBoard == null || OpGameBoard.ShapesQueue == null || OpFallTimer == null) return;
+
+            bool found = false;
+            for (DesiredIndex = 0; DesiredIndex < MaxPlayersCount && !found; DesiredIndex++)
+                if (snapshot.Get<bool>(Keys.PlayerDetailsKey + DesiredIndex + 
+                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
+                    found = true;
+
+            if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId ||
+                OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)// Shape has changed
+            {
+                Shape newShape = fbd.CreateShape(snapshot);
+                Shape newShape2 = fbd.CreateShape(snapshot);
+                if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId)
+                    GameBoard.ShapesQueue.Insert(newShape);
+                if (OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)
+                    OpGameBoard.ShapesQueue.Insert(newShape2);
+            }
+            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (DesiredIndex - 1) + TechnicalConsts.DotSign
+                    + Keys.PlayerIdKey) != User.UserID)// Op player has moved
+            {
+                DesiredIndex--;
+                Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
+                    (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
+
+                CurrentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex + 
+                    TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+
+                fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
+
+                IsMovesQueueSorting = true;
+
+                foreach (KeyValuePair<string, string> move in playerMoveMap)
+                    MovesQueue.Insert(move);
+                await MovesQueue.SortByUnixTimestampKeyAsync();
+                
+                IsMovesQueueSorting = false;
+
+                if (!OpFallTimer.IsRunning)
+                    OpFallTimer.Start();
+            }
+        }
+     
+        protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
+        {
+            if (snapshot == null) return;
+            CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
+            fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
+        }
+  
+        protected override void OnCompleteChange(ObservableCollection<User> users)
+        {
+            UsersInGame.Clear();
+            foreach (User user in users) { UsersInGame.Add(user); }
+
+            if (!IsFull)
+                OnPlayersChange?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                if (GameBoard == null || OpGameBoard == null || User == null) return;
+                fbd.SetGameIsFull(GameID);
+                GameBoard.GameID = GameID;
+                OpGameBoard.GameID = GameID;
+                GameBoard.User = User;
+                foreach (User user in UsersInGame)
+                    if (user.UserID != User.UserID)
+                        OpGameBoard.User = user;
+                OnGameFull?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        protected override void ApplyOpMove(object? sender, EventArgs e)
+        {
+            if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
+            if (!MovesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != CurrentMovingOpId)
+            // third check is unnecessary since it enters the second if in the
+            // on change game only if its not the player who finished a moved.
+            {
+                string move = MovesQueue.Remove().Value;
+                switch (move)
+                {
+                    case Keys.RightKey:
+                        MoveRightOpShape();
+                        break;
+                    case Keys.LeftKey:
+                        MoveLeftOpShape();
+                        break;
+                    case Keys.DownKey:
+                        MoveDownOpShape();
+                        break;
+                    case Keys.RotateKey:
+                        RotateOpShape();
+                        break;
+                }
+            }
+            else
+                OpFallTimer.Stop();
+        }
+        #endregion
     }
 }

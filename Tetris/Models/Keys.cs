@@ -1,5 +1,9 @@
 ﻿namespace Tetris.Models
 {
+    /// <summary>
+    /// Provides a collection of constant string keys used throughout the application for user data, game settings,
+    /// error messages, API endpoints, and other configuration values.
+    /// </summary>
     public static class Keys
     {
         public const string UserNameKey = "userName";

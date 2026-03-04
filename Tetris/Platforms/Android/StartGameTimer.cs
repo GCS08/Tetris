@@ -7,6 +7,7 @@ namespace Tetris.Platforms.Android
     public class StartGameTimer(long millisInFuture, long countDownInterval) 
         : CountDownTimer(millisInFuture, countDownInterval)
     {
+        #region Public Methods
         public override void OnFinish()
         {
             WeakReferenceMessenger.Default.Send(new AppMessage<long>(ConstData.FinishedSignal));
@@ -16,5 +17,6 @@ namespace Tetris.Platforms.Android
         {
             WeakReferenceMessenger.Default.Send(new AppMessage<long>(millisUntilFinished));
         }
+        #endregion
     }
 }

@@ -6,13 +6,15 @@ namespace Tetris.ModelsLogic
 {
     public class JoinableGamesList : JoinableGamesListModel
     {
+        #region Constructors
+        public JoinableGamesList() { }
         public JoinableGamesList(ObservableCollection<Game> list)
         {
             this.gamesObsCollection = list;
         }
-      
-        public JoinableGamesList() { }
-   
+        #endregion
+
+        #region Public Methods
         public override async Task<JoinableGamesList> CreateAsync()
         {
             // create an instance so we can access fbd from the base class
@@ -24,19 +26,6 @@ namespace Tetris.ModelsLogic
         public override void AddGamesCollectionListener()
         {
             ilr = fbd.AddGamesCollectionListener(OnChange);
-        }
-      
-        protected override void OnChange(IQuerySnapshot? snapshot, Exception? error)
-        {
-            fbd.GetAvailGames(OnCompleteChange);
-        }
-       
-        protected override void OnCompleteChange(ObservableCollection<Game> newList)
-        {
-            if (gamesObsCollection == null) return;
-            gamesObsCollection.Clear();
-            foreach (Game game in newList) { gamesObsCollection.Add(game); }
-            OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
      
         public override void RemoveGamesCollectionListener()
@@ -61,5 +50,21 @@ namespace Tetris.ModelsLogic
                 (currentNewGame.GameBoard.CurrentShape.Color),
                 currentNewGame.IsPublicGame);
         }
+        #endregion
+
+        #region Protected Methods
+        protected override void OnChange(IQuerySnapshot? snapshot, Exception? error)
+        {
+            fbd.GetAvailGames(OnCompleteChange);
+        }
+       
+        protected override void OnCompleteChange(ObservableCollection<Game> newList)
+        {
+            if (gamesObsCollection == null) return;
+            gamesObsCollection.Clear();
+            foreach (Game game in newList) { gamesObsCollection.Add(game); }
+            OnGamesChanged?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
     }
 }

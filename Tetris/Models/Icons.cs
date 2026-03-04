@@ -1,5 +1,8 @@
 ﻿namespace Tetris.Models
 {
+    /// <summary>
+    /// Provides a collection of constant string values representing various icon glyphs for use in UI elements.
+    /// </summary>
     public static class Icons
     {
         public const string Delete = "\ue872";

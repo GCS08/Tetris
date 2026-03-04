@@ -1,7 +1,12 @@
 ﻿namespace Tetris.Models
 {
+    /// <summary>
+    /// Provides centralized string constants for UI text, error messages, and notifications used throughout the Tetris
+    /// application.
+    /// </summary>
     public class Strings
     {
+        #region Fields
         public const string UserName = "Enter your username:";
         public const string Email = "Enter your email:";
         public const string Password = "Enter your password:";
@@ -137,5 +142,6 @@
         public const string RemindersButtonText = "Reminders";
         public const string TetrisServiceTitle = "Tetris";
         public const string DeleteDocsDesc = "Deleting old Firebase docs...";
+        #endregion
     }
 }

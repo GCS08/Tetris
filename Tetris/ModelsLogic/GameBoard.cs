@@ -5,6 +5,7 @@ namespace Tetris.ModelsLogic
 {
     public class GameBoard : GameBoardModel
     {
+        #region Constructors
         public GameBoard(string gameId, Shape currentShape, bool IsOp)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
@@ -31,110 +32,14 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-   
+        #endregion
+
+        #region Public Methods
         public override void StartGame()
         {
             if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
             EnableMoves = true;
-        }
-        
-        protected override void ShapeAtBottom()
-        {
-            if (User == null) return;
-            int linesCleared = CheckForLines();
-            if (linesCleared > 0 && !IsOp)
-            {
-                SoundManager.PlayLineCleared();
-                User.TotalLines += linesCleared;
-                Score += linesCleared * ConstData.ScorePerLine * ComboCount;
-                ComboCount++;
-            }
-            else
-                ComboCount = 1;
-
-            if (CheckForLose())
-                OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
-            else
-            {
-                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
-
-                ShapesQueue.Remove();
-                if (ShapesQueue.IsEmpty() && !IsOp)
-                {
-                    Shape shape = new(CurrentShape.InGameId + 1);
-                    fbd.AddShape(shape, GameID);
-                    ShapesQueue.Insert(shape);
-                    CurrentShape = shape;
-                }
-                else
-                    CurrentShape = ShapesQueue.Head();
-                ShowShape();
-            }
-        }
-      
-        protected override bool CheckForLose()
-        {
-            if (Board == null) return false;
-            for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                if (Board[0, col].Color != Colors.Transparent)
-                    return true;
-            return false;
-        }
-      
-        protected override int CheckForLines()
-        {
-            if (Board == null) return 0;
-            int linesCleared = 0;
-
-            int writeRow = ConstData.GameGridRowCount - 1;
-
-            for (int readRow = ConstData.GameGridRowCount - 1; readRow >= 0; readRow--)
-            {
-                bool lineFull = true;
-                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                    if (Board[readRow, col].Color == Colors.Transparent)
-                    {
-                        lineFull = false;
-                        break;
-                    }
-
-                if (!lineFull)
-                {
-                    if (writeRow != readRow)
-                        for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                            Board[writeRow, col].Color = Board[readRow, col].Color;
-                    writeRow--;
-                }
-                else
-                    linesCleared++;
-            }
-
-            for (int row = writeRow; row >= 0; row--)
-                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                    Board[row, col].Color = Colors.Transparent;
-
-            return linesCleared;
-        }
-     
-        protected override void ShowShape()
-        {
-            if (CurrentShape == null || Board == null) return;
-            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
-                    if (CurrentShape.Cells[i, j])
-                        Board[i + CurrentShape.TopLeftY, j +
-                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
-        }
- 
-        protected override void EraseShape()
-        {
-            if (CurrentShape == null || Board == null) return;
-            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
-                    if (CurrentShape.Cells[i, j])
-                        Board[i + CurrentShape.TopLeftY, j +
-                            CurrentShape.TopLeftX].Color = Colors.Transparent;
         }
        
         public override void MoveRightShape()
@@ -293,12 +198,6 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
-    
-        protected override async void MoveDownShape(object? sender, ElapsedEventArgs e) 
-        {
-            if (GameID == null) return;
-            await MoveDownShape();
-        }
      
         public override void RotateShape()
         {
@@ -321,6 +220,155 @@ namespace Tetris.ModelsLogic
 
             MovesQueue.Insert(Keys.RotateKey);
             ShowShape();
+        }
+     
+        public override void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
+        {
+            if (gameBoardGrid == null || Board == null) return;
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
+
+            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+            {
+                for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                {
+                    Cube cube = Board[r, c];
+
+                    BoxView boxView = new()
+                    {
+                        WidthRequest = cube.Width,
+                        HeightRequest = cube.Height,
+                        BackgroundColor = cube.Color
+                    };
+
+                    cube.PropertyChanged += (s, e) =>
+                    {
+                        if (e.PropertyName == nameof(cube.Color))
+                            boxView.BackgroundColor = cube.Color;
+                    };
+
+                    Border border = new()
+                    {
+                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                        Stroke = Colors.Gray,
+                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                        Background = Colors.Transparent,
+                        Content = boxView
+                    };
+
+                    gameBoardGrid.Add(border, c, r);
+                }
+            }
+        }
+        #endregion
+
+        #region Protected Methods
+        protected override void ShapeAtBottom()
+        {
+            if (User == null) return;
+            int linesCleared = CheckForLines();
+            if (linesCleared > 0 && !IsOp)
+            {
+                SoundManager.PlayLineCleared();
+                User.TotalLines += linesCleared;
+                Score += linesCleared * ConstData.ScorePerLine * ComboCount;
+                ComboCount++;
+            }
+            else
+                ComboCount = 1;
+
+            if (CheckForLose())
+                OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
+
+                ShapesQueue.Remove();
+                if (ShapesQueue.IsEmpty() && !IsOp)
+                {
+                    Shape shape = new(CurrentShape.InGameId + 1);
+                    fbd.AddShape(shape, GameID);
+                    ShapesQueue.Insert(shape);
+                    CurrentShape = shape;
+                }
+                else
+                    CurrentShape = ShapesQueue.Head();
+                ShowShape();
+            }
+        }
+      
+        protected override bool CheckForLose()
+        {
+            if (Board == null) return false;
+            for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                if (Board[0, col].Color != Colors.Transparent)
+                    return true;
+            return false;
+        }
+      
+        protected override int CheckForLines()
+        {
+            if (Board == null) return 0;
+            int linesCleared = 0;
+
+            int writeRow = ConstData.GameGridRowCount - 1;
+
+            for (int readRow = ConstData.GameGridRowCount - 1; readRow >= 0; readRow--)
+            {
+                bool lineFull = true;
+                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                    if (Board[readRow, col].Color == Colors.Transparent)
+                    {
+                        lineFull = false;
+                        break;
+                    }
+
+                if (!lineFull)
+                {
+                    if (writeRow != readRow)
+                        for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                            Board[writeRow, col].Color = Board[readRow, col].Color;
+                    writeRow--;
+                }
+                else
+                    linesCleared++;
+            }
+
+            for (int row = writeRow; row >= 0; row--)
+                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                    Board[row, col].Color = Colors.Transparent;
+
+            return linesCleared;
+        }
+     
+        protected override void ShowShape()
+        {
+            if (CurrentShape == null || Board == null) return;
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
+                    if (CurrentShape.Cells[i, j])
+                        Board[i + CurrentShape.TopLeftY, j +
+                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
+        }
+ 
+        protected override void EraseShape()
+        {
+            if (CurrentShape == null || Board == null) return;
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
+                    if (CurrentShape.Cells[i, j])
+                        Board[i + CurrentShape.TopLeftY, j +
+                            CurrentShape.TopLeftX].Color = Colors.Transparent;
+        }
+    
+        protected override async void MoveDownShape(object? sender, ElapsedEventArgs e) 
+        {
+            if (GameID == null) return;
+            await MoveDownShape();
         }
     
         protected override bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)
@@ -378,48 +426,6 @@ namespace Tetris.ModelsLogic
 
             return false; // No valid position found
         }
-     
-        public override void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
-        {
-            if (gameBoardGrid == null || Board == null) return;
-
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
-
-            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
-
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
-            {
-                for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                {
-                    Cube cube = Board[r, c];
-
-                    BoxView boxView = new()
-                    {
-                        WidthRequest = cube.Width,
-                        HeightRequest = cube.Height,
-                        BackgroundColor = cube.Color
-                    };
-
-                    cube.PropertyChanged += (s, e) =>
-                    {
-                        if (e.PropertyName == nameof(cube.Color))
-                            boxView.BackgroundColor = cube.Color;
-                    };
-
-                    Border border = new()
-                    {
-                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
-                        Stroke = Colors.Gray,
-                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
-                        Background = Colors.Transparent,
-                        Content = boxView
-                    };
-
-                    gameBoardGrid.Add(border, c, r);
-                }
-            }
-        }
+        #endregion
     }
 }

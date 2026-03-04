@@ -8,12 +8,20 @@ namespace Tetris.ViewModels
 {
     public partial class MainPageVM : ObservableObject
     {
+        #region Fields
+        private string? welcomeUserName;
+        private bool isLogged;
+        public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
+        #endregion
+
+        #region ICommands
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand NavToRemindersCommand { get => new Command(NavToReminders); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
-        public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
-        private bool isLogged;
+        #endregion
+
+        #region Properties
         private bool IsLogged
         {
             get => isLogged;
@@ -30,7 +38,6 @@ namespace Tetris.ViewModels
         public bool PlayVisibility => IsLogged;
         public bool RemindersVisibility => IsLogged;
         public bool LoginVisibility => !IsLogged;
-        private string? welcomeUserName;
         public string? WelcomeUserName
         {
             get => welcomeUserName;
@@ -43,13 +50,17 @@ namespace Tetris.ViewModels
                 }
             }
         }
-   
+        #endregion
+
+        #region Constructors
         public MainPageVM()
         {
             //SignOut();
             RefreshProperties();
         }
-      
+        #endregion
+
+        #region Private Methods
         private void SeveralPropertiesChange()
         {
             string[] nameOfs = [nameof(LoginVisibility), nameof(RemindersVisibility)
@@ -90,5 +101,6 @@ namespace Tetris.ViewModels
             User.SignOut();
             RefreshProperties();
         }
+        #endregion
     }
 }

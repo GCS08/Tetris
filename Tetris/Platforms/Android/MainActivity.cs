@@ -15,7 +15,11 @@ namespace Tetris.Platforms.Android
         | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     public class MainActivity : MauiAppCompatActivity
     {
+        #region Fields
         StartGameTimer? startGameTimer;
+        #endregion
+
+        #region Protected Methods
         protected override async void OnCreate(Bundle? savedInstanceState)
         {
             /*default*/ base.OnCreate(savedInstanceState);
@@ -34,7 +38,9 @@ namespace Tetris.Platforms.Android
             if (intent != null)
                 ReceiveNotificationFromIntent(intent);
         }
-   
+        #endregion
+
+        #region Private Methods
         private static void ReceiveNotificationFromIntent(Intent intent)
         {
             if (intent?.Extras != null)
@@ -83,5 +89,6 @@ namespace Tetris.Platforms.Android
             else
                 StartService(intent);
         }
+        #endregion
     }
 }

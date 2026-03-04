@@ -9,11 +9,18 @@ namespace Tetris.ViewModels
 {
     public partial class WaitingRoomPageVM : ObservableObject
     {
+        #region ICommands
+        public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
+        #endregion
+
+        #region Properties
         public string PrivateJoinCode => !CurrentGame.IsPublicGame ? 
             Strings.CodeInterview + CurrentGame.PrivateJoinCode.ToString() : string.Empty;
-        private Game CurrentGame { get; set; }
-        public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
         public ObservableCollection<User> PlayersInGame => CurrentGame.UsersInGame;
+        private Game CurrentGame { get; set; }
+        #endregion
+
+        #region Constructors
         public WaitingRoomPageVM(Game? game)
         {
             if (game == null)
@@ -29,7 +36,21 @@ namespace Tetris.ViewModels
             if (!CurrentGame.IsPublicGame && CurrentGame.PrivateJoinCode == 0)
                 CurrentGame.CreateCode();
         }
+        #endregion
 
+        #region Public Methods
+        public void AddWaitingRoomListener()
+        {
+            CurrentGame.AddWaitingRoomListener();
+        }
+
+        public void RemoveWaitingRoomListener()
+        {
+            CurrentGame.RemoveWaitingRoomListener();
+        }
+        #endregion
+
+        #region Private Methods
         private void OnCodeReady(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(PrivateJoinCode));
@@ -50,15 +71,6 @@ namespace Tetris.ViewModels
             await CurrentGame.OnPlayerLeaveWR();
             _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
-
-        public void AddWaitingRoomListener()
-        {
-            CurrentGame.AddWaitingRoomListener();
-        }
-
-        public void RemoveWaitingRoomListener()
-        {
-            CurrentGame.RemoveWaitingRoomListener();
-        }
+        #endregion
     }
 }

@@ -6,6 +6,7 @@ namespace Tetris.Platforms.Android
     [BroadcastReceiver(Enabled = true, Label = Strings.AlarmReceiverBroadcastLabel)]
     public class AlarmReceiver : BroadcastReceiver
     {
+        #region Public Methods
         public override void OnReceive(Context? context, Intent? intent)
         {
             if (intent?.Extras != null)
@@ -17,5 +18,6 @@ namespace Tetris.Platforms.Android
                 manager.Show(title, message);
             }
         }
+        #endregion
     }
 }

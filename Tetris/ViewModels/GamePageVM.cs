@@ -8,29 +8,36 @@ namespace Tetris.ViewModels;
 
 public partial class GamePageVM : ObservableObject
 {
-    public bool IsReadyVisible { get; set; } = true;
-    public bool IsTimerVisible { get; set; } = false;
-    public bool IsGameFinishedVisible { get; set; } = false;
-
-    public Color GameFinishedResultColor { get; set; } = Colors.Black;
+    #region Fields
     public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
-    public string GameFinishedResultText { get; set; } = Strings.LoadingResult;
-    public string TimeLeft => CurrentGame.TimeLeftText;
-    public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UsernameUa;
-    public string PlayerName => User?.UserName ?? Strings.UsernameUa;
-    public GridLength UserScreenHeight => ConstData.UserScreenHeight;
+    #endregion
 
+    #region ICommands
     public ICommand NavToGameLobbyCommand => new Command(NavToGameLobby);
     public ICommand ReadyCommand => new Command(Ready);
     public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
     public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
     public ICommand RotateShapeCommand => new Command(RotateShape);
+    #endregion
+
+    #region Properties
+    public bool IsReadyVisible { get; set; } = true;
+    public bool IsTimerVisible { get; set; } = false;
+    public bool IsGameFinishedVisible { get; set; } = false;
+
+    public Color GameFinishedResultColor { get; set; } = Colors.Black;
+    public string GameFinishedResultText { get; set; } = Strings.LoadingResult;
+    public string TimeLeft => CurrentGame.TimeLeftText;
+    public string OpName => CurrentGame.OpGameBoard?.User?.UserName ?? Strings.UsernameUa;
+    public string PlayerName => User?.UserName ?? Strings.UsernameUa;
 
     public Game CurrentGame { get; }
     public Grid? GameBoardGrid { get; set; }
     public Grid? OpGameBoardGrid { get; set; }
+    #endregion
 
+    #region Constructors
     public GamePageVM(Game game)
     {
         this.CurrentGame = game;
@@ -39,7 +46,31 @@ public partial class GamePageVM : ObservableObject
         game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
         game.OnGameFinishedUI += OnGameFinishedUIHandler;
     }
+    #endregion
 
+    #region Public Methods
+    public void InitializeGrid()
+    {
+        if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null
+            || GameBoardGrid == null || OpGameBoardGrid == null) return;
+        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, 
+            ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
+        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, 
+            ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+    }
+   
+    public void AddReadyListener()
+    {
+        CurrentGame.AddReadyListener();
+    }
+  
+    public void RemoveGameListener()
+    {
+        CurrentGame.RemoveGameListener();
+    }
+    #endregion
+
+    #region Private Methods
     private void OnGameFinishedUIHandler(object? sender, EventArgs e)
     {
         bool isOpLost = sender is GameBoard gameBoard && gameBoard.IsOp;
@@ -103,24 +134,5 @@ public partial class GamePageVM : ObservableObject
     {
         CurrentGame.RotateShape();
     }
-   
-    public void InitializeGrid()
-    {
-        if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null
-            || GameBoardGrid == null || OpGameBoardGrid == null) return;
-        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, 
-            ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, 
-            ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
-    }
-   
-    public void AddReadyListener()
-    {
-        CurrentGame.AddReadyListener();
-    }
-  
-    public void RemoveGameListener()
-    {
-        CurrentGame.RemoveGameListener();
-    }
+    #endregion
 }

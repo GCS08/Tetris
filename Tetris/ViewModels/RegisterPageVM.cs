@@ -9,17 +9,24 @@ namespace Tetris.ViewModels
 {
     public class RegisterPageVM : ObservableObject
     {
+        #region Fields
+        private readonly User User = IPlatformApplication.Current?.
+            Services.GetService<IUser>() as User ?? new();
+        private string passwordRepeat;
+        #endregion
+
+        #region ICommands
         public ICommand NavToLoginCommand => new Command(NavToLogin);
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand RandomUsernameCommand => new Command(GetRandomUsername);
         public ICommand RegisterCommand { get; }
         public ICommand ToggleIsPassword1Command { get; }
         public ICommand ToggleIsPassword2Command { get; }
+        #endregion
+
+        #region Properties
         public bool RegisterEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
-        private readonly User User = IPlatformApplication.Current?.
-            Services.GetService<IUser>() as User ?? new();
-     
         public string UserName
         {
             get => User?.UserName ?? Strings.UsernameUa;
@@ -29,7 +36,6 @@ namespace Tetris.ViewModels
                     User.UserName = value;
             }
         }
-    
         public string Email
         {
             get => User?.Email ?? Strings.EmailUa;
@@ -39,7 +45,6 @@ namespace Tetris.ViewModels
                     User.Email = value;
             }
         }
-     
         public string Password
         {
             get => User?.Password ?? Strings.PasswordUa;
@@ -49,9 +54,6 @@ namespace Tetris.ViewModels
                     User.Password = value;
             }
         }
-      
-        private string passwordRepeat;
-    
         public string PasswordRepeat
         {
             get => passwordRepeat;
@@ -65,7 +67,9 @@ namespace Tetris.ViewModels
         }
         public bool IsPassword1 { get; set; } = true;
         public bool IsPassword2 { get; set; } = true;
-      
+        #endregion
+
+        #region Constructors
         public RegisterPageVM()
         {
             RefreshProperties();
@@ -74,7 +78,9 @@ namespace Tetris.ViewModels
             ToggleIsPassword1Command = new Command(ToggleIsPassword1);
             ToggleIsPassword2Command = new Command(ToggleIsPassword2);
         }
-      
+        #endregion
+
+        #region Private Methods
         private void ToggleIsPassword1()
         {
             IsPassword1 = !IsPassword1;
@@ -142,5 +148,6 @@ namespace Tetris.ViewModels
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
+        #endregion
     }
 }

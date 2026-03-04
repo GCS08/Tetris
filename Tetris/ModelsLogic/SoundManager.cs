@@ -6,11 +6,14 @@ namespace Tetris.ModelsLogic
 {
     public class SoundManager : SoundManagerModel, ISoundManager
     {
+        #region Constructors
         public SoundManager()
         {
             audioManager = AudioManager.Current;
         }
-   
+        #endregion
+
+        #region Public Methods
         public override async Task InitializeAsync()
         {
             if (audioManager == null) return;
@@ -29,5 +32,6 @@ namespace Tetris.ModelsLogic
         {
             shapeDownPlayer?.Play();
         }
+        #endregion
     }
 }

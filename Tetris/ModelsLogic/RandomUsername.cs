@@ -5,6 +5,7 @@ namespace Tetris.ModelsLogic
 {
     public class RandomUsername : RandomUsernameModel
     {
+        #region Public Methods
         // Static method to get a random username
         public override async Task<string> GetAsync()
         {
@@ -33,5 +34,6 @@ namespace Tetris.ModelsLogic
                 }
             }
         }
+        #endregion
     }
 }

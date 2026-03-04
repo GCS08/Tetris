@@ -4,6 +4,7 @@ namespace Tetris.ModelsLogic
 {
     public class Node<T> : NodeModel<T>
     {
+        #region Constructors
         // Constructor with value only, next is null by default
         public Node(T value)
         {
@@ -17,7 +18,9 @@ namespace Tetris.ModelsLogic
             this.value = value;
             this.next = next;
         }
+        #endregion
 
+        #region Public Methods
         // Getter for value
         public override T GetValue()
         {
@@ -39,5 +42,6 @@ namespace Tetris.ModelsLogic
         {
             this.next = next;
         }
+        #endregion
     }
 }

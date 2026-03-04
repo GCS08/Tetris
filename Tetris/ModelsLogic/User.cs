@@ -5,13 +5,57 @@ using Tetris.Models;
 namespace Tetris.ModelsLogic
 {
     public class User : UserModel, IUser
-    {        
+    {
+        #region Public Methods
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
      
+        public override async Task<bool> Register()
+        {
+            bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
+            return success;
+        }
+    
+        public override void SignOut()
+        {
+            fbd.SignOut();
+            Preferences.Clear();
+            Reset();
+        }
+    
+        public override async Task ResetPassword() 
+        {
+            await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
+        }
+      
+        public override bool CanLogin()
+        {
+            return IsEmailValid() && IsPasswordValid();
+        }
+     
+        public override bool CanRegister(string repeatPassword)
+        {
+            return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
+        }
+    
+        public override void Reset()
+        {
+            UserID = Preferences.Get(Keys.UserIDKey, string.Empty);
+            UserName = Preferences.Get(Keys.UserNameKey, string.Empty);
+            TotalLines = Preferences.Get(Keys.TotalLinesKey, 0);
+            GamesPlayed = Preferences.Get(Keys.GamesPlayedKey, 0);
+            HighestScore = Preferences.Get(Keys.HighestScoreKey, 0);
+            DateJoined = Preferences.Get(Keys.DateJoinedKey,
+            DateTime.Now.ToString(TechnicalConsts.DateFormat));
+            Email = Preferences.Get(Keys.EmailKey, string.Empty);
+            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
+        }
+        #endregion
+
+        #region Protected Methods
         protected override async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
@@ -40,12 +84,6 @@ namespace Tetris.ModelsLogic
             DateJoined = await fbd.GetUserDataAsync<string>(Keys.DateJoinedKey);
 
             SaveToPreferences();
-        }
-     
-        public override async Task<bool> Register()
-        {
-            bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
-            return success;
         }
     
         protected override bool OnCompleteRegister(Task task)
@@ -80,18 +118,6 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.HighestScoreKey, HighestScore);
             Preferences.Set(Keys.DateJoinedKey, DateJoined);
         }
-    
-        public override void SignOut()
-        {
-            fbd.SignOut();
-            Preferences.Clear();
-            Reset();
-        }
-    
-        public override async Task ResetPassword() 
-        {
-            await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
-        }
 
         protected override void OnCompleteSendEmail(Task task)
         {
@@ -104,29 +130,6 @@ namespace Tetris.ModelsLogic
                 string errorMessage = fbd.IdentifyFireBaseError(task);
                 _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
-        }
-      
-        public override bool CanLogin()
-        {
-            return IsEmailValid() && IsPasswordValid();
-        }
-     
-        public override bool CanRegister(string repeatPassword)
-        {
-            return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
-        }
-    
-        public override void Reset()
-        {
-            UserID = Preferences.Get(Keys.UserIDKey, string.Empty);
-            UserName = Preferences.Get(Keys.UserNameKey, string.Empty);
-            TotalLines = Preferences.Get(Keys.TotalLinesKey, 0);
-            GamesPlayed = Preferences.Get(Keys.GamesPlayedKey, 0);
-            HighestScore = Preferences.Get(Keys.HighestScoreKey, 0);
-            DateJoined = Preferences.Get(Keys.DateJoinedKey,
-            DateTime.Now.ToString(TechnicalConsts.DateFormat));
-            Email = Preferences.Get(Keys.EmailKey, string.Empty);
-            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
         }
       
         protected override bool IsEmailValid()
@@ -231,5 +234,6 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+        #endregion
     }
 }

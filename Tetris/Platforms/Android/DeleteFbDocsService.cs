@@ -15,11 +15,15 @@ namespace Tetris.Platforms.Android
     ForegroundServiceType = ForegroundService.TypeDataSync)]
     public class DeleteFbDocsService : Service
     {
+        #region Fields
         private bool isRunning = true;
         private readonly FbData fbd = IPlatformApplication.Current?.
             Services.GetService<IFbData>() as FbData ?? new();
         private readonly NotificationManagerService? notificationManager = IPlatformApplication.
             Current?.Services.GetService<INotificationManagerService>() as NotificationManagerService;
+        #endregion
+
+        #region Public Methods
         public override StartCommandResult OnStartCommand(
             Intent? intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
@@ -52,5 +56,6 @@ namespace Tetris.Platforms.Android
         }
 
         public override IBinder? OnBind(Intent? intent) => null;
+        #endregion
     }
 }

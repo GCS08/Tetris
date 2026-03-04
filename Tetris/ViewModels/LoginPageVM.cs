@@ -8,13 +8,20 @@ namespace Tetris.ViewModels
 {
     public partial class LoginPageVM : ObservableObject
     {
+        #region Fields
         public User User = IPlatformApplication.Current?.
             Services.GetService<IUser>() as User ?? new();
+        #endregion
+
+        #region ICommands
         public ICommand NavToRegisterCommand => new Command(NavToRegister);
         public ICommand NavBackHomeCommand => new Command(NavHome);
         public ICommand LoginCommand { get; }
         public ICommand ForgotPasswordCommand { get; }
         public ICommand ToggleIsPasswordCommand { get; }
+        #endregion
+
+        #region Properties
         public bool LoginEnable { get; set; } = true;
         public bool IsBusy { get; set; } = false;
         public string Email
@@ -36,7 +43,9 @@ namespace Tetris.ViewModels
             }
         }
         public bool IsPassword { get; set; } = true;
-        
+        #endregion
+
+        #region Constructors
         public LoginPageVM()
         {
             RefreshProperties();
@@ -44,7 +53,9 @@ namespace Tetris.ViewModels
             ForgotPasswordCommand = new Command(async () => await ForgotPassword());
             ToggleIsPasswordCommand = new Command(ToggleIsPassword);
         }
+        #endregion
 
+        #region Private Methods
         private void ToggleIsPassword()
         {
             IsPassword = !IsPassword;
@@ -107,5 +118,6 @@ namespace Tetris.ViewModels
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
+        #endregion
     }
 }

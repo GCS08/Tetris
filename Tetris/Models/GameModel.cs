@@ -1,14 +1,48 @@
-﻿using Plugin.CloudFirestore;
-using System.Collections.ObjectModel;
-using System.Timers;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Plugin.CloudFirestore;
 using Tetris.Interfaces;
 using Tetris.ModelsLogic;
 
 namespace Tetris.Models
 {
+    /// <summary>
+    /// Abstract base class representing the core logic and state for a multiplayer game session, including player
+    /// management, game timing, event handling, and game board operations.
+    /// </summary>
     public abstract class GameModel
     {
+        #region Fields
+        protected User User = IPlatformApplication.
+            Current?.Services.GetService<IUser>() as User ?? new();
+        protected FbData fbd = IPlatformApplication.
+            Current?.Services.GetService<IFbData>() as FbData ?? new();
+        protected IDispatcherTimer? OpFallTimer;
+        protected IListenerRegistration? ilr;
+        protected StartGameTimerSettings startGameTimerSettings = 
+            new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
+        #endregion
+        
+        #region Events
+        public EventHandler? OnPlayersChange;
+        public EventHandler? OnGameFull;
+        public EventHandler? OnAllReady;
+        public EventHandler? OnTimeLeftChanged;
+        public EventHandler? OnGameFinishedUI;
+        public EventHandler? OnCodeReady;
+        #endregion
+        
+        #region ICommands
+        public ICommand JoinGameCommand => new Command(NavToWR);
+        #endregion
+        
+        #region Properties
+        protected int DesiredIndex { get; set; } = 0;
+        protected bool IsGameStarted { get; set; } = false;
+        protected bool IsStatsUpdatedOnceOnGameFinished { get; set; } = false;
+        protected string CurrentMovingOpId { get; set; } = string.Empty;
+        protected ModelsLogic.Queue<KeyValuePair<string, string>> MovesQueue { get; set; } = new();
+        protected bool IsMovesQueueSorting { get; set; } = false;
         public string CubeColor { get; set; } = string.Empty;
         public string CreatorName { get; set; } = string.Empty;
         public int CurrentPlayersCount { get; set; }
@@ -24,32 +58,12 @@ namespace Tetris.Models
         public string TimeLeftText => (TimeLeftMs / 1000).ToString() == TechnicalConsts.
             ZeroSignString ? Strings.TimeUp : (TimeLeftMs / 1000).ToString();
         public ObservableCollection<User> UsersInGame { get; set; } = [];
-        public ICommand JoinGameCommand => new Command(NavToWR);
-        public EventHandler? OnPlayersChange;
-        public EventHandler? OnGameFull;
-        public EventHandler? OnAllReady;
-        public EventHandler? OnTimeLeftChanged;
-        public EventHandler? OnGameFinishedUI;
-        public EventHandler? OnCodeReady;
-        public GameBoard? GameBoard;
-        public GameBoard? OpGameBoard;
-        protected User User = IPlatformApplication.
-            Current?.Services.GetService<IUser>() as User ?? new();
-        protected int desiredIndex = 0;
-        protected bool IsGameStarted = false;
-        protected bool IsStatsUpdatedOnceOnGameFinished = false;
-        protected string currentMovingOpId = string.Empty;
-        protected FbData fbd = IPlatformApplication.
-            Current?.Services.GetService<IFbData>() as FbData ?? new();
-        protected IDispatcherTimer? OpFallTimer;
-        protected ModelsLogic.Queue<KeyValuePair<string, string>> movesQueue = new();
-        protected bool IsMovesQueueSorting { get; set; } = false;
-        protected IListenerRegistration? ilr;
-        protected StartGameTimerSettings startGameTimerSettings = 
-            new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
+        public GameBoard? GameBoard { get; set; }
+        public GameBoard? OpGameBoard { get; set; }
+        #endregion
+        
+        #region Public Methods
         public abstract void RegisterTimer();
-        protected abstract void UnregisterTimer();
-        protected abstract void OnMessageReceived(long timeLeft);
         public abstract Task OnPlayerLeaveWR();
         public abstract void AddWaitingRoomListener();
         public abstract void RemoveWaitingRoomListener();
@@ -57,11 +71,6 @@ namespace Tetris.Models
         public abstract void RemoveGameListener();
         public abstract void AddReadyListener();
         public abstract void RemoveReadyListener();
-        protected abstract void OnChangeReady(IDocumentSnapshot snapshot, Exception error);
-        protected abstract void OnChangeGame(IDocumentSnapshot snapshot, Exception error);
-        protected abstract void ApplyOpMove(object? sender, EventArgs e);
-        protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
-        protected abstract void OnCompleteChange(ObservableCollection<User> users);
         public abstract void PrepareGame();
         public abstract void StartGame();
         public abstract void MoveRightShape();
@@ -76,5 +85,17 @@ namespace Tetris.Models
         public abstract void NavToWR();
         public abstract void CreateCode();
         public abstract Task<Game> GetGameByCode(int code);
+        #endregion
+       
+        #region Protected Methods
+        protected abstract void UnregisterTimer();
+        protected abstract void OnGameFinishedLogicHandler(object? sender, EventArgs e);
+        protected abstract void OnMessageReceived(long timeLeft);
+        protected abstract void OnChangeReady(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void OnChangeGame(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void ApplyOpMove(object? sender, EventArgs e);
+        protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void OnCompleteChange(ObservableCollection<User> users);
+        #endregion
     }
 }

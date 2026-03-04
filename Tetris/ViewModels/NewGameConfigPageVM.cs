@@ -8,14 +8,21 @@ namespace Tetris.ViewModels
 {
     public partial class NewGameConfigPageVM : ObservableObject
     {
-        public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
-        public ICommand CreateGameCommand => new Command(CreateGame);
+        #region Fields
         private readonly Game currentNewGame;
         private readonly JoinableGamesList gamesList;
-        public bool IsBusy { get; set; } = false;
-        public bool IsCreateEnabled { get; set; } = true;
         private readonly User User = IPlatformApplication.Current?.
             Services.GetService<IUser>() as User ?? new();
+        #endregion
+
+        #region ICommands
+        public ICommand NavGameLobbyCommand => new Command(NavGameLobby);
+        public ICommand CreateGameCommand => new Command(CreateGame);
+        #endregion
+
+        #region Properties
+        public bool IsBusy { get; set; } = false;
+        public bool IsCreateEnabled { get; set; } = true;
         public string SelectedColor
         {
             get => currentNewGame.CubeColor;
@@ -44,14 +51,18 @@ namespace Tetris.ViewModels
                 }
             }
         }
-       
+        #endregion
+
+        #region Constructors
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
             currentNewGame = new(Keys.RedKey, User?.UserName ?? 
                 Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
-      
+        #endregion
+
+        #region Private Methods
         private void CreateGame()
         {
             if (User == null) return;
@@ -74,5 +85,6 @@ namespace Tetris.ViewModels
         {
             Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
+        #endregion
     }
 }
