@@ -8,6 +8,10 @@ using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the Reminders page.
+    /// Handles scheduling notifications and navigation back to the main page.
+    /// </summary>
     public class RemindersPageVM
     {
         #region Fields
@@ -26,14 +30,25 @@ namespace Tetris.ViewModels
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="RemindersPageVM"/> 
+        /// and sets up notification handling.
+        /// </summary>
         public RemindersPageVM()
         {
             notifications = new Notifications();
             notifications.NotificationReceived += OnNotificationReceived;
         }
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Schedules a reminder using the <see cref="Notifications"/> service 
+        /// and displays a toast indicating success or failure.
+        /// </summary>
         private void ScheduleReminder()
         {
             IToast toast = notifications.ScheduleReminder(SelectedDate,
@@ -42,18 +57,28 @@ namespace Tetris.ViewModels
                 Maui.Core.ToastDuration.Long, ConstData.ToastFontSize)
                 : Toast.Make(Strings.NotificationFail, CommunityToolkit.Maui
                 .Core.ToastDuration.Long, ConstData.ToastFontSize);
+
             toast.Show();
         }
 
+        /// <summary>
+        /// Handles a notification being received and navigates back to the main page.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Notification event arguments.</param>
         private void OnNotificationReceived(object? sender, NotificationEventArgs e)
         {
             NavHome();
         }
 
+        /// <summary>
+        /// Navigates back to the main page.
+        /// </summary>
         private void NavHome()
         {
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
+
         #endregion
     }
 }

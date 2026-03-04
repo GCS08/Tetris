@@ -4,43 +4,78 @@ using Tetris.Models;
 
 namespace Tetris.ModelsLogic
 {
+    /// <summary>
+    /// Represents a user in the Tetris application.
+    /// Provides authentication, registration, password reset, and local preferences management.
+    /// </summary>
     public class User : UserModel, IUser
     {
         #region Public Methods
+
+        /// <summary>
+        /// Attempts to log in the user using <see cref="Email"/> and <see cref="Password"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task{bool}"/> indicating whether the login was successful.
+        /// </returns>
         public override async Task<bool> Login()
         {
             bool success = await fbd.SignInWithEmailAndPWAsync(Email, Password, OnCompleteLogin);
             return success;
         }
-     
+
+        /// <summary>
+        /// Registers a new user with <see cref="Email"/>, <see cref="Password"/>, and <see cref="UserName"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task{bool}"/> indicating whether the registration was successful.
+        /// </returns>
         public override async Task<bool> Register()
         {
             bool success = await fbd.CreateUserWithEmailAndPWAsync(Email, Password, UserName, OnCompleteRegister);
             return success;
         }
-    
+
+        /// <summary>
+        /// Signs out the current user, clears local preferences, and resets the user object.
+        /// </summary>
         public override void SignOut()
         {
             fbd.SignOut();
             Preferences.Clear();
             Reset();
         }
-    
-        public override async Task ResetPassword() 
+
+        /// <summary>
+        /// Sends a password reset email to the user.
+        /// </summary>
+        public override async Task ResetPassword()
         {
             await fbd.SendPasswordResetEmailAsync(Email, OnCompleteSendEmail);
         }
-      
+
+        /// <summary>
+        /// Validates if the user can log in with the current <see cref="Email"/> and <see cref="Password"/>.
+        /// </summary>
+        /// <returns>True if both email and password are valid; otherwise false.</returns>
         public override bool CanLogin()
         {
             return IsEmailValid() && IsPasswordValid();
         }
-     
+
+        /// <summary>
+        /// Validates if the user can register using the current fields.
+        /// </summary>
+        /// <param name="repeatPassword">The repeated password to confirm match with <see cref="Password"/>.</param>
+        /// <returns>True if all fields are valid and passwords match; otherwise false.</returns>
         public override bool CanRegister(string repeatPassword)
         {
             return IsUserNameValid() && IsPasswordValid() && IsEmailValid() && repeatPassword == Password;
         }
-    
+
+        /// <summary>
+        /// Loads user data from local preferences.
+        /// </summary>
         public override void Reset()
         {
             UserID = Preferences.Get(Keys.UserIDKey, string.Empty);
@@ -49,20 +84,28 @@ namespace Tetris.ModelsLogic
             GamesPlayed = Preferences.Get(Keys.GamesPlayedKey, 0);
             HighestScore = Preferences.Get(Keys.HighestScoreKey, 0);
             DateJoined = Preferences.Get(Keys.DateJoinedKey,
-            DateTime.Now.ToString(TechnicalConsts.DateFormat));
+                DateTime.Now.ToString(TechnicalConsts.DateFormat));
             Email = Preferences.Get(Keys.EmailKey, string.Empty);
             Password = Preferences.Get(Keys.PasswordKey, string.Empty);
         }
+
         #endregion
 
         #region Protected Methods
+
+        /// <summary>
+        /// Handles the completion of the login task.
+        /// On success, loads user data into preferences and shows a success toast.
+        /// On failure, displays a login error alert.
+        /// </summary>
+        /// <param name="task">The login <see cref="Task"/>.</param>
+        /// <returns>True if login succeeded; otherwise false.</returns>
         protected override async Task<bool> OnCompleteLogin(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
-                _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.
-                    Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
+                _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
@@ -72,10 +115,12 @@ namespace Tetris.ModelsLogic
                 return false;
             }
         }
-     
+
+        /// <summary>
+        /// Saves the current user's data retrieved from Firebase to local preferences.
+        /// </summary>
         protected override async Task LoginSaveToPreferencesAsync()
         {
-            // Await all async Firebase reads
             UserID = fbd.GetCurrentUserID();
             UserName = await fbd.GetUserDataAsync<string>(Keys.UserNameKey);
             TotalLines = await fbd.GetUserDataAsync<int>(Keys.TotalLinesKey);
@@ -85,30 +130,36 @@ namespace Tetris.ModelsLogic
 
             SaveToPreferences();
         }
-    
+
+        /// <summary>
+        /// Handles completion of the registration task.
+        /// On success, saves user data and displays a success toast.
+        /// On failure, displays a registration error alert.
+        /// </summary>
+        /// <param name="task">The registration <see cref="Task"/>.</param>
+        /// <returns>True if registration succeeded; otherwise false.</returns>
         protected override bool OnCompleteRegister(Task task)
         {
             if (task.IsCompletedSuccessfully)
             {
                 UserID = fbd.GetCurrentUserID();
                 SaveToPreferences();
-                _ = Toast.Make(Strings.RegisterSuccess,
-                    CommunityToolkit.Maui.Core.ToastDuration.Short,
-                    ConstData.ToastFontSize).Show();
+                _ = Toast.Make(Strings.RegisterSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
                 return true;
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                _ = Shell.Current.DisplayAlert(Strings.RegisterErrorTitle,
-                    errorMessage, Strings.RegisterFailButton);
+                _ = Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
                 return false;
             }
         }
-    
+
+        /// <summary>
+        /// Saves the current user data to local preferences.
+        /// </summary>
         protected override void SaveToPreferences()
         {
-            // Now store everything in Preferences
             Preferences.Set(Keys.UserIDKey, UserID);
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.EmailKey, Email);
@@ -119,6 +170,11 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.DateJoinedKey, DateJoined);
         }
 
+        /// <summary>
+        /// Handles completion of sending a password reset email.
+        /// Displays a success or error alert depending on task result.
+        /// </summary>
+        /// <param name="task">The password reset <see cref="Task"/>.</param>
         protected override void OnCompleteSendEmail(Task task)
         {
             if (task.IsCompletedSuccessfully)
@@ -131,70 +187,79 @@ namespace Tetris.ModelsLogic
                 _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
             }
         }
-      
+
+        /// <summary>
+        /// Validates the user's email address.
+        /// </summary>
+        /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsEmailValid()
         {
             if (Email.Length < ConstData.MinCharacterInEmail)
             {
-                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, 
-                    dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
                 return false;
             }
             if (!HasAtSign(Email) || !HasDot(Email))
             {
-                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, 
-                    Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
+                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
                 return false;
             }
             return true;
         }
-      
+
+        /// <summary>
+        /// Validates the user's password.
+        /// Must meet length and character requirements.
+        /// </summary>
+        /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsPasswordValid()
         {
             if (Password.Length < ConstData.MinCharacterInPW)
             {
-                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, 
-                    dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
                 return false;
             }
             if (!HasNumber(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, 
-                    Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
                 return false;
             }
             if (!HasLowerCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, 
-                    Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
                 return false;
             }
             if (!HasUpperCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, 
-                    Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
+                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
                 return false;
             }
             return true;
         }
-    
+
+        /// <summary>
+        /// Validates the user's username.
+        /// Must meet length and contain a number.
+        /// </summary>
+        /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsUserNameValid()
         {
             if (UserName.Length < ConstData.MinCharacterInUN)
             {
-                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, 
-                    dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
+                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
                 return false;
             }
             if (!HasNumber(UserName))
             {
-                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, 
-                    Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
+                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
                 return false;
             }
             return true;
         }
-    
+
+        /// <summary>
+        /// Checks if a string contains an '@' character.
+        /// </summary>
         protected override bool HasAtSign(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -202,7 +267,10 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-      
+
+        /// <summary>
+        /// Checks if a string contains a '.' character.
+        /// </summary>
         protected override bool HasDot(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -210,7 +278,10 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-     
+
+        /// <summary>
+        /// Checks if a string contains a numeric digit.
+        /// </summary>
         protected override bool HasNumber(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -218,7 +289,10 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-     
+
+        /// <summary>
+        /// Checks if a string contains a lowercase letter.
+        /// </summary>
         protected override bool HasLowerCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -226,7 +300,10 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
-       
+
+        /// <summary>
+        /// Checks if a string contains an uppercase letter.
+        /// </summary>
         protected override bool HasUpperCase(string str)
         {
             for (int i = 0; i < str.Length; i++)
@@ -234,6 +311,7 @@ namespace Tetris.ModelsLogic
                     return true;
             return false;
         }
+
         #endregion
     }
 }

@@ -6,6 +6,11 @@ using Tetris.Views;
 
 namespace Tetris.ViewModels;
 
+/// <summary>
+/// ViewModel for the Game page.
+/// Handles user interaction, game state updates, and binding to the UI elements 
+/// such as game boards, timers, and finished game notifications.
+/// </summary>
 public partial class GamePageVM : ObservableObject
 {
     #region Fields
@@ -38,6 +43,12 @@ public partial class GamePageVM : ObservableObject
     #endregion
 
     #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="GamePageVM"/> with a specific game.
+    /// Registers event handlers for game readiness, timer updates, and game finish UI.
+    /// </summary>
+    /// <param name="game">The game instance to bind to this ViewModel.</param>
     public GamePageVM(Game game)
     {
         this.CurrentGame = game;
@@ -49,6 +60,11 @@ public partial class GamePageVM : ObservableObject
     #endregion
 
     #region Public Methods
+
+    /// <summary>
+    /// Initializes the UI grids for both the player and opponent game boards.
+    /// Sets the grid cell sizes according to constants.
+    /// </summary>
     public void InitializeGrid()
     {
         if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null
@@ -58,12 +74,18 @@ public partial class GamePageVM : ObservableObject
         CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, 
             ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
     }
-   
+
+    /// <summary>
+    /// Adds a listener for the "ready" event from the game.
+    /// </summary>
     public void AddReadyListener()
     {
         CurrentGame.AddReadyListener();
     }
-  
+
+    /// <summary>
+    /// Removes all registered game listeners to prevent memory leaks.
+    /// </summary>
     public void RemoveGameListener()
     {
         CurrentGame.RemoveGameListener();
@@ -71,6 +93,11 @@ public partial class GamePageVM : ObservableObject
     #endregion
 
     #region Private Methods
+
+    /// <summary>
+    /// Handles the game finished event for the UI.
+    /// Updates visibility, result text, and result color depending on the winner.
+    /// </summary>
     private void OnGameFinishedUIHandler(object? sender, EventArgs e)
     {
         bool isOpLost = sender is GameBoard gameBoard && gameBoard.IsOp;
@@ -81,7 +108,10 @@ public partial class GamePageVM : ObservableObject
         OnPropertyChanged(nameof(GameFinishedResultColor));
         OnPropertyChanged(nameof(GameFinishedResultText));
     }
-  
+
+    /// <summary>
+    /// Updates the UI timer and triggers the game start when the countdown ends.
+    /// </summary>
     private void OnTimeLeftChangedHandler(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(TimeLeft));
@@ -94,6 +124,10 @@ public partial class GamePageVM : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Handles the "all ready" event from the game.
+    /// Hides the ready button, shows the timer, and prepares the game.
+    /// </summary>
     private void OnAllReadyHandler(object? sender, EventArgs e)
     {
         IsReadyVisible = false;
@@ -105,31 +139,49 @@ public partial class GamePageVM : ObservableObject
         CurrentGame.PrepareGame();
     }
 
+    /// <summary>
+    /// Navigates to the game lobby page.
+    /// </summary>
     private void NavToGameLobby()
     {
         _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
     }
-   
+
+    /// <summary>
+    /// Marks the player as ready in the current game.
+    /// </summary>
     private void Ready()
     {
         CurrentGame.Ready();
     }
-  
+
+    /// <summary>
+    /// Moves the active shape one step to the right.
+    /// </summary>
     private void MoveRightShape()
     {
         CurrentGame.MoveRightShape();
     }
-   
+
+    /// <summary>
+    /// Moves the active shape one step to the left.
+    /// </summary>
     private void MoveLeftShape()
     {
         CurrentGame.MoveLeftShape();
     }
-  
+
+    /// <summary>
+    /// Moves the active shape one step down.
+    /// </summary>
     private void MoveDownShape()
     {
         CurrentGame.MoveDownShape();
     }
- 
+
+    /// <summary>
+    /// Rotates the active shape clockwise.
+    /// </summary>
     private void RotateShape()
     {
         CurrentGame.RotateShape();

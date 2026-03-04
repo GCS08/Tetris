@@ -6,10 +6,29 @@ using Tetris.Views;
 
 namespace Tetris.ModelsLogic
 {
+    /// <summary>
+    /// Represents a Tetris game instance, managing both the player's and opponent's boards,
+    /// moves, game state, and integration with Firestore for multiplayer updates.
+    /// </summary>
     public class Game : GameModel
     {
         #region Constructors
+
+        // <summary>
+        /// Initializes an empty game instance. Used for deserialization or delayed setup.
+        /// </summary>
         public Game() { }
+
+        /// <summary>
+        /// Initializes a game with the specified settings, creating both player and opponent boards.
+        /// </summary>
+        /// <param name="CubeColor">The color used for cubes on the board.</param>
+        /// <param name="CreatorName">The name of the game creator.</param>
+        /// <param name="CurrentPlayersCount">The current number of players in the game.</param>
+        /// <param name="MaxPlayersCount">The maximum allowed players in the game.</param>
+        /// <param name="IsPublicGame">Indicates whether the game is public or private.</param>
+        /// <param name="shape">The initial shape to display on the boards.</param>
+        /// <param name="GameID">Unique identifier for the game.</param>
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
         int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
         {
@@ -27,6 +46,12 @@ namespace Tetris.ModelsLogic
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Retrieves a game instance from Firestore by a private join code.
+        /// </summary>
+        /// <param name="code">The game's private join code.</param>
+        /// <returns>The <see cref="Game"/> object if found; otherwise, null.</returns>
         public override async Task<Game> GetGameByCode(int code)
         {
             Game currentGame = await fbd.GetGameByCode(code);
@@ -35,6 +60,9 @@ namespace Tetris.ModelsLogic
             return null!;
         }
 
+        /// <summary>
+        /// Registers the timer to listen for countdown updates via <see cref="WeakReferenceMessenger"/>.
+        /// </summary>
         public override void RegisterTimer()
         {
             WeakReferenceMessenger.Default.Register<AppMessage<long>>(this, (r, m) =>
@@ -42,7 +70,11 @@ namespace Tetris.ModelsLogic
                 OnMessageReceived(m.Value);
             });
         }
-    
+
+        /// <summary>
+        /// Handles a player leaving the waiting room or the game,
+        /// updating Firestore and removing the player locally.
+        /// </summary>
         public override async Task OnPlayerLeaveWR() 
         {
             if (CurrentPlayersCount <= 1)
@@ -57,37 +89,58 @@ namespace Tetris.ModelsLogic
                 UsersInGame.Remove(User);
             }            
         }
-    
+
+        /// <summary>
+        /// Subscribes to Firestore updates for the waiting room.
+        /// </summary>
         public override void AddWaitingRoomListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom);
         }
-    
+
+        /// <summary>
+        /// Removes the waiting room listener from Firestore updates.
+        /// </summary>
         public override void RemoveWaitingRoomListener()
         {
             ilr?.Remove();
         }
-  
+
+        /// <summary>
+        /// Subscribes to Firestore updates for in-game changes.
+        /// </summary>
         public override void AddGameListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeGame);
         }
-   
+
+        /// <summary>
+        /// Removes the in-game listener from Firestore updates.
+        /// </summary>
         public override void RemoveGameListener()
         {
             ilr?.Remove();
         }
- 
+
+        /// <summary>
+        /// Subscribes to Firestore updates for ready-state changes.
+        /// </summary>
         public override void AddReadyListener()
         {
             ilr = fbd.AddGameListener(GameID, OnChangeReady);
         }
-    
+
+        /// <summary>
+        /// Removes the ready-state listener from Firestore updates.
+        /// </summary>
         public override void RemoveReadyListener()
         {
             ilr?.Remove();
         }
-     
+
+        /// <summary>
+        /// Navigates the user to the waiting room and updates Firestore accordingly.
+        /// </summary>
         public override async void NavToWR()
         {
             if (User == null) return;
@@ -97,7 +150,10 @@ namespace Tetris.ModelsLogic
 
             _ = Shell.Current.Navigation.PushAsync(new WaitingRoomPage(this));
         }
-      
+
+        /// <summary>
+        /// Prepares the game by sending start timer settings and clearing ready listeners.
+        /// </summary>
         public override void PrepareGame()
         {
             WeakReferenceMessenger.Default.Send(
@@ -105,7 +161,10 @@ namespace Tetris.ModelsLogic
 
             RemoveReadyListener();
         }
-   
+
+        /// <summary>
+        /// Starts the game, initializing the opponent timer and enabling player moves.
+        /// </summary>
         public override void StartGame()
         {
             if (GameBoard == null || OpGameBoard == null || IsGameStarted) return;
@@ -121,64 +180,94 @@ namespace Tetris.ModelsLogic
             OpGameBoard.EnableMoves = true;
         }
 
+        /// <summary>
+        /// Moves the player's current shape to the right, if possible.
+        /// </summary>
         public override void MoveRightShape() 
         {
             if (GameBoard == null) return;
             
             GameBoard.MoveRightShape();
         }
-      
+
+        /// <summary>
+        /// Moves the player's current shape to the left, if possible.
+        /// </summary>
         public override void MoveLeftShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.MoveLeftShape();
         }
-     
+
+        /// <summary>
+        /// Moves the player's current shape down, if possible.
+        /// </summary>
         public override async void MoveDownShape() 
         {
             if (GameBoard == null) return;
 
             await GameBoard.MoveDownShape();
         }
-   
+
+        /// <summary>
+        /// Rotates the player's current shape, applying wall kicks if necessary.
+        /// </summary>
         public override void RotateShape() 
         {
             if (GameBoard == null) return;
 
             GameBoard.RotateShape();
         }
-    
+
+        /// <summary>
+        /// Moves the opponent's shape to the right, if possible.
+        /// </summary>
         public override void MoveRightOpShape()
         {
             if (OpGameBoard == null) return;
             OpGameBoard.MoveRightShape();
         }
-   
+
+        /// <summary>
+        /// Moves the opponent's shape to the left, if possible.
+        /// </summary>
         public override void MoveLeftOpShape()
         {
             if (OpGameBoard == null) return; 
             OpGameBoard.MoveLeftShape();
         }
-     
+
+        /// <summary>
+        /// Moves the opponent's shape down, if possible.
+        /// </summary>
         public override async void MoveDownOpShape() 
         {
             if (OpGameBoard == null) return;
             await OpGameBoard.MoveDownShape();
         }
-     
+
+        /// <summary>
+        /// Rotates the opponent's shape, applying wall kicks if necessary.
+        /// </summary>
         public override void RotateOpShape()
         {
             if (OpGameBoard == null) return;
             OpGameBoard.RotateShape();
         }
-     
+
+        /// <summary>
+        /// Sets the player as ready in Firestore.
+        /// </summary>
         public override void Ready()
         {
             if (User == null) return;
             fbd.SetPlayerReady(GameID, MaxPlayersCount, User.UserID);
         }
 
+        /// <summary>
+        /// Generates a private join code for this game and updates Firestore.
+        /// </summary>
         public override async void CreateCode()
         {
             Random rnd = new();
@@ -195,6 +284,15 @@ namespace Tetris.ModelsLogic
         #endregion
 
         #region Protected Methods
+
+        /// <summary>
+        /// Handles logic when the game finishes, updating stats, stopping timers, and triggering UI events.
+        /// </summary>
+        /// <param name="sender">
+        /// The source of the event. Usually the <see cref="GameBoard"/> or <see cref="OpGameBoard"/> 
+        /// that triggered the game finished event.
+        /// </param>
+        /// <param name="e">Event arguments for the game finished event. Usually <see cref="EventArgs.Empty"/></param>
         protected override void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
@@ -215,11 +313,18 @@ namespace Tetris.ModelsLogic
             OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Unregisters the timer from <see cref="WeakReferenceMessenger"/>.
+        /// </summary>
         protected override void UnregisterTimer()
         {
             WeakReferenceMessenger.Default.Unregister<AppMessage<long>>(this);
         }
-    
+
+        /// <summary>
+        /// Updates the remaining game time and triggers the <see cref="OnTimeLeftChanged"/> event.
+        /// </summary>
+        /// <param name="timeLeft">The remaining time in milliseconds.</param>
         protected override void OnMessageReceived(long timeLeft)
         {
             TimeLeftMs = timeLeft;
@@ -228,7 +333,18 @@ namespace Tetris.ModelsLogic
                 OnTimeLeftChanged?.Invoke(this, EventArgs.Empty);
             });
         }
-    
+
+        /// <summary>
+        /// Called when a snapshot of the "ready" state changes in the database. 
+        /// Checks if all players are ready and raises <see cref="OnAllReady"/> if so.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot containing current ready states of all players.
+        /// May be null if an error occurred or document is missing.
+        /// </param>
+        /// <param name="error">
+        /// Any exception that occurred while retrieving the snapshot.
+        /// </param>
         protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
@@ -242,7 +358,18 @@ namespace Tetris.ModelsLogic
             if (allReady)
                 OnAllReady?.Invoke(this, EventArgs.Empty);
         }
-    
+
+        /// <summary>
+        /// Called when a snapshot of the main game document changes in the database.
+        /// Handles opponent moves, updates shapes queues, and starts the opponent timer if needed.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot representing the current game state.
+        /// May be null if an error occurred or document is missing.
+        /// </param>
+        /// <param name="error">
+        /// Any exception that occurred while retrieving the snapshot.
+        /// </param>
         protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
@@ -292,14 +419,32 @@ namespace Tetris.ModelsLogic
                     OpFallTimer.Start();
             }
         }
-     
+
+        /// <summary>
+        /// Called when a snapshot of the waiting room document changes.
+        /// Updates the current players count and fetches the updated list of players.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot representing the waiting room state.
+        /// May be null if an error occurred or document is missing.
+        /// </param>
+        /// <param name="error">
+        /// Any exception that occurred while retrieving the snapshot.
+        /// </param>
         protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
             fbd.GetPlayersFromDocument(GameID, OnCompleteChange);
         }
-  
+
+        /// <summary>
+        /// Callback that is executed after fetching all users in the waiting room.
+        /// Updates the internal <see cref="UsersInGame"/> collection and triggers UI events.
+        /// </summary>
+        /// <param name="users">
+        /// The list of <see cref="User"/> objects currently in the game.
+        /// </param>
         protected override void OnCompleteChange(ObservableCollection<User> users)
         {
             UsersInGame.Clear();
@@ -321,6 +466,16 @@ namespace Tetris.ModelsLogic
             }
         }
 
+        /// <summary>
+        /// Applies the next move from the opponent's moves queue.
+        /// Called on each tick of the opponent's fall timer (<see cref="OpFallTimer"/>).
+        /// </summary>
+        /// <param name="sender">
+        /// The source of the timer event. Usually the <see cref="DispatcherTimer"/> instance.
+        /// </param>
+        /// <param name="e">
+        /// Event arguments for the timer tick event. Usually <see cref="EventArgs.Empty"/>.
+        /// </param>
         protected override void ApplyOpMove(object? sender, EventArgs e)
         {
             if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;

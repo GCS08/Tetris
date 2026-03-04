@@ -543,14 +543,30 @@ namespace Tetris.ModelsLogic
             _ = fs.Collection(Keys.GamesCollectionName).
                 Document(gameID).UpdateAsync(updates);
         }
-     
+
+        /// <summary>
+        /// Registers a real-time listener for changes to a specific game document in the database.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game to monitor.</param>
+        /// <param name="OnChange">The handler that will be invoked whenever the game document changes.</param>
+        /// <returns>
+        /// An IListenerRegistration that can be used to stop listening for updates,
+        /// or null if the listener could not be created.
+        /// </returns>
         public override IListenerRegistration? AddGameListener(string gameID,
             Plugin.CloudFirestore.DocumentSnapshotHandler OnChange)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             return dr.AddSnapshotListener(OnChange);
         }
-  
+
+        /// <summary>
+        /// Marks a specific player as ready within a game by updating their readiness status
+        /// in the database.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game.</param>
+        /// <param name="maxPlayersCount">The maximum number of players allowed in the game.</param>
+        /// <param name="userID">The unique identifier of the player to mark as ready.</param>
         public override async void SetPlayerReady(
             string gameID, int maxPlayersCount, string userID)
         {
@@ -566,14 +582,26 @@ namespace Tetris.ModelsLogic
                     changed = true;
                 }
         }
-   
+
+        /// <summary>
+        /// Resets the "IsShapeAtBottom" status for a specific player in a game
+        /// by updating the corresponding field in the database.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game.</param>
+        /// <param name="desiredIndex">The index of the player whose shape status should be reset.</param>
         public override void ResetIsShapeAtBottom(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
                 + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
         }
-    
+
+        /// <summary>
+        /// Deletes game documents from the database that were created before a specified cutoff time.
+        /// </summary>
+        /// <returns>
+        /// A task representing the asynchronous deletion operation.
+        /// </returns>
         public override async Task DeleteFbDocsAsync()
         {
             try
@@ -597,7 +625,13 @@ namespace Tetris.ModelsLogic
             {
             }
         }
-       
+
+        /// <summary>
+        /// Updates the user's post-game statistics both locally and in the database.
+        /// </summary>
+        /// <param name="user">
+        /// The <see cref="User"/> object containing the updated statistics to persist.
+        /// </param>
         public override void UpdateUserPostGame(User user)
         {
             Preferences.Set(Keys.GamesPlayedKey, user.GamesPlayed);
@@ -615,6 +649,16 @@ namespace Tetris.ModelsLogic
             _ = dr.UpdateAsync(updates);
         }
 
+        /// <summary>
+        /// Attempts to assign a private join code to a game, ensuring that the code
+        /// is not already in use by another game.
+        /// </summary>
+        /// <param name="gameID">The unique identifier of the game.</param>
+        /// <param name="code">The private join code to assign to the game.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The result is true if the
+        /// code was successfully assigned; otherwise, false if the code is already in use.
+        /// </returns>
         public override async Task<bool> SetPrivateJoinCode(string gameID, int code)
         {
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
@@ -626,7 +670,15 @@ namespace Tetris.ModelsLogic
             _ = dr.UpdateAsync(Keys.PrivateJoinCodeKey, code);
             return true;
         }
-   
+
+        /// <summary>
+        /// Retrieves a game from the database based on its private join code.
+        /// </summary>
+        /// <param name="code">The private join code associated with the game.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The result is the corresponding
+        /// <see cref="Game"/> if found; otherwise, null if no game matches the provided code.
+        /// </returns>
         public override async Task<Game> GetGameByCode(int code)
         {
             ICollectionReference collectionRef = fs.Collection
@@ -654,6 +706,15 @@ namespace Tetris.ModelsLogic
         #endregion
 
         #region Protected Methods
+        /// <summary>
+        /// Retrieves a user document from the database by their unique ID and converts it
+        /// into a <see cref="User"/> object.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to retrieve.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The result is the <see cref="User"/>
+        /// object corresponding to the specified ID.
+        /// </returns>
         protected override async Task<User> UserIDToObject(string id)
         {
             IDocumentSnapshot docSnap = await fs.Collection(

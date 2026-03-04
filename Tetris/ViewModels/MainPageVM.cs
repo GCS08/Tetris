@@ -6,9 +6,14 @@ using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the Main Page.
+    /// Manages user state, navigation, and UI visibility based on login status.
+    /// </summary>
     public partial class MainPageVM : ObservableObject
     {
         #region Fields
+
         private string? welcomeUserName;
         private bool isLogged;
         public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
@@ -34,10 +39,12 @@ namespace Tetris.ViewModels
                 }
             }
         }
+
         public bool SignOutVisibility => IsLogged;
         public bool PlayVisibility => IsLogged;
         public bool RemindersVisibility => IsLogged;
         public bool LoginVisibility => !IsLogged;
+
         public string? WelcomeUserName
         {
             get => welcomeUserName;
@@ -53,14 +60,23 @@ namespace Tetris.ViewModels
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="MainPageVM"/>.
+        /// Refreshes bound properties based on the current user state.
+        /// </summary>
         public MainPageVM()
         {
-            //SignOut();
             RefreshProperties();
         }
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Triggers OnPropertyChanged for multiple UI visibility properties.
+        /// </summary>
         private void SeveralPropertiesChange()
         {
             string[] nameOfs = [nameof(LoginVisibility), nameof(RemindersVisibility)
@@ -68,39 +84,56 @@ namespace Tetris.ViewModels
             for (int i = 0; i < nameOfs.Length; i++)
                 OnPropertyChanged(nameOfs[i]);
         }
-    
+
+        /// <summary>
+        /// Refreshes the UI-bound properties like welcome message and visibility based on user login state.
+        /// </summary>
         private void RefreshProperties()
         {
             if (User != null && User.UserName != string.Empty)
-                WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign + 
+                WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign +
                     User.UserName + TechnicalConsts.ExclamationSign;
             else
                 WelcomeUserName = Strings.Welcome + TechnicalConsts.SpaceSign +
                     TechnicalConsts.DefaultUserName + TechnicalConsts.ExclamationSign;
+
             IsLogged = User != null && User.UserID != string.Empty;
         }
-     
+
+        /// <summary>
+        /// Navigates to the Reminders page.
+        /// </summary>
         private void NavToReminders()
         {
             Shell.Current.Navigation.PushAsync(new RemindersPage());
         }
-      
+
+        /// <summary>
+        /// Navigates to the Login page.
+        /// </summary>
         private void NavToLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage());
         }
-      
+
+        /// <summary>
+        /// Navigates to the Game Lobby page.
+        /// </summary>
         private void NavToGameLobby()
         {
             Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
-    
+
+        /// <summary>
+        /// Signs out the current user and refreshes UI properties.
+        /// </summary>
         private void SignOut()
         {
             if (User == null) return;
             User.SignOut();
             RefreshProperties();
         }
+
         #endregion
     }
 }

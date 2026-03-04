@@ -6,9 +6,14 @@ using Tetris.Views;
 
 namespace Tetris.ViewModels
 {
+    /// <summary>
+    /// ViewModel for the New Game Configuration page.
+    /// Manages the creation of a new game, selection of color and privacy, and navigation.
+    /// </summary>
     public partial class NewGameConfigPageVM : ObservableObject
     {
         #region Fields
+
         private readonly Game currentNewGame;
         private readonly JoinableGamesList gamesList;
         private readonly User User = IPlatformApplication.Current?.
@@ -23,6 +28,7 @@ namespace Tetris.ViewModels
         #region Properties
         public bool IsBusy { get; set; } = false;
         public bool IsCreateEnabled { get; set; } = true;
+
         public string SelectedColor
         {
             get => currentNewGame.CubeColor;
@@ -32,10 +38,10 @@ namespace Tetris.ViewModels
                 {
                     currentNewGame.CubeColor = value;
                     OnPropertyChanged(nameof(currentNewGame.CubeColor));
-                    // You can react to selection change here if you want
                 }
             }
         }
+
         public string SelectedPrivacy
         {
             get => !currentNewGame.IsPublicGame ? Keys.PrivateKey : Keys.PublicKey;
@@ -47,22 +53,32 @@ namespace Tetris.ViewModels
                 {
                     currentNewGame.IsPublicGame = (value == Keys.PublicKey);
                     OnPropertyChanged(nameof(currentNewGame.IsPublicGame));
-                    // You can react to selection change here if you want
                 }
             }
         }
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="NewGameConfigPageVM"/>.
+        /// Sets up a new game instance and references the joinable games list.
+        /// </summary>
+        /// <param name="joinableGamesList">The list of joinable games to which the new game will be added.</param>
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
-            currentNewGame = new(Keys.RedKey, User?.UserName ?? 
+            currentNewGame = new(Keys.RedKey, User?.UserName ??
                 Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
             gamesList = joinableGamesList;
         }
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Creates a new game, adds it to the database, and navigates to the waiting room page.
+        /// </summary>
         private void CreateGame()
         {
             if (User == null) return;
@@ -72,7 +88,11 @@ namespace Tetris.ViewModels
             Shell.Current.Navigation.PushAsync(
                 new WaitingRoomPage(currentNewGame));
         }
-    
+
+        /// <summary>
+        /// Updates the busy state and the create button enabled state.
+        /// </summary>
+        /// <param name="value">True if busy, false otherwise.</param>
         private void UpdatePropertiesByBusy(bool value)
         {
             IsBusy = value;
@@ -80,11 +100,15 @@ namespace Tetris.ViewModels
             IsCreateEnabled = !value;
             OnPropertyChanged(nameof(IsCreateEnabled));
         }
-      
+
+        /// <summary>
+        /// Navigates back to the Game Lobby page.
+        /// </summary>
         private void NavGameLobby()
         {
             Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
+
         #endregion
     }
 }

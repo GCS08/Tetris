@@ -3,9 +3,20 @@ using Tetris.Converters;
 
 namespace Tetris.ModelsLogic
 {
+    /// <summary>
+    /// Represents a Tetris shape with a specific type, color, rotation states, 
+    /// and position on the game grid.
+    /// </summary>
     public class Shape : ShapeModel
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new <see cref="Shape"/> with a random type and color.
+        /// </summary>
+        /// <param name="inGameId">
+        /// The unique identifier for this shape instance within the current game.
+        /// </param>
         public Shape(int inGameId)
         {
             this.Id = rnd.Next(ConstData.ShapesCount);
@@ -15,7 +26,19 @@ namespace Tetris.ModelsLogic
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }
-      
+
+        /// <summary>
+        /// Initializes a new <see cref="Shape"/> with a specified type, color, and in-game ID.
+        /// </summary>
+        /// <param name="id">
+        /// The shape type identifier (index into <see cref="ConstData.ShapeRotationState"/>).
+        /// </param>
+        /// <param name="inGameId">
+        /// The unique identifier for this shape instance within the current game.
+        /// </param>
+        /// <param name="color">
+        /// The color of the shape, as a string name (converted to a <see cref="Color"/>).
+        /// </param>
         public Shape(int id, int inGameId, string color)
         {
             this.Id = id;
@@ -25,15 +48,31 @@ namespace Tetris.ModelsLogic
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
         }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Creates a duplicate of the given shape, preserving its type, in-game ID, and color.
+        /// </summary>
+        /// <param name="shape">
+        /// The <see cref="Shape"/> to duplicate.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="Shape"/> instance with the same <see cref="Id"/>, <see cref="InGameId"/>, and <see cref="Color"/>.
+        /// Returns <c>null</c> if the original shape's color is <c>null</c>.
+        /// </returns>
         public override Shape Duplicate(Shape shape)
         {
             if (shape.Color == null) return null!;
-            return new Shape(shape.Id, shape.InGameId, 
-                StringAndColorConverter.ColorToColorName(shape.Color));
+            return new Shape(
+                shape.Id,
+                shape.InGameId,
+                StringAndColorConverter.ColorToColorName(shape.Color)
+            );
         }
+
         #endregion
     }
 }
