@@ -60,17 +60,19 @@ namespace Tetris.ModelsLogic
         /// The <see cref="Shape"/> to duplicate.
         /// </param>
         /// <returns>
-        /// A new <see cref="Shape"/> instance with the same <see cref="Id"/>, <see cref="InGameId"/>, and <see cref="Color"/>.
+        /// A new <see cref="Shape"/> instance with the same Id, InGameId, and <see cref="Color"/>.
         /// Returns <c>null</c> if the original shape's color is <c>null</c>.
         /// </returns>
         public override Shape Duplicate(Shape shape)
         {
-            if (shape.Color == null) return null!;
-            return new Shape(
-                shape.Id,
-                shape.InGameId,
-                StringAndColorConverter.ColorToColorName(shape.Color)
-            );
+            Shape? result = null;
+            if (shape.Color != null)
+                result = new Shape(
+                    shape.Id,
+                    shape.InGameId,
+                    StringAndColorConverter.ColorToColorName(shape.Color)
+                );
+            return result!;
         }
 
         #endregion

@@ -14,7 +14,7 @@ namespace Tetris.ModelsLogic
         /// Asynchronously retrieves a random username from the API.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task{string}"/> containing the username retrieved from the API.
+        /// A Task{string} containing the username retrieved from the API.
         /// Returns a fallback string <see cref="Strings.FailedRandomApiUN"/> if the request fails,
         /// the response is invalid, or an exception occurs.
         /// </returns>
@@ -25,6 +25,7 @@ namespace Tetris.ModelsLogic
         /// </remarks>
         public override async Task<string> GetAsync()
         {
+            string result = Strings.FailedRandomApiUN;
             using (client)
             {
                 try
@@ -32,25 +33,28 @@ namespace Tetris.ModelsLogic
                     // Attempt to get the response from the API
                     response = await client.GetAsync(apiUrl);
 
-                    if (!response.IsSuccessStatusCode)
-                        return Strings.FailedRandomApiUN; // fallback if HTTP request failed
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
 
-                    json = await response.Content.ReadAsStringAsync();
+                        using JsonDocument doc = JsonDocument.Parse(json);
 
-                    using JsonDocument doc = JsonDocument.Parse(json);
+                        // Navigate the JSON to extract the username
+                        string? username = doc.RootElement
+                            .GetProperty(TechnicalConsts.ResultsJson)[0]
+                            .GetProperty(TechnicalConsts.LoginJson)
+                            .GetProperty(TechnicalConsts.UsernameJson)
+                            .GetString();
 
-                    // Navigate the JSON to extract the username
-                    return doc.RootElement
-                              .GetProperty(TechnicalConsts.ResultsJson)[0]
-                              .GetProperty(TechnicalConsts.LoginJson)
-                              .GetProperty(TechnicalConsts.UsernameJson)
-                              .GetString() ?? Strings.FailedRandomApiUN; // fallback if null
+                        if (!string.IsNullOrEmpty(username))
+                            result = username;
+                    }
                 }
                 catch
                 {
-                    return Strings.FailedRandomApiUN; // fallback on exception
                 }
             }
+            return result;
         }
 
         #endregion

@@ -21,13 +21,13 @@ namespace Tetris.Platforms.Android
         {
             get
             {
-                List<(string androidPermission, bool isRuntime)> result = new();
+                List<(string androidPermission, bool isRuntime)> result = [];
 
                 // Android 13+ requires runtime permission for posting notifications
                 if (OperatingSystem.IsAndroidVersionAtLeast(33))
                     result.Add((Manifest.Permission.PostNotifications, true));
 
-                return result.ToArray();
+                return [.. result];
             }
         }
 

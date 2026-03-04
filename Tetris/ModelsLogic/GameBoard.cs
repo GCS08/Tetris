@@ -363,11 +363,18 @@ namespace Tetris.ModelsLogic
         /// <returns>True if the game is over (top row has filled cells); otherwise, false.</returns>
         protected override bool CheckForLose()
         {
-            if (Board == null) return false;
-            for (int col = 0; col < ConstData.GameGridColumnCount; col++)
-                if (Board[0, col].Color != Colors.Transparent)
-                    return true;
-            return false;
+            bool result = false;
+            if (Board != null)
+            {
+                int col = 0;
+                while (col < ConstData.GameGridColumnCount && !result)
+                {
+                    if (Board[0, col].Color != Colors.Transparent)
+                        result = true;
+                    col++;
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -459,60 +466,65 @@ namespace Tetris.ModelsLogic
         /// <param name="newX">Outputs the adjusted X-coordinate where the shape can be placed.</param>
         /// <param name="newY">Outputs the adjusted Y-coordinate where the shape can be placed.</param>
         /// <returns>True if a valid position was found for the rotated shape; otherwise, false.</returns>
-        protected override bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY)
+        protected override bool TryPlaceRotation(
+    bool[,] cells, int x, int y,
+    out int newX, out int newY)
         {
-            if (Board == null)
-            {
-                newX = x;
-                newY = y;
-                return false;
-            }
+            bool result = false;
 
             newX = x;
             newY = y;
 
-            int h = cells.GetLength(0);
-            int w = cells.GetLength(1);
-
-            // Prioritized shifts (center first, then small wall kicks)
-            int[] shiftsX = [0, -1, 1, -2, 2];
-            int[] shiftsY = [0, -1, 1];
-
-            foreach (int dx in shiftsX)
+            if (Board != null)
             {
-                foreach (int dy in shiftsY)
+                int h = cells.GetLength(0);
+                int w = cells.GetLength(1);
+
+                int[] shiftsX = [0, -1, 1, -2, 2];
+                int[] shiftsY = [0, -1, 1];
+
+                int sx = 0;
+                while (sx < shiftsX.Length && !result)
                 {
-                    bool canPlace = true;
-
-                    for (int i = 0; i < h && canPlace; i++)
+                    int sy = 0;
+                    while (sy < shiftsY.Length && !result)
                     {
-                        for (int j = 0; j < w && canPlace; j++)
+                        int dx = shiftsX[sx];
+                        int dy = shiftsY[sy];
+                        bool canPlace = true;
+                        int i = 0;
+                        while (i < h && canPlace)
                         {
-                            if (!cells[i, j]) continue;
-
-                            int boardY = y + dy + i;
-                            int boardX = x + dx + j;
-
-                            // Out of bounds or collides with existing cube
-                            if (boardX < 0 || boardX >= ConstData.GameGridColumnCount ||
-                                boardY < 0 || boardY >= ConstData.GameGridRowCount ||
-                                Board[boardY, boardX].Color != Colors.Transparent)
+                            int j = 0;
+                            while (j < w && canPlace)
                             {
-                                canPlace = false;
+                                if (cells[i, j])
+                                {
+                                    int boardY = y + dy + i;
+                                    int boardX = x + dx + j;
+                                    if (boardX < 0 || boardX >= ConstData.GameGridColumnCount ||
+                                        boardY < 0 || boardY >= ConstData.GameGridRowCount ||
+                                        Board[boardY, boardX].Color != Colors.Transparent)
+                                        canPlace = false;
+                                }
+                                j++;
                             }
+                            i++;
                         }
-                    }
 
-                    if (canPlace)
-                    {
-                        newX = x + dx;
-                        newY = y + dy;
-                        return true;
+                        if (canPlace)
+                        {
+                            newX = x + dx;
+                            newY = y + dy;
+                            result = true;
+                        }
+                        sy++;
                     }
+                    sx++;
                 }
             }
 
-            return false; // No valid position found
+            return result;
         }
         #endregion
     }

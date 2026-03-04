@@ -54,10 +54,8 @@ namespace Tetris.ModelsLogic
         /// <returns>The <see cref="Game"/> object if found; otherwise, null.</returns>
         public override async Task<Game> GetGameByCode(int code)
         {
-            Game currentGame = await fbd.GetGameByCode(code);
-            if (currentGame != null)
-                return currentGame;
-            return null!;
+            Game? result = await fbd.GetGameByCode(code);
+            return result!;
         }
 
         /// <summary>

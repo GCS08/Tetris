@@ -44,9 +44,7 @@ namespace Tetris.ModelsLogic
         /// <returns>The value of type <typeparamref name="T"/>. Returns <c>default</c> if the value is <c>null</c>.</returns>
         public override T GetValue()
         {
-            if (this.value == null)
-                return default!;
-            return this.value;
+            return this.value ?? default!;
         }
 
         /// <summary>
@@ -57,9 +55,7 @@ namespace Tetris.ModelsLogic
         /// </returns>
         public override Node<T> GetNext()
         {
-            if (this.next == null)
-                return default!;
-            return this.next;
+            return this.next ?? default!;
         }
 
         /// <summary>

@@ -67,16 +67,15 @@ namespace Tetris.ModelsLogic
         /// </returns>
         public override T Remove()
         {
-            if (first == null || IsEmpty())
-                return default!;
-
-            T value = first.GetValue();
-            first = first.GetNext();
-
-            if (IsEmpty())
-                last = null;
-
-            return value;
+            T result = default!;
+            if (first != null && !IsEmpty())
+            {
+                result = first.GetValue();
+                first = first.GetNext();
+                if (IsEmpty())
+                    last = null;
+            }
+            return result;
         }
 
         /// <summary>
@@ -104,13 +103,14 @@ namespace Tetris.ModelsLogic
             while (!IsEmpty())
             {
                 T value = Remove();
-                if (value == null) return output;
+                if (value != null)
+                {
+                    output += value.ToString() + TechnicalConsts.SpaceSign
+                        + TechnicalConsts.ArrowSignString + TechnicalConsts.SpaceSign;
 
-                output += value.ToString() + TechnicalConsts.SpaceSign
-                    + TechnicalConsts.ArrowSignString + TechnicalConsts.SpaceSign;
-
-                temp.Insert(value);
-                counter++;
+                    temp.Insert(value);
+                    counter++;
+                }
             }
 
             while (!temp.IsEmpty())
@@ -120,44 +120,44 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Sorts the queue assuming <typeparamref name="T"/> is <see cref="KeyValuePair{string,string}"/> 
+        /// Sorts the queue assuming <typeparamref name="T"/> is KeyValuePair{string,string} 
         /// and the key represents a Unix timestamp.
         /// </summary>
         /// <returns>A task representing the asynchronous sort operation.</returns>
         /// <remarks>
-        /// If <typeparamref name="T"/> is not <see cref="KeyValuePair{string,string}"/> or the queue is empty, 
+        /// If <typeparamref name="T"/> is not KeyValuePair{string,string} or the queue is empty, 
         /// the method exits without performing any sorting.
         /// </remarks>
         public override async Task SortByUnixTimestampKeyAsync()
         {
-            if (typeof(T) != typeof(KeyValuePair<string, string>) || IsEmpty())
-                return;
+            bool shouldSort = typeof(T) == typeof(KeyValuePair<string, string>) && !IsEmpty();
 
-            await Task.Run(() =>
+            if (shouldSort)
             {
-                List<KeyValuePair<string, string>> buffer = [];
-
-                // Drain queue into buffer
-                while (!IsEmpty())
+                await Task.Run(() =>
                 {
-                    KeyValuePair<string, string> item = (KeyValuePair<string, string>)(object)Remove()!;
-                    buffer.Add(item);
-                }
+                    List<KeyValuePair<string, string>> buffer = [];
 
-                // Sort by Unix timestamp key in ascending order
-                buffer.Sort((a, b) =>
-                {
-                    long ta = long.Parse(a.Key);
-                    long tb = long.Parse(b.Key);
-                    return ta.CompareTo(tb);
+                    // Drain queue into buffer
+                    while (!IsEmpty())
+                    {
+                        KeyValuePair<string, string> item = (KeyValuePair<string, string>)(object)Remove()!;
+                        buffer.Add(item);
+                    }
+
+                    // Sort by Unix timestamp key in ascending order
+                    buffer.Sort((a, b) =>
+                    {
+                        long ta = long.Parse(a.Key);
+                        long tb = long.Parse(b.Key);
+                        return ta.CompareTo(tb);
+                    });
+
+                    // Restore sorted queue
+                    foreach (KeyValuePair<string, string> item in buffer)
+                        Insert((T)(object)item);
                 });
-
-                // Restore sorted queue
-                foreach (KeyValuePair<string, string> item in buffer)
-                {
-                    Insert((T)(object)item);
-                }
-            });
+            }
         }
 
         #endregion

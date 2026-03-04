@@ -156,7 +156,7 @@ namespace Tetris.ModelsLogic
         {
             return facl.User?.Uid ?? string.Empty;
         }
-        
+
         /// <summary>
         /// Asynchronously retrieves user data of the specified type from Firestore using the given key.
         /// </summary>
@@ -166,18 +166,26 @@ namespace Tetris.ModelsLogic
         /// default value for type T.</returns>
         public override async Task<T> GetUserDataAsync<T>(string key)
         {
-            if (string.IsNullOrEmpty(facl.User?.Uid))
-                return default!;
-            IDocumentSnapshot snapshot = await fs.Collection(
-                Keys.UsersCollectionName).Document(facl.User.Uid).GetAsync();
-            if (!snapshot.Exists)
-                return default!;
+            T result = default!;
 
-            // Firebase Cloud Firestore supports strongly-typed Get<T>
-            T? value = snapshot.Get<T>(key);
-            return value != null ? value : default!;
+            if (!string.IsNullOrEmpty(facl.User?.Uid))
+            {
+                IDocumentSnapshot snapshot = await fs
+                    .Collection(Keys.UsersCollectionName)
+                    .Document(facl.User.Uid)
+                    .GetAsync();
+
+                if (snapshot.Exists)
+                {
+                    T? value = snapshot.Get<T>(key);
+                    if (value != null)
+                        result = value;
+                }
+            }
+
+            return result;
         }
-       
+
         /// <summary>
         /// Extracts and interprets Firebase error messages from a failed Task, mapping them to user-friendly messages.
         /// </summary>
@@ -661,14 +669,21 @@ namespace Tetris.ModelsLogic
         /// </returns>
         public override async Task<bool> SetPrivateJoinCode(string gameID, int code)
         {
+            bool result = true;
             ICollectionReference collectionRef = fs.Collection(Keys.GamesCollectionName);
-            IQuerySnapshot snapshot = await collectionRef.
-                WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
+            IQuerySnapshot snapshot = await collectionRef
+                .WhereEqualsTo(Keys.PrivateJoinCodeKey, code)
+                .GetAsync();
             if (snapshot.Documents.Any())
-                return false;
-            IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            _ = dr.UpdateAsync(Keys.PrivateJoinCodeKey, code);
-            return true;
+                result = false;
+            else
+            {
+                IDocumentReference dr = fs
+                    .Collection(Keys.GamesCollectionName)
+                    .Document(gameID);
+                _ = dr.UpdateAsync(Keys.PrivateJoinCodeKey, code);
+            }
+            return result;
         }
 
         /// <summary>
@@ -681,27 +696,43 @@ namespace Tetris.ModelsLogic
         /// </returns>
         public override async Task<Game> GetGameByCode(int code)
         {
-            ICollectionReference collectionRef = fs.Collection
-                (Keys.GamesCollectionName);
+            Game? result = null;
+            ICollectionReference collectionRef =
+                fs.Collection(Keys.GamesCollectionName);
             IQuerySnapshot querySnap = await collectionRef
-                .WhereEqualsTo(Keys.PrivateJoinCodeKey, code).GetAsync();
-            IDocumentSnapshot? docSnap = querySnap.Documents.FirstOrDefault();
-            if (docSnap == null)
-                return null!;
-            return new Game(
-                docSnap.Get<string>(Keys.CubeColorKey)!,
-                docSnap.Get<string>(Keys.CreatorNameKey)!,
-                docSnap.Get<int>(Keys.CurrentPlayersCountKey),
-                docSnap.Get<int>(Keys.MaxPlayersCountKey),
-                docSnap.Get<bool>(Keys.IsPublicGameKey),
-                new Shape(docSnap.Get<int>(Keys.CurrentShapeMapKey + 
-                TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
-                    docSnap.Get<int>(Keys.CurrentShapeMapKey + 
-                    TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
-                    docSnap.Get<string>(Keys.CurrentShapeMapKey +
-                    TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
-                docSnap.Id
-            );
+                .WhereEqualsTo(Keys.PrivateJoinCodeKey, code)
+                .GetAsync();
+            IDocumentSnapshot? docSnap =
+                querySnap.Documents.FirstOrDefault();
+
+            if (docSnap != null)
+            {
+                result = new Game(
+                    docSnap.Get<string>(Keys.CubeColorKey)!,
+                    docSnap.Get<string>(Keys.CreatorNameKey)!,
+                    docSnap.Get<int>(Keys.CurrentPlayersCountKey),
+                    docSnap.Get<int>(Keys.MaxPlayersCountKey),
+                    docSnap.Get<bool>(Keys.IsPublicGameKey),
+                    new Shape(
+                        docSnap.Get<int>(
+                            Keys.CurrentShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.CurrentShapeIdKey),
+
+                        docSnap.Get<int>(
+                            Keys.CurrentShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.CurrentShapeInGameIdKey),
+
+                        docSnap.Get<string>(
+                            Keys.CurrentShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.CurrentShapeColorKey)!),
+                    docSnap.Id
+                );
+            }
+
+            return result!;
         }
         #endregion
 

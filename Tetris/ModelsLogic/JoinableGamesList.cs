@@ -110,7 +110,7 @@ namespace Tetris.ModelsLogic
 
         /// <summary>
         /// Called when the list of available games has been fetched from Firestore.
-        /// Updates the observable collection and raises the <see cref="OnGamesChanged"/> event.
+        /// Updates the observable collection and raises the OnGamesChanged event.
         /// </summary>
         /// <param name="newList">
         /// The collection of <see cref="Game"/> objects retrieved from Firestore.

@@ -73,6 +73,7 @@ namespace Tetris.ModelsLogic
         /// </returns>
         public override bool ScheduleReminder(DateTime selectedDate, TimeSpan selectedTime, string selectedSeconds)
         {
+            bool result = true;
             if (!int.TryParse(selectedSeconds, out int seconds) || seconds < 0 || seconds > 59)
                 seconds = 0;
 
@@ -87,15 +88,15 @@ namespace Tetris.ModelsLogic
 
             // Do not schedule reminders in the past
             if (finalTime <= DateTime.Now)
-                return false;
+                result = false;
+            else
+                PushNotification(
+                    Strings.NotificationTitle,
+                    Strings.NotificationContent,
+                    finalTime
+                );
 
-            PushNotification(
-                Strings.NotificationTitle,
-                Strings.NotificationContent,
-                finalTime
-            );
-
-            return true;
+            return result;
         }
 
         #endregion
@@ -114,7 +115,7 @@ namespace Tetris.ModelsLogic
 
         /// <summary>
         /// Handler invoked when a notification is received from the notification manager service.
-        /// Raises the <see cref="NotificationReceived"/> event for subscribers.
+        /// Raises the NotificationReceived event for subscribers.
         /// </summary>
         /// <param name="sender">The object that raised the event, typically the notification manager service.</param>
         /// <param name="e">Event arguments containing the notification data. May be cast to <see cref="NotificationEventArgs"/>.</param>

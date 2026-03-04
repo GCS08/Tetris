@@ -13,10 +13,10 @@ namespace Tetris.ModelsLogic
         #region Public Methods
 
         /// <summary>
-        /// Attempts to log in the user using <see cref="Email"/> and <see cref="Password"/>.
+        /// Attempts to log in the user using <see cref="Email"/> and Password.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task{bool}"/> indicating whether the login was successful.
+        /// A Task{bool} indicating whether the login was successful.
         /// </returns>
         public override async Task<bool> Login()
         {
@@ -25,10 +25,10 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Registers a new user with <see cref="Email"/>, <see cref="Password"/>, and <see cref="UserName"/>.
+        /// Registers a new user with <see cref="Email"/>, Password, and UserName.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task{bool}"/> indicating whether the registration was successful.
+        /// A Task{bool} indicating whether the registration was successful.
         /// </returns>
         public override async Task<bool> Register()
         {
@@ -55,7 +55,7 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Validates if the user can log in with the current <see cref="Email"/> and <see cref="Password"/>.
+        /// Validates if the user can log in with the current <see cref="Email"/> and Password.
         /// </summary>
         /// <returns>True if both email and password are valid; otherwise false.</returns>
         public override bool CanLogin()
@@ -66,7 +66,7 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Validates if the user can register using the current fields.
         /// </summary>
-        /// <param name="repeatPassword">The repeated password to confirm match with <see cref="Password"/>.</param>
+        /// <param name="repeatPassword">The repeated password to confirm match with Password.</param>
         /// <returns>True if all fields are valid and passwords match; otherwise false.</returns>
         public override bool CanRegister(string repeatPassword)
         {
@@ -102,18 +102,22 @@ namespace Tetris.ModelsLogic
         /// <returns>True if login succeeded; otherwise false.</returns>
         protected override async Task<bool> OnCompleteLogin(Task task)
         {
+            bool result;
+
             if (task.IsCompletedSuccessfully)
             {
                 await LoginSaveToPreferencesAsync();
                 _ = Toast.Make(Strings.LoginSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
-                return true;
+                result = true;
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
                 _ = Shell.Current.DisplayAlert(Strings.LoginErrorTitle, errorMessage, Strings.LoginFailButton);
-                return false;
+                result = false;
             }
+
+            return result;
         }
 
         /// <summary>
@@ -140,19 +144,25 @@ namespace Tetris.ModelsLogic
         /// <returns>True if registration succeeded; otherwise false.</returns>
         protected override bool OnCompleteRegister(Task task)
         {
+            bool result;
+
             if (task.IsCompletedSuccessfully)
             {
                 UserID = fbd.GetCurrentUserID();
                 SaveToPreferences();
-                _ = Toast.Make(Strings.RegisterSuccess, CommunityToolkit.Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
-                return true;
+                _ = Toast.Make(Strings.RegisterSuccess, CommunityToolkit
+                    .Maui.Core.ToastDuration.Short, ConstData.ToastFontSize).Show();
+                result = true;
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                _ = Shell.Current.DisplayAlert(Strings.RegisterErrorTitle, errorMessage, Strings.RegisterFailButton);
-                return false;
+                _ = Shell.Current.DisplayAlert(Strings.RegisterErrorTitle,
+                    errorMessage, Strings.RegisterFailButton);
+                result = false;
             }
+
+            return result;
         }
 
         /// <summary>
@@ -179,12 +189,14 @@ namespace Tetris.ModelsLogic
         {
             if (task.IsCompletedSuccessfully)
             {
-                _ = Shell.Current.DisplayAlert(Strings.ResetPWTitle, Strings.ResetPWMessage, Strings.ResetPWButton);
+                _ = Shell.Current.DisplayAlert(Strings.ResetPWTitle, 
+                    Strings.ResetPWMessage, Strings.ResetPWButton);
             }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
-                _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, errorMessage, Strings.ResetPWErrorButton);
+                _ = Shell.Current.DisplayAlert(Strings.ResetPWErrorTitle, 
+                    errorMessage, Strings.ResetPWErrorButton);
             }
         }
 
@@ -194,17 +206,28 @@ namespace Tetris.ModelsLogic
         /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsEmailValid()
         {
+            bool result = true;
+
             if (Email.Length < ConstData.MinCharacterInEmail)
             {
-                Shell.Current.DisplayAlert(Strings.EmailShortErrorTitle, dynamicStrings.EmailShortErrorMessage, Strings.EmailShortErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.EmailShortErrorTitle,
+                    dynamicStrings.EmailShortErrorMessage,
+                    Strings.EmailShortErrorButton
+                );
+                result = false;
             }
-            if (!HasAtSign(Email) || !HasDot(Email))
+            else if (!HasAtSign(Email) || !HasDot(Email))
             {
-                Shell.Current.DisplayAlert(Strings.EmailInvalidErrorTitle, Strings.EmailInvalidErrorMessage, Strings.EmailInvalidErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.EmailInvalidErrorTitle,
+                    Strings.EmailInvalidErrorMessage,
+                    Strings.EmailInvalidErrorButton
+                );
+                result = false;
             }
-            return true;
+
+            return result;
         }
 
         /// <summary>
@@ -214,27 +237,46 @@ namespace Tetris.ModelsLogic
         /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsPasswordValid()
         {
+            bool result = true;
+
             if (Password.Length < ConstData.MinCharacterInPW)
             {
-                Shell.Current.DisplayAlert(Strings.PasswordShortErrorTitle, dynamicStrings.PasswordShortErrorMessage, Strings.PasswordShortErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.PasswordShortErrorTitle,
+                    dynamicStrings.PasswordShortErrorMessage,
+                    Strings.PasswordShortErrorButton
+                );
+                result = false;
             }
-            if (!HasNumber(Password))
+            else if (!HasNumber(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordNumberErrorTitle, Strings.PasswordNumberErrorMessage, Strings.PasswordNumberErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.PasswordNumberErrorTitle,
+                    Strings.PasswordNumberErrorMessage,
+                    Strings.PasswordNumberErrorButton
+                );
+                result = false;
             }
-            if (!HasLowerCase(Password))
+            else if (!HasLowerCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordLowerCaseErrorTitle, Strings.PasswordLowerCaseErrorMessage, Strings.PasswordLowerCaseErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.PasswordLowerCaseErrorTitle,
+                    Strings.PasswordLowerCaseErrorMessage,
+                    Strings.PasswordLowerCaseErrorButton
+                );
+                result = false;
             }
-            if (!HasUpperCase(Password))
+            else if (!HasUpperCase(Password))
             {
-                Shell.Current.DisplayAlert(Strings.PasswordUpperCaseErrorTitle, Strings.PasswordUpperCaseErrorMessage, Strings.PasswordUpperCaseErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.PasswordUpperCaseErrorTitle,
+                    Strings.PasswordUpperCaseErrorMessage,
+                    Strings.PasswordUpperCaseErrorButton
+                );
+                result = false;
             }
-            return true;
+
+            return result;
         }
 
         /// <summary>
@@ -244,17 +286,28 @@ namespace Tetris.ModelsLogic
         /// <returns>True if valid; otherwise false.</returns>
         protected override bool IsUserNameValid()
         {
+            bool result = true;
+
             if (UserName.Length < ConstData.MinCharacterInUN)
             {
-                Shell.Current.DisplayAlert(Strings.UserNameShortErrorTitle, dynamicStrings.UserNameShortErrorMessage, Strings.UserNameShortErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.UserNameShortErrorTitle,
+                    dynamicStrings.UserNameShortErrorMessage,
+                    Strings.UserNameShortErrorButton
+                );
+                result = false;
             }
-            if (!HasNumber(UserName))
+            else if (!HasNumber(UserName))
             {
-                Shell.Current.DisplayAlert(Strings.UserNameNumberErrorTitle, Strings.UserNameNumberErrorMessage, Strings.UserNameNumberErrorButton);
-                return false;
+                Shell.Current.DisplayAlert(
+                    Strings.UserNameNumberErrorTitle,
+                    Strings.UserNameNumberErrorMessage,
+                    Strings.UserNameNumberErrorButton
+                );
+                result = false;
             }
-            return true;
+
+            return result;
         }
 
         /// <summary>
@@ -262,10 +315,13 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override bool HasAtSign(string str)
         {
-            for (int i = 0; i < str.Length; i++)
+            bool result = false;
+
+            for (int i = 0; i < str.Length && !result; i++)
                 if (str[i] == TechnicalConsts.AtSign)
-                    return true;
-            return false;
+                    result = true;
+
+            return result;
         }
 
         /// <summary>
@@ -273,10 +329,13 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override bool HasDot(string str)
         {
-            for (int i = 0; i < str.Length; i++)
+            bool result = false;
+
+            for (int i = 0; i < str.Length && !result; i++)
                 if (str[i] == TechnicalConsts.DotSign)
-                    return true;
-            return false;
+                    result = true;
+
+            return result;
         }
 
         /// <summary>
@@ -284,10 +343,13 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override bool HasNumber(string str)
         {
-            for (int i = 0; i < str.Length; i++)
+            bool result = false;
+
+            for (int i = 0; i < str.Length && !result; i++)
                 if (str[i] >= TechnicalConsts.ZeroSign && str[i] <= TechnicalConsts.NineSign)
-                    return true;
-            return false;
+                    result = true;
+
+            return result;
         }
 
         /// <summary>
@@ -295,10 +357,13 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override bool HasLowerCase(string str)
         {
-            for (int i = 0; i < str.Length; i++)
+            bool result = false;
+
+            for (int i = 0; i < str.Length && !result; i++)
                 if (str[i] >= TechnicalConsts.ASign && str[i] <= TechnicalConsts.ZSign)
-                    return true;
-            return false;
+                    result = true;
+
+            return result;
         }
 
         /// <summary>
@@ -306,10 +371,13 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override bool HasUpperCase(string str)
         {
-            for (int i = 0; i < str.Length; i++)
+            bool result = false;
+
+            for (int i = 0; i < str.Length && !result; i++)
                 if (str[i] >= TechnicalConsts.CapitalASign && str[i] <= TechnicalConsts.CapitalZSign)
-                    return true;
-            return false;
+                    result = true;
+
+            return result;
         }
 
         #endregion

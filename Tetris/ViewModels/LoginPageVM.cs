@@ -84,8 +84,10 @@ namespace Tetris.ViewModels
         /// <returns>True if login is allowed, otherwise false.</returns>
         private bool CanLogin()
         {
-            if (User == null) return false;
-            return User.CanLogin();
+            bool result = false;
+            if (User != null)
+                result = User.CanLogin();
+            return result;
         }
 
         /// <summary>
@@ -160,6 +162,7 @@ namespace Tetris.ViewModels
         /// </summary>
         private void NavHome()
         {
+            User.Reset();
             Shell.Current.Navigation.PushAsync(new MainPage());
         }
 

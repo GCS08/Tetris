@@ -113,9 +113,7 @@ namespace Tetris.Platforms.Android
                     alarmManager?.Set(AlarmType.RtcWakeup, triggerTime, pendingIntent);
             }
             else
-            {
                 Show(title, message);
-            }
         }
 
         /// <summary>
