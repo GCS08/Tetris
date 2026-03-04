@@ -14,9 +14,9 @@ namespace Tetris.ModelsLogic
     {
         #region Constructors
 
-        // <summary>
+        /// <summary>
         /// Initializes an empty game instance. Used for deserialization or delayed setup.
-        /// </summary>
+        /// </summary> 
         public Game() { }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Tetris.ModelsLogic
         /// Handles logic when the game finishes, updating stats, stopping timers, and triggering UI events.
         /// </summary>
         /// <param name="sender">
-        /// The source of the event. Usually the <see cref="GameBoard"/> or <see cref="OpGameBoard"/> 
+        /// The source of the event. Usually the <see cref="GameBoard"/> or OpGameBoard/> 
         /// that triggered the game finished event.
         /// </param>
         /// <param name="e">Event arguments for the game finished event. Usually <see cref="EventArgs.Empty"/></param>
@@ -322,7 +322,7 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Updates the remaining game time and triggers the <see cref="OnTimeLeftChanged"/> event.
+        /// Updates the remaining game time and triggers the OnTimeLeftChanged event.
         /// </summary>
         /// <param name="timeLeft">The remaining time in milliseconds.</param>
         protected override void OnMessageReceived(long timeLeft)
@@ -336,7 +336,7 @@ namespace Tetris.ModelsLogic
 
         /// <summary>
         /// Called when a snapshot of the "ready" state changes in the database. 
-        /// Checks if all players are ready and raises <see cref="OnAllReady"/> if so.
+        /// Checks if all players are ready and raises OnAllReady if so.
         /// </summary>
         /// <param name="snapshot">
         /// The Firestore document snapshot containing current ready states of all players.
@@ -440,7 +440,7 @@ namespace Tetris.ModelsLogic
 
         /// <summary>
         /// Callback that is executed after fetching all users in the waiting room.
-        /// Updates the internal <see cref="UsersInGame"/> collection and triggers UI events.
+        /// Updates the internal UsersInGame collection and triggers UI events.
         /// </summary>
         /// <param name="users">
         /// The list of <see cref="User"/> objects currently in the game.
@@ -468,7 +468,7 @@ namespace Tetris.ModelsLogic
 
         /// <summary>
         /// Applies the next move from the opponent's moves queue.
-        /// Called on each tick of the opponent's fall timer (<see cref="OpFallTimer"/>).
+        /// Called on each tick of the opponent's fall timer (OpFallTimer)
         /// </summary>
         /// <param name="sender">
         /// The source of the timer event. Usually the <see cref="DispatcherTimer"/> instance.

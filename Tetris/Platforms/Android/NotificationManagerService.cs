@@ -27,7 +27,7 @@ namespace Tetris.Platforms.Android
 
         /// <summary>
         /// Initializes a new instance of <see cref="NotificationManagerService"/>.
-        /// Ensures singleton <see cref="Instance"/> is set and notification channel is created.
+        /// Ensures singleton Instance is set and notification channel is created.
         /// </summary>
         public NotificationManagerService()
         {
