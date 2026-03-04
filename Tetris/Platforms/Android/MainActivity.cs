@@ -59,6 +59,16 @@ namespace Tetris.Platforms.Android
         }
 
         /// <summary>
+        /// Called when the Activity is being destroyed.
+        /// Cleans up timer message listeners to prevent memory leaks.
+        /// </summary>
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            UnregisterTimerMessages();
+        }
+
+        /// <summary>
         /// Called when the activity receives a new intent while running in single-top mode.
         /// Handles notifications sent from intents.
         /// </summary>
@@ -107,6 +117,15 @@ namespace Tetris.Platforms.Android
             {
                 OnMessageReceived(m.Value);
             });
+        }
+
+        /// <summary>
+        /// Unregisters any WeakReferenceMessenger timer messages previously registered.
+        /// </summary>
+        private void UnregisterTimerMessages()
+        {
+            WeakReferenceMessenger.Default.Unregister<AppMessage<StartGameTimerSettings>>(this);
+            WeakReferenceMessenger.Default.Unregister<AppMessage<bool>>(this);
         }
 
         /// <summary>

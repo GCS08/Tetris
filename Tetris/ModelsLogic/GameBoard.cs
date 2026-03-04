@@ -392,12 +392,9 @@ namespace Tetris.ModelsLogic
             for (int readRow = ConstData.GameGridRowCount - 1; readRow >= 0; readRow--)
             {
                 bool lineFull = true;
-                for (int col = 0; col < ConstData.GameGridColumnCount; col++)
+                for (int col = 0; col < ConstData.GameGridColumnCount && lineFull; col++)
                     if (Board[readRow, col].Color == Colors.Transparent)
-                    {
                         lineFull = false;
-                        break;
-                    }
 
                 if (!lineFull)
                 {
