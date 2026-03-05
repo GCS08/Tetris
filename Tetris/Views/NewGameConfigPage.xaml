@@ -72,7 +72,7 @@
                                         FontSize="20"
                                         HorizontalOptions="Center"
                                         Text="{Binding .}"
-                                        TextColor="{Binding ., Converter={StaticResource ColorNameToColorConverter}}"
+                                        TextColor="{Binding ., Converter={StaticResource StringAndColorConverter}}"
                                         VerticalOptions="Center"
                                         VerticalTextAlignment="Center" />
 
