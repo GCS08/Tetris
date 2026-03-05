@@ -230,11 +230,7 @@ namespace Tetris.ModelsLogic
                         SoundManager.PlayMoveDown();
                 }
                 else
-                {
                     ShapeAtBottom();
-                    if (!IsOp)
-                        await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
-                }
             }
         }
 
@@ -323,13 +319,17 @@ namespace Tetris.ModelsLogic
         /// including clearing completed lines, updating the score and combo count,
         /// checking for game over, and preparing the next shape from the queue.
         /// </summary>
-        protected override void ShapeAtBottom()
+        protected override async void ShapeAtBottom()
         {
-            if (User == null) return;
+            if (User == null || GameID == null || MovesQueue == null) return;
+
             int linesCleared = CheckForLines();
-            if (linesCleared > 0 && !IsOp)
+            if (!IsOp)
+                await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
+            if (linesCleared > 0)
             {
-                SoundManager.PlayLineCleared();
+                if (!IsOp)
+                    SoundManager.PlayLineCleared();
                 User.TotalLines += linesCleared;
                 Score += linesCleared * ConstData.ScorePerLine * ComboCount;
                 ComboCount++;
@@ -341,7 +341,7 @@ namespace Tetris.ModelsLogic
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {
-                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
+                if (ShapesQueue == null || CurrentShape == null || FallTimer == null) return;
 
                 ShapesQueue.Remove();
                 if (ShapesQueue.IsEmpty() && !IsOp)
@@ -353,6 +353,7 @@ namespace Tetris.ModelsLogic
                 }
                 else
                     CurrentShape = ShapesQueue.Head();
+                FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS - CurrentShape.InGameId * 0.03);
                 ShowShape();
             }
         }
@@ -464,8 +465,8 @@ namespace Tetris.ModelsLogic
         /// <param name="newY">Outputs the adjusted Y-coordinate where the shape can be placed.</param>
         /// <returns>True if a valid position was found for the rotated shape; otherwise, false.</returns>
         protected override bool TryPlaceRotation(
-    bool[,] cells, int x, int y,
-    out int newX, out int newY)
+            bool[,] cells, int x, int y,
+            out int newX, out int newY)
         {
             bool result = false;
 

@@ -67,7 +67,7 @@ namespace Tetris.Converters
         /// <returns>The corresponding MAUI Color.</returns>
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return ColorNameToColor((string)value);
+            return ColorNameToColor((string)value!);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Tetris.Converters
         /// <returns>The string key representing the color.</returns>
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return ColorToColorName((Color)value);
+            return ColorToColorName((Color)value!);
         }
     }
 }

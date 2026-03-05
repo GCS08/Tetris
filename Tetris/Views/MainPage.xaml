@@ -37,6 +37,7 @@
                     HorizontalOptions="Center"
                     IsVisible="{Binding PlayVisibility}"
                     Text="{x:Static m:Strings.PlayButtonText}"
+                    TextColor="White"
                     VerticalOptions="Center"
                     WidthRequest="175">
                     <Button.Background>
