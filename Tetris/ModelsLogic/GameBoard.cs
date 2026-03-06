@@ -353,7 +353,8 @@ namespace Tetris.ModelsLogic
                 }
                 else
                     CurrentShape = ShapesQueue.Head();
-                FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS - CurrentShape.InGameId * 0.03);
+                if (!IsOp)
+                    FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS - CurrentShape.InGameId * 0.03);
                 ShowShape();
             }
         }
