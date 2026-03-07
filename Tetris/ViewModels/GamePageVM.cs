@@ -69,10 +69,8 @@ public partial class GamePageVM : ObservableObject
     {
         if (CurrentGame.GameBoard == null || CurrentGame.OpGameBoard == null
             || GameBoardGrid == null || OpGameBoardGrid == null) return;
-        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid, 
-            ConstData.GameGridColumnWidth, ConstData.GameGridRowHeight);
-        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid, 
-            ConstData.OpGameGridColumnWidth, ConstData.OpGameGridRowHeight);
+        CurrentGame.GameBoard.InitializeGrid(GameBoardGrid);
+        CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid);
     }
 
     /// <summary>

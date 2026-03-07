@@ -267,49 +267,63 @@ namespace Tetris.ModelsLogic
         /// creating cube views for each cell, and binding cube color changes to the UI elements.
         /// </summary>
         /// <param name="gameBoardGrid">The <see cref="Grid"/> control to initialize with the game board cells.</param>
-        /// <param name="cubeWidth">The width of each cube in the grid.</param>
-        /// <param name="cubeHeight">The height of each cube in the grid.</param>
-        public override void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight)
+        public override void InitializeGrid(Grid? gameBoardGrid)
         {
             if (gameBoardGrid == null || Board == null) return;
 
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeHeight });
+            bool initialized = false;
 
-            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeWidth });
-
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+            gameBoardGrid.SizeChanged += (s, e) =>
             {
+                if (initialized) return;
+                if (gameBoardGrid.Width <= 0 || gameBoardGrid.Height <= 0) return;
+
+                initialized = true;
+
+                double cubeSize = Math.Min(
+                    gameBoardGrid.Width / ConstData.GameGridColumnCount,
+                    gameBoardGrid.Height / ConstData.GameGridRowCount
+                );
+
+                for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                    gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeSize });
+
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                    gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeSize });
+
+                for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 {
-                    Cube cube = Board[r, c];
-
-                    BoxView boxView = new()
+                    for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                     {
-                        WidthRequest = cube.Width,
-                        HeightRequest = cube.Height,
-                        BackgroundColor = cube.Color
-                    };
+                        Cube cube = Board[r, c];
 
-                    cube.PropertyChanged += (s, e) =>
-                    {
-                        if (e.PropertyName == nameof(cube.Color))
-                            boxView.BackgroundColor = cube.Color;
-                    };
+                        BoxView boxView = new()
+                        {
+                            BackgroundColor = cube.Color
+                        };
 
-                    Border border = new()
-                    {
-                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
-                        Stroke = Colors.Gray,
-                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
-                        Background = Colors.Transparent,
-                        Content = boxView
-                    };
+                        cube.PropertyChanged += (s2, e2) =>
+                        {
+                            if (e2.PropertyName == nameof(Cube.Color))
+                                boxView.BackgroundColor = cube.Color;
+                        };
 
-                    gameBoardGrid.Add(border, c, r);
+                        Border border = new()
+                        {
+                            Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                            Stroke = Colors.Gray,
+                            StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                            Background = Colors.Transparent,
+                            Content = boxView
+                        };
+
+                        gameBoardGrid.Add(border, c, r);
+                    }
                 }
-            }
+
+                gameBoardGrid.HorizontalOptions = LayoutOptions.Center;
+                gameBoardGrid.VerticalOptions = LayoutOptions.Center;
+            };
         }
         #endregion
 

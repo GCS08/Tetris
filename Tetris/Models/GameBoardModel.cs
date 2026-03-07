@@ -38,7 +38,7 @@ namespace Tetris.Models
 
         #region Public Methods
         public abstract void StartGame();
-        public abstract void InitializeGrid(Grid? gameBoardGrid, double cubeWidth, double cubeHeight);
+        public abstract void InitializeGrid(Grid? gameBoardGrid);
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
         public abstract Task MoveDownShape();
