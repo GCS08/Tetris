@@ -39,16 +39,8 @@ namespace Tetris.ModelsLogic
             double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
-            {
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                {
-                    Board[r, c] = new Cube(
-                        cubeWidth,
-                        cubeHeight,
-                        Colors.Transparent
-                    );
-                }
-            }
+                    Board[r, c] = new Cube(Colors.Transparent);
         }
         #endregion
 
