@@ -204,7 +204,6 @@ namespace Tetris.ModelsLogic
         public override async void MoveDownShape() 
         {
             if (GameBoard == null) return;
-
             await GameBoard.MoveDownShape();
         }
 

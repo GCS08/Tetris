@@ -55,7 +55,7 @@
         public const string BlueKey = "Blue";
         public const string IndigoKey = "Indigo";
         public const string VioletKey = "Violet";
-        public const string LightBlueKey = "LightBlue";
+        public const string LightBlueKey = "Light Blue";
         public const string TransparentKey = "Transparent";
         public const string RightKey = "right";
         public const string LeftKey = "left";

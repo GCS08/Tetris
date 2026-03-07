@@ -35,9 +35,6 @@ namespace Tetris.ModelsLogic
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
             FallTimer.Tick += async (s, e) => await MoveDownShape();
 
-            double cubeWidth = IsOp ? ConstData.OpGameGridColumnWidth : ConstData.GameGridColumnWidth;
-            double cubeHeight = IsOp ? ConstData.OpGameGridRowHeight : ConstData.GameGridRowHeight;
-
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                     Board[r, c] = new Cube(Colors.Transparent);
@@ -222,7 +219,7 @@ namespace Tetris.ModelsLogic
                         SoundManager.PlayMoveDown();
                 }
                 else
-                    ShapeAtBottom();
+                    await ShapeAtBottom();
             }
         }
 
@@ -325,7 +322,7 @@ namespace Tetris.ModelsLogic
         /// including clearing completed lines, updating the score and combo count,
         /// checking for game over, and preparing the next shape from the queue.
         /// </summary>
-        protected override async void ShapeAtBottom()
+        protected override async Task ShapeAtBottom()
         {
             if (User == null || GameID == null || MovesQueue == null) return;
 

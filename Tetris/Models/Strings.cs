@@ -142,6 +142,10 @@
         public const string RemindersButtonText = "Reminders";
         public const string TetrisServiceTitle = "Tetris";
         public const string DeleteDocsDesc = "Deleting old Firebase docs...";
+        public const string LeftString = "Left";
+        public const string RightString = "Right";
+        public const string RotateString = "Rotate";
+        public const string DownString = "Down";
         #endregion
     }
 }
