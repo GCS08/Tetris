@@ -147,10 +147,10 @@
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="0" Text="Left"/>
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="1" Text="Rotate"/>
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="2" Text="Right"/>
-                            <Button Padding="0" Margin="5" Grid.Row="1" Grid.Column="1" Text="Down"/>
+                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="0" Command="{Binding MoveLeftShapeCommand}" Text="{x:Static m:Strings.LeftString}" />
+                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="1" Command="{Binding RotateShapeCommand}" Text="{x:Static m:Strings.RotateString}" />
+                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="2" Command="{Binding MoveRightShapeCommand}" Text="{x:Static m:Strings.RightString}" />
+                            <Button Padding="0" Margin="5" Grid.Row="1" Grid.Column="1" Command="{Binding MoveDownShapeCommand}" Text="{x:Static m:Strings.DownString}" />
                         </Grid>
                     </Grid>
                 </Frame>
