@@ -46,7 +46,7 @@ namespace Tetris.Models
         #endregion
 
         #region Protected Methods
-        protected abstract Task ShapeAtBottom();
+        protected abstract void ShapeAtBottom();
         protected abstract bool CheckForLose();
         protected abstract void ShowShape();
         protected abstract int CheckForLines();

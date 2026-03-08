@@ -219,7 +219,11 @@ namespace Tetris.ModelsLogic
                         SoundManager.PlayMoveDown();
                 }
                 else
-                    await ShapeAtBottom();
+                {
+                    ShapeAtBottom();
+                    if (!IsOp)
+                        await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
+                }
             }
         }
 
@@ -322,13 +326,11 @@ namespace Tetris.ModelsLogic
         /// including clearing completed lines, updating the score and combo count,
         /// checking for game over, and preparing the next shape from the queue.
         /// </summary>
-        protected override async Task ShapeAtBottom()
+        protected override void ShapeAtBottom()
         {
             if (User == null || GameID == null || MovesQueue == null) return;
 
             int linesCleared = CheckForLines();
-            if (!IsOp)
-                await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
             if (linesCleared > 0)
             {
                 if (!IsOp)
