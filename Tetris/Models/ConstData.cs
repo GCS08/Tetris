@@ -21,6 +21,7 @@
         public const int ShapesCount = 10;
         public const int ShapeFallIntervalS = 1;
         public const double OpShapeFallIntervalS = 0.3;
+        public const double ShapeFallIntervalMult = 7/8;
         public const int DeleteFbDocsIntervalS = 3600;
         public const int TotalGameTimeS = 6;
         public const int GameTimeIntervalS = 1;

@@ -42,10 +42,12 @@ namespace Tetris.Models
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
         public abstract Task MoveDownShape();
+        public abstract Task SnapDownShape();
         public abstract void RotateShape();
         #endregion
 
         #region Protected Methods
+        protected abstract bool CanMoveDown();
         protected abstract void ShapeAtBottom();
         protected abstract bool CheckForLose();
         protected abstract void ShowShape();

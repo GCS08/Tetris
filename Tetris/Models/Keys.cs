@@ -61,6 +61,7 @@
         public const string LeftKey = "left";
         public const string DownKey = "down";
         public const string RotateKey = "rotate";
+        public const string SnapDownKey = "sdown";
         public const string PlayerActionKey = "PlayerAction";
         public const string MoveIndexKey = "MoveIndex";
         public const string PlayerDetailsKey = "PlayerDetails";

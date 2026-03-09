@@ -142,15 +142,19 @@
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="60" />
-                                <ColumnDefinition Width="60" />
-                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="0" Command="{Binding MoveLeftShapeCommand}" Text="{x:Static m:Strings.LeftString}" />
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="1" Command="{Binding RotateShapeCommand}" Text="{x:Static m:Strings.RotateString}" />
-                            <Button Padding="0" Margin="5" Grid.Row="0" Grid.Column="2" Command="{Binding MoveRightShapeCommand}" Text="{x:Static m:Strings.RightString}" />
-                            <Button Padding="0" Margin="5" Grid.Row="1" Grid.Column="1" Command="{Binding MoveDownShapeCommand}" Text="{x:Static m:Strings.DownString}" />
+                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0" Command="{Binding MoveLeftShapeCommand}" Text="{x:Static m:Strings.LeftString}" />
+                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="2" Command="{Binding RotateShapeCommand}" Text="{x:Static m:Strings.RotateString}" />
+                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="4" Command="{Binding MoveRightShapeCommand}" Text="{x:Static m:Strings.RightString}" />
+                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="1" Command="{Binding MoveDownShapeCommand}" Text="{x:Static m:Strings.DownString}" />
+                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="3" Command="{Binding SnapDownShapeCommand}" Text="{x:Static m:Strings.SnapDownString}" />
                         </Grid>
                     </Grid>
                 </Frame>

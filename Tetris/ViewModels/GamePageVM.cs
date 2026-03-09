@@ -23,6 +23,7 @@ public partial class GamePageVM : ObservableObject
     public ICommand MoveRightShapeCommand => new Command(MoveRightShape);
     public ICommand MoveLeftShapeCommand => new Command(MoveLeftShape);
     public ICommand MoveDownShapeCommand => new Command(MoveDownShape);
+    public ICommand SnapDownShapeCommand => new Command(SnapDownShape);
     public ICommand RotateShapeCommand => new Command(RotateShape);
     #endregion
 
@@ -175,6 +176,14 @@ public partial class GamePageVM : ObservableObject
     private void MoveDownShape()
     {
         CurrentGame.MoveDownShape();
+    }
+
+    /// <summary>
+    /// Moves the active shape steps down, as much as it can.
+    /// </summary>
+    private void SnapDownShape()
+    {
+        CurrentGame.SnapDownShape();
     }
 
     /// <summary>

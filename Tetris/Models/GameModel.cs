@@ -76,11 +76,8 @@ namespace Tetris.Models
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
         public abstract void MoveDownShape();
+        public abstract void SnapDownShape();
         public abstract void RotateShape();
-        public abstract void MoveRightOpShape();
-        public abstract void MoveLeftOpShape();
-        public abstract void MoveDownOpShape();
-        public abstract void RotateOpShape();
         public abstract void Ready();
         public abstract void NavToWR();
         public abstract void CreateCode();
@@ -96,6 +93,11 @@ namespace Tetris.Models
         protected abstract void ApplyOpMove(object? sender, EventArgs e);
         protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
         protected abstract void OnCompleteChange(ObservableCollection<User> users);
+        protected abstract void MoveRightOpShape();
+        protected abstract void MoveLeftOpShape();
+        protected abstract void MoveDownOpShape();
+        protected abstract void SnapDownOpShape();
+        protected abstract void RotateOpShape();
         #endregion
     }
 }

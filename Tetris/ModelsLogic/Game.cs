@@ -184,7 +184,6 @@ namespace Tetris.ModelsLogic
         public override void MoveRightShape() 
         {
             if (GameBoard == null) return;
-            
             GameBoard.MoveRightShape();
         }
 
@@ -194,7 +193,6 @@ namespace Tetris.ModelsLogic
         public override void MoveLeftShape() 
         {
             if (GameBoard == null) return;
-
             GameBoard.MoveLeftShape();
         }
 
@@ -208,49 +206,21 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
+        /// Moves the player's current shape low as possible.
+        /// </summary>
+        public override async void SnapDownShape() 
+        {
+            if (GameBoard == null) return;
+            await GameBoard.SnapDownShape();
+        }
+
+        /// <summary>
         /// Rotates the player's current shape, applying wall kicks if necessary.
         /// </summary>
         public override void RotateShape() 
         {
             if (GameBoard == null) return;
-
             GameBoard.RotateShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape to the right, if possible.
-        /// </summary>
-        public override void MoveRightOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.MoveRightShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape to the left, if possible.
-        /// </summary>
-        public override void MoveLeftOpShape()
-        {
-            if (OpGameBoard == null) return; 
-            OpGameBoard.MoveLeftShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape down, if possible.
-        /// </summary>
-        public override async void MoveDownOpShape() 
-        {
-            if (OpGameBoard == null) return;
-            await OpGameBoard.MoveDownShape();
-        }
-
-        /// <summary>
-        /// Rotates the opponent's shape, applying wall kicks if necessary.
-        /// </summary>
-        public override void RotateOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.RotateShape();
         }
 
         /// <summary>
@@ -495,10 +465,58 @@ namespace Tetris.ModelsLogic
                     case Keys.RotateKey:
                         RotateOpShape();
                         break;
+                    case Keys.SnapDownKey:
+                        SnapDownOpShape();
+                        break;
                 }
             }
             else
                 OpFallTimer.Stop();
+        }
+
+        /// <summary>
+        /// Moves the opponent's shape to the right, if possible.
+        /// </summary>
+        protected override void MoveRightOpShape()
+        {
+            if (OpGameBoard == null) return;
+            OpGameBoard.MoveRightShape();
+        }
+
+        /// <summary>
+        /// Moves the opponent's shape to the left, if possible.
+        /// </summary>
+        protected override void MoveLeftOpShape()
+        {
+            if (OpGameBoard == null) return;
+            OpGameBoard.MoveLeftShape();
+        }
+
+        /// <summary>
+        /// Moves the opponent's shape down, if possible.
+        /// </summary>
+        protected override async void MoveDownOpShape()
+        {
+            if (OpGameBoard == null) return;
+            await OpGameBoard.MoveDownShape();
+        }
+
+        /// <summary>
+        /// Moves the opponent's shape down, if possible.
+        /// </summary>
+        protected override async void SnapDownOpShape()
+        {
+            if (OpGameBoard == null) return;
+            await OpGameBoard.SnapDownShape();
+        }
+
+        /// <summary>
+        /// Rotates the opponent's shape, applying wall kicks if necessary.
+        /// </summary>
+        protected override void RotateOpShape()
+        {
+            if (OpGameBoard == null) return;
+            OpGameBoard.RotateShape();
         }
         #endregion
     }

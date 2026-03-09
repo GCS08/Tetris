@@ -146,6 +146,7 @@
         public const string RightString = "Right";
         public const string RotateString = "Rotate";
         public const string DownString = "Down";
+        public const string SnapDownString = "SDOWN";
         #endregion
     }
 }

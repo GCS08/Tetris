@@ -166,51 +166,13 @@ namespace Tetris.ModelsLogic
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
         public override async Task MoveDownShape() 
         {
-            if (CurrentShape == null || Board == null || (!IsOp && User == null) || GameID == null || MovesQueue == null) return;
-
-            bool canMoveDown = true;
-
-            int shapeHeight = CurrentShape.Cells.GetLength(0);
-            int shapeWidth = CurrentShape.Cells.GetLength(1);
-
-            bool[] IsCubesUnderShapeFilled = new bool[shapeWidth];
-
-            // Check collision only if we're not already literally at the last row
-            for (int col = 0; col < shapeWidth && canMoveDown; col++)
-            {
-                bool found = false;
-                for (int row = shapeHeight - 1; row >= 0 && !found; row--)
-                {
-                    // Find the lowest filled block in this column
-                    if (CurrentShape.Cells[row, col])
-                    {
-                        int boardY = CurrentShape.TopLeftY + row + 1;
-                        int boardX = CurrentShape.TopLeftX + col;
-
-                        // If stepping down goes outside board -> collision
-                        if (boardY >= ConstData.GameGridRowCount)
-                            IsCubesUnderShapeFilled[col] = true;
-                        else
-                        {
-                            // Check if the cell under it is filled
-                            IsCubesUnderShapeFilled[col] =
-                                Board[boardY, boardX].Color != Colors.Transparent;
-                        }
-
-                        found = true; // stop scanning this column
-                    }
-                }
-
-                // If this column is blocked, no point checking the rest
-                if (IsCubesUnderShapeFilled[col])
-                    canMoveDown = false;
-            }
+            if (CurrentShape == null || GameID == null || MovesQueue == null) return;
             
             if (EnableMoves)
             {
                 MovesQueue.Insert(Keys.DownKey);
                 // Move or lock
-                if (canMoveDown)
+                if (CanMoveDown())
                 {
                     EraseShape();
                     CurrentShape.TopLeftY++;
@@ -224,6 +186,30 @@ namespace Tetris.ModelsLogic
                     if (!IsOp)
                         await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to move the current shape one row down on the game board, checking for collisions
+        /// with the bottom of the board or other placed cubes. If the shape cannot move further,
+        /// it locks the shape in place and triggers end-of-round logic for the player if applicable.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
+        public override async Task SnapDownShape() 
+        {
+            if (CurrentShape == null || GameID == null || MovesQueue == null || !EnableMoves) return;
+
+            EraseShape();
+            while (CanMoveDown())
+                CurrentShape.TopLeftY++;
+
+            MovesQueue.Insert(Keys.SnapDownKey);
+            ShowShape();
+            ShapeAtBottom();
+            if (!IsOp)
+            {
+                SoundManager.PlayMoveDown();
+                await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
             }
         }
 
@@ -322,13 +308,53 @@ namespace Tetris.ModelsLogic
 
         #region Protected Methods
         /// <summary>
+        /// Determines whether the current shape can move one cell downward on the game board.
+        /// The method checks the lowest occupied cell in each column of the shape and verifies
+        /// that the position below it is within the board boundaries and not already occupied.
+        /// </summary>
+        /// <returns>
+        /// True if the shape can move down safely; otherwise, false.
+        /// </returns>
+        protected override bool CanMoveDown()
+        {
+            if (CurrentShape == null || Board == null) return false;
+            bool canMoveDown = true;
+
+            int shapeHeight = CurrentShape.Cells.GetLength(0);
+            int shapeWidth = CurrentShape.Cells.GetLength(1);
+
+            for (int col = 0; col < shapeWidth && canMoveDown; col++)
+            {
+                bool found = false;
+
+                for (int row = shapeHeight - 1; row >= 0 && !found && canMoveDown; row--)
+                {
+                    if (CurrentShape.Cells[row, col])
+                    {
+                        int boardY = CurrentShape.TopLeftY + row + 1;
+                        int boardX = CurrentShape.TopLeftX + col;
+
+                        if (boardY >= ConstData.GameGridRowCount)
+                            canMoveDown = false;
+                        else if (Board[boardY, boardX].Color != Colors.Transparent)
+                            canMoveDown = false;
+
+                        found = true;
+                    }
+                }
+            }
+
+            return canMoveDown;
+        }
+
+        /// <summary>
         /// Handles the logic when the current shape reaches the bottom of the board,
         /// including clearing completed lines, updating the score and combo count,
         /// checking for game over, and preparing the next shape from the queue.
         /// </summary>
         protected override void ShapeAtBottom()
         {
-            if (User == null || GameID == null || MovesQueue == null) return;
+            if (User == null || GameID == null || MovesQueue == null || FallTimer == null || CurrentShape == null) return;
 
             int linesCleared = CheckForLines();
             if (linesCleared > 0)
@@ -338,6 +364,8 @@ namespace Tetris.ModelsLogic
                 User.TotalLines += linesCleared;
                 Score += linesCleared * ConstData.ScorePerLine * ComboCount;
                 ComboCount++;
+                if (!IsOp)
+                    FallTimer.Interval *= ConstData.ShapeFallIntervalMult;
             }
             else
                 ComboCount = 1;
@@ -346,7 +374,7 @@ namespace Tetris.ModelsLogic
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {
-                if (ShapesQueue == null || CurrentShape == null || FallTimer == null) return;
+                if (ShapesQueue == null || CurrentShape == null) return;
 
                 ShapesQueue.Remove();
                 if (ShapesQueue.IsEmpty() && !IsOp)
@@ -358,8 +386,6 @@ namespace Tetris.ModelsLogic
                 }
                 else
                     CurrentShape = ShapesQueue.Head();
-                if (!IsOp)
-                    FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS - CurrentShape.InGameId * 0.03);
                 ShowShape();
             }
         }
