@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tetris.Interfaces
+﻿namespace Tetris.Interfaces
 {
     public interface IUser
     {
         #region Public Methods
-        public abstract Task<bool> Login();
-        public abstract Task<bool> Register();
-        public abstract void SignOut();
-        public abstract Task ResetPassword();
-        public abstract bool CanLogin();
-        public abstract bool CanRegister(string repeatPassword);
-        public abstract void Reset();
+        public Task<bool> Login();
+        public Task<bool> Register();
+        public void SignOut();
+        public Task ResetPassword();
+        public bool CanLogin();
+        public bool CanRegister(string repeatPassword);
+        public void Reset();
         #endregion
     }
 }

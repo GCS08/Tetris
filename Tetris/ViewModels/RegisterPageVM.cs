@@ -11,7 +11,7 @@ namespace Tetris.ViewModels
     /// ViewModel for the Register page.
     /// Handles user registration, random username generation, password visibility toggling, and navigation.
     /// </summary>
-    public class RegisterPageVM : ObservableObject
+    public partial class RegisterPageVM : ObservableObject
     {
         #region Fields
         private readonly User User = IPlatformApplication.Current?.
@@ -148,8 +148,7 @@ namespace Tetris.ViewModels
         /// <summary>
         /// Generates a random username asynchronously and updates the UserName property.
         /// </summary>
-        /// <param name="obj">Unused parameter for Command compatibility.</param>
-        private async void GetRandomUsername(object obj)
+        private async void GetRandomUsername()
         {
             RandomUsername randomUsername = new();
             UserName = await randomUsername.GetAsync();
