@@ -4,7 +4,7 @@
 /// Represents a cube with specified width, height, and optional color, supporting property change notifications.
 /// </summary>
 /// <param name="color">The color of the cube, or null for default.</param>
-public class CubeModel(Color? color) : 
+public class Cube(Color? color) : 
     CommunityToolkit.Mvvm.ComponentModel.ObservableObject
 {
     #region Fields

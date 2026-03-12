@@ -16,8 +16,8 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public Queue()
         {
-            first = null;
-            last = null;
+            First = null;
+            Last = null;
         }
 
         #endregion
@@ -30,7 +30,7 @@ namespace Tetris.ModelsLogic
         /// <returns><c>true</c> if the queue contains no elements; otherwise, <c>false</c>.</returns>
         public override bool IsEmpty()
         {
-            return first == null;
+            return First == null;
         }
 
         /// <summary>
@@ -39,24 +39,13 @@ namespace Tetris.ModelsLogic
         /// <param name="value">The value to insert into the queue.</param>
         public override void Insert(T value)
         {
-            Node<T> oldLast = last!;
-            last = new Node<T>(value);
+            Node<T> oldLast = Last!;
+            Last = new Node<T>() { Value = value };
 
             if (IsEmpty())
-                first = last;
+                First = Last;
             else
-                oldLast.SetNext(last);
-        }
-
-        /// <summary>
-        /// Gets the value at the tail (end) of the queue without removing it.
-        /// </summary>
-        /// <returns>
-        /// The value of the last element in the queue, or <c>default</c> if the queue is empty.
-        /// </returns>
-        public override T GetTail()
-        {
-            return last == null || IsEmpty() ? default! : last.GetValue();
+                oldLast.Next = Last;
         }
 
         /// <summary>
@@ -68,25 +57,14 @@ namespace Tetris.ModelsLogic
         public override T Remove()
         {
             T result = default!;
-            if (first != null && !IsEmpty())
+            if (First != null && !IsEmpty())
             {
-                result = first.GetValue();
-                first = first.GetNext();
+                result = First.Value;
+                First = First.Next;
                 if (IsEmpty())
-                    last = null;
+                    Last = null;
             }
             return result;
-        }
-
-        /// <summary>
-        /// Returns the value at the head (front) of the queue without removing it.
-        /// </summary>
-        /// <returns>
-        /// The value at the front of the queue, or <c>default</c> if the queue is empty.
-        /// </returns>
-        public override T Head()
-        {
-            return first == null || IsEmpty() ? default! : first.GetValue();
         }
 
         /// <summary>

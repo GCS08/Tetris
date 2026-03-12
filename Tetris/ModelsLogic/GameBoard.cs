@@ -385,7 +385,7 @@ namespace Tetris.ModelsLogic
                     CurrentShape = shape;
                 }
                 else
-                    CurrentShape = ShapesQueue.Head();
+                    CurrentShape = ShapesQueue.First.Value;
                 ShowShape();
             }
         }

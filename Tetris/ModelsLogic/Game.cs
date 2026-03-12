@@ -349,17 +349,17 @@ namespace Tetris.ModelsLogic
                     found = true;
 
             if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId ||
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.Last.Value.InGameId ||
                 OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)// Shape has changed
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.Last.Value.InGameId)// Shape has changed
             {
                 Shape newShape = fbd.CreateShape(snapshot);
                 Shape newShape2 = fbd.CreateShape(snapshot);
                 if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.GetTail().InGameId)
+                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.Last.Value.InGameId)
                     GameBoard.ShapesQueue.Insert(newShape);
                 if (OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.GetTail().InGameId)
+                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.Last.Value.InGameId)
                     OpGameBoard.ShapesQueue.Insert(newShape2);
             }
             else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (DesiredIndex - 1) + TechnicalConsts.DotSign
