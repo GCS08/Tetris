@@ -6,9 +6,22 @@
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
     x:DataType="vm:LoginPageVM"
-    IsBusy="{Binding IsBusy}"
-    Shell.NavBarIsVisible="False">
+    IsBusy="{Binding IsBusy}">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+             Command="{Binding NavBackHomeCommand}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.MainPage}" />    
+        <ToolbarItem
+             Order="Primary"
+             Text="{x:Static m:Strings.Login}" />
+        <ToolbarItem
+             Command="{Binding NavToRegisterCommand}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.Register}" />
+    </ContentPage.ToolbarItems>
+    
     <Grid>
         <!--  Background Image  -->
         <Image Aspect="AspectFill" Source="background.png" />

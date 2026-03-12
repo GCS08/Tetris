@@ -21,6 +21,7 @@ namespace Tetris.ViewModels
 
         #region ICommands
         public ICommand NavToLoginCommand { get => new Command(NavToLogin); }
+        public ICommand NavToRegisterCommand { get => new Command(NavToRegister); }
         public ICommand NavToGameLobbyCommand { get => new Command(NavToGameLobby); }
         public ICommand NavToRemindersCommand { get => new Command(NavToReminders); }
         public ICommand SignOutCommand { get => new Command(SignOut); }
@@ -114,6 +115,14 @@ namespace Tetris.ViewModels
         private void NavToLogin()
         {
             Shell.Current.Navigation.PushAsync(new LoginPage());
+        }
+
+        /// <summary>
+        /// Navigates to the Register page.
+        /// </summary>
+        private void NavToRegister()
+        {
+            Shell.Current.Navigation.PushAsync(new RegisterPage());
         }
 
         /// <summary>

@@ -6,8 +6,33 @@
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
     x:DataType="vm:MainPageVM"
-    Shell.NavBarIsVisible="False">
-
+    Shell.NavBarIsVisible="true"
+    NavigationPage.HasBackButton="False">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+             Order="Primary"
+             Text="{x:Static m:Strings.MainPage}" />
+        <ToolbarItem
+             Command="{Binding NavToLoginCommand}"
+             IsEnabled="{Binding LoginVisibility}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.Login}" />
+        <ToolbarItem
+             Command="{Binding NavToRegisterCommand}"
+             IsEnabled="{Binding LoginVisibility}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.Register}" />
+        <ToolbarItem
+             Command="{Binding NavToGameLobbyCommand}"
+             IsEnabled="{Binding PlayVisibility}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.PlayButtonText}" />
+        <ToolbarItem
+             Command="{Binding NavToRemindersCommand}"
+             IsEnabled="{Binding RemindersVisibility}"
+             Order="Secondary"
+             Text="{x:Static m:Strings.RemindersButtonText}" />
+    </ContentPage.ToolbarItems>
     <Grid>
         <!--  Background Image  -->
         <Image Aspect="AspectFill" Source="background.png" />

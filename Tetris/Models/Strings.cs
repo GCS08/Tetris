@@ -19,6 +19,7 @@
         public const string OwnAccountText = "Already have an account? ";
         public const string Register = "Register!";
         public const string Login = "Login!";
+        public const string MainPage = "Main Page";
         public const string LoginOrRegisterButton = "Login/Register? Click me!";
         public const string SignOutButton = "Sign out";
         public const string RemindersTitleText = "Set a Play Reminder!";
