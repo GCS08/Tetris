@@ -56,7 +56,6 @@
         public const string RegisterSuccess ="Thank you for creating an account!" +
             " Enjoy Tetris!\nA verification email was sent.";
         public const string LoginSuccess = "Welcome back! Enjoy our Tetris!";
-        public const string LoginWithGoogleButtonText = "Login with Google!";
         public const string ForgotPassword = "Forgot your password? ";
         public const string ClickMe = "Click me!";
         public const string ResetPWTitle = "An email has been sent:";
