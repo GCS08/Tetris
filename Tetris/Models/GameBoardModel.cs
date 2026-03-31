@@ -11,12 +11,13 @@ namespace Tetris.Models
     public abstract class GameBoardModel
     {
         #region Fields
+        public IDispatcherTimer? FallTimer;
         protected Cube[,]? Board;
         protected FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
         protected SoundManager SoundManager = IPlatformApplication.
             Current?.Services.GetService<ISoundManager>() as SoundManager ?? new();
-        public IDispatcherTimer? FallTimer;
+        protected bool isMoving = false;
         #endregion
 
         #region Events
@@ -41,7 +42,7 @@ namespace Tetris.Models
         public abstract void InitializeGrid(Grid? gameBoardGrid);
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
-        public abstract Task MoveDownShape();
+        public abstract void MoveDownShape();
         public abstract Task SnapDownShape();
         public abstract void RotateShape();
         #endregion

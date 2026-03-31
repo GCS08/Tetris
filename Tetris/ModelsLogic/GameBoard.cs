@@ -33,7 +33,7 @@ namespace Tetris.ModelsLogic
 
             FallTimer = Application.Current!.Dispatcher.CreateTimer();
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
-            FallTimer.Tick += async (s, e) => await MoveDownShape();
+            FallTimer.Tick += (s, e) => MoveDownShape();
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
@@ -164,29 +164,28 @@ namespace Tetris.ModelsLogic
         /// it locks the shape in place and triggers end-of-round logic for the player if applicable.
         /// </summary>
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
-        public override async Task MoveDownShape() 
+        public override async void MoveDownShape() 
         {
-            if (CurrentShape == null || GameID == null || MovesQueue == null) return;
-            
-            if (EnableMoves)
+            if (isMoving || !EnableMoves || CurrentShape == null || GameID == null || MovesQueue == null) return;
+
+            isMoving = true;
+            MovesQueue.Insert(Keys.DownKey);
+            // Move or lock
+            if (CanMoveDown())
             {
-                MovesQueue.Insert(Keys.DownKey);
-                // Move or lock
-                if (CanMoveDown())
-                {
-                    EraseShape();
-                    CurrentShape.TopLeftY++;
-                    ShowShape();
-                    if (!IsOp)
-                        SoundManager.PlayMoveDown();
-                }
-                else
-                {
-                    ShapeAtBottom();
-                    if (!IsOp)
-                        await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
-                }
+                EraseShape();
+                CurrentShape.TopLeftY++;
+                ShowShape();
+                if (!IsOp)
+                    SoundManager.PlayMoveDown();
             }
+            else
+            {
+                ShapeAtBottom();
+                if (!IsOp)
+                    await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
+            }
+            isMoving = false;
         }
 
         /// <summary>
@@ -197,8 +196,9 @@ namespace Tetris.ModelsLogic
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
         public override async Task SnapDownShape() 
         {
-            if (CurrentShape == null || GameID == null || MovesQueue == null || !EnableMoves) return;
-
+            if (isMoving || FallTimer == null || CurrentShape == null || GameID == null || MovesQueue == null || !EnableMoves) return;
+            
+            isMoving = true;
             EraseShape();
             while (CanMoveDown())
                 CurrentShape.TopLeftY++;
@@ -209,8 +209,10 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 SoundManager.PlayMoveDown();
+                FallTimer.Start();
                 await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
             }
+            isMoving = false;
         }
 
         /// <summary>
@@ -384,7 +386,7 @@ namespace Tetris.ModelsLogic
                     ShapesQueue.Insert(shape);
                     CurrentShape = shape;
                 }
-                else
+                else if (ShapesQueue.First != null)
                     CurrentShape = ShapesQueue.First.Value;
                 ShowShape();
             }
@@ -480,10 +482,10 @@ namespace Tetris.ModelsLogic
         /// </summary>
         /// <param name="sender">The source of the event (typically the timer).</param>
         /// <param name="e">The event arguments associated with the timer tick.</param>
-        protected override async void MoveDownShape(object? sender, ElapsedEventArgs e) 
+        protected override void MoveDownShape(object? sender, ElapsedEventArgs e) 
         {
             if (GameID == null) return;
-            await MoveDownShape();
+            MoveDownShape();
         }
 
         /// <summary>

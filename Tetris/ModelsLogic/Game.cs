@@ -199,10 +199,10 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Moves the player's current shape down, if possible.
         /// </summary>
-        public override async void MoveDownShape() 
+        public override void MoveDownShape() 
         {
             if (GameBoard == null) return;
-            await GameBoard.MoveDownShape();
+            GameBoard.MoveDownShape();
         }
 
         /// <summary>
@@ -339,8 +339,10 @@ namespace Tetris.ModelsLogic
         /// </param>
         protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
-            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null
-                || OpGameBoard == null || OpGameBoard.ShapesQueue == null || OpFallTimer == null) return;
+            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null 
+                || GameBoard.ShapesQueue.Last == null || OpGameBoard == null || 
+                OpGameBoard.ShapesQueue == null || OpGameBoard.ShapesQueue.Last == null
+                || OpFallTimer == null) return;
 
             bool found = false;
             for (DesiredIndex = 0; DesiredIndex < MaxPlayersCount && !found; DesiredIndex++)
@@ -495,10 +497,10 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Moves the opponent's shape down, if possible.
         /// </summary>
-        protected override async void MoveDownOpShape()
+        protected override void MoveDownOpShape()
         {
             if (OpGameBoard == null) return;
-            await OpGameBoard.MoveDownShape();
+            OpGameBoard.MoveDownShape();
         }
 
         /// <summary>

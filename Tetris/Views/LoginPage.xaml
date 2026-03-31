@@ -8,6 +8,10 @@
     x:DataType="vm:LoginPageVM"
     IsBusy="{Binding IsBusy}">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem
              Command="{Binding NavBackHomeCommand}"
@@ -62,7 +66,7 @@
                         FlowDirection="LeftToRight"
                         FontSize="20"
                         Placeholder="{x:Static m:Strings.Email}"
-                        ReturnType="Go"
+                        ReturnType="Next"
                         Text="{Binding Email}"
                         TextColor="White" />
                 </Border>

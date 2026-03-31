@@ -5,9 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:m="clr-namespace:Tetris.Models"
     xmlns:vm="clr-namespace:Tetris.ViewModels"
-    x:DataType="vm:MainPageVM"
-    Shell.NavBarIsVisible="true"
-    NavigationPage.HasBackButton="False">
+    x:DataType="vm:MainPageVM">
+    
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
+    
     <ContentPage.ToolbarItems>
         <ToolbarItem
              Order="Primary"

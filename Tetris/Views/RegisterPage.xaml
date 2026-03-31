@@ -8,6 +8,10 @@
     x:DataType="vm:RegisterPageVM"
     IsBusy="{Binding IsBusy}">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem
              Command="{Binding NavBackHomeCommand}"
@@ -65,7 +69,7 @@
                             FlowDirection="LeftToRight"
                             FontSize="20"
                             Placeholder="{x:Static m:Strings.UserName}"
-                            ReturnType="Go"
+                            ReturnType="Next"
                             Text="{Binding UserName}"
                             TextColor="White" />
                         <Button
@@ -92,7 +96,7 @@
                         FlowDirection="LeftToRight"
                         FontSize="20"
                         Placeholder="{x:Static m:Strings.Email}"
-                        ReturnType="Go"
+                        ReturnType="Next"
                         Text="{Binding Email}"
                         TextColor="White" />
                 </Border>
@@ -109,7 +113,7 @@
                             FontSize="20"
                             IsPassword="{Binding IsPassword1}"
                             Placeholder="{x:Static m:Strings.Password}"
-                            ReturnType="Done"
+                            ReturnType="Next"
                             Text="{Binding Password}"
                             TextColor="White" />
                         <Button
