@@ -52,6 +52,7 @@ namespace Tetris.ModelsLogic
             if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
             EnableMoves = true;
+            CurrentShape = ShapesQueue?.Remove();
         }
 
         /// <summary>
@@ -306,6 +307,21 @@ namespace Tetris.ModelsLogic
                 gameBoardGrid.VerticalOptions = LayoutOptions.Center;
             };
         }
+
+        /// <summary>
+        /// Renders the current shape onto the game board by updating the colors of the corresponding cubes
+        /// based on the shape's position and filled cells.
+        /// </summary>
+        public override void ShowShape()
+        {
+            if (CurrentShape == null || Board == null) return;
+            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
+                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
+                    if (CurrentShape.Cells[i, j])
+                        Board[i + CurrentShape.TopLeftY, j +
+                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
+        }
+
         #endregion
 
         #region Protected Methods
@@ -367,7 +383,12 @@ namespace Tetris.ModelsLogic
                 Score += linesCleared * ConstData.ScorePerLine * ComboCount;
                 ComboCount++;
                 if (!IsOp)
-                    FallTimer.Interval *= ConstData.ShapeFallIntervalMult;
+                    FallTimer.Interval = TimeSpan.FromSeconds(
+                        Math.Max(
+                            ConstData.MinFallIntervalS,
+                            FallTimer.Interval.TotalSeconds * ConstData.ShapeFallIntervalMult
+                        )
+                    );
             }
             else
                 ComboCount = 1;
@@ -378,17 +399,8 @@ namespace Tetris.ModelsLogic
             {
                 if (ShapesQueue == null || CurrentShape == null) return;
 
-                ShapesQueue.Remove();
                 if (ShapesQueue.IsEmpty() && !IsOp)
-                {
-                    Shape shape = new(CurrentShape.InGameId + 1);
-                    fbd.AddShape(shape, GameID);
-                    ShapesQueue.Insert(shape);
-                    CurrentShape = shape;
-                }
-                else if (ShapesQueue.First != null)
-                    CurrentShape = ShapesQueue.First.Value;
-                ShowShape();
+                    fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
             }
         }
 
@@ -448,21 +460,6 @@ namespace Tetris.ModelsLogic
 
             return linesCleared;
         }
-
-        /// <summary>
-        /// Renders the current shape onto the game board by updating the colors of the corresponding cubes
-        /// based on the shape's position and filled cells.
-        /// </summary>
-        protected override void ShowShape()
-        {
-            if (CurrentShape == null || Board == null) return;
-            for (int i = 0; i < CurrentShape.Cells.GetLength(0); i++)
-                for (int j = 0; j < CurrentShape.Cells.GetLength(1); j++)
-                    if (CurrentShape.Cells[i, j])
-                        Board[i + CurrentShape.TopLeftY, j +
-                            CurrentShape.TopLeftX].Color = CurrentShape.Color;
-        }
-
         /// <summary>
         /// Removes the current shape from the game board by setting the colors of its occupied cubes to transparent.
         /// </summary>

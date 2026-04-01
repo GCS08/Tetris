@@ -339,10 +339,7 @@ namespace Tetris.ModelsLogic
         /// </param>
         protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
-            if (snapshot == null || GameBoard == null || GameBoard.ShapesQueue == null 
-                || GameBoard.ShapesQueue.Last == null || OpGameBoard == null || 
-                OpGameBoard.ShapesQueue == null || OpGameBoard.ShapesQueue.Last == null
-                || OpFallTimer == null) return;
+            if (snapshot == null) return;
 
             bool found = false;
             for (DesiredIndex = 0; DesiredIndex < MaxPlayersCount && !found; DesiredIndex++)
@@ -350,21 +347,28 @@ namespace Tetris.ModelsLogic
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                     found = true;
 
-            if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign 
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.Last.Value.InGameId ||
-                OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.Last.Value.InGameId)// Shape has changed
+            if (!found)
             {
+                if (GameBoard == null || GameBoard.ShapesQueue == null
+                    || GameBoard.ShapesQueue.Last == null || OpGameBoard == null ||
+                    OpGameBoard.ShapesQueue == null) return;
+
                 Shape newShape = fbd.CreateShape(snapshot);
                 Shape newShape2 = fbd.CreateShape(snapshot);
-                if (GameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != GameBoard.ShapesQueue.Last.Value.InGameId)
-                    GameBoard.ShapesQueue.Insert(newShape);
-                if (OpGameBoard.ShapesQueue.IsEmpty() || snapshot.Get<int>(Keys.CurrentShapeMapKey + TechnicalConsts.DotSign
-                + Keys.CurrentShapeInGameIdKey) != OpGameBoard.ShapesQueue.Last.Value.InGameId)
-                    OpGameBoard.ShapesQueue.Insert(newShape2);
+                GameBoard.ShapesQueue.Insert(newShape);
+                OpGameBoard.ShapesQueue.Insert(newShape2);
+                if (GameBoard.ShapesQueue.First!.Value == newShape)
+                {
+                    GameBoard.CurrentShape = newShape;
+                    GameBoard.ShowShape();
+                }
+                if (OpGameBoard.ShapesQueue.First!.Value == newShape)
+                {   
+                    OpGameBoard.CurrentShape = newShape;
+                    OpGameBoard.ShowShape();
+                }
             }
-            else if (found && snapshot.Get<string>(Keys.PlayerDetailsKey + (DesiredIndex - 1) + TechnicalConsts.DotSign
+            else if (snapshot.Get<string>(Keys.PlayerDetailsKey + (DesiredIndex - 1) + TechnicalConsts.DotSign
                     + Keys.PlayerIdKey) != User.UserID)// Op player has moved
             {
                 DesiredIndex--;
@@ -384,7 +388,7 @@ namespace Tetris.ModelsLogic
                 
                 IsMovesQueueSorting = false;
 
-                if (!OpFallTimer.IsRunning)
+                if (OpFallTimer != null && !OpFallTimer.IsRunning)
                     OpFallTimer.Start();
             }
         }

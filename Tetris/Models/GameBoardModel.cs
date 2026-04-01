@@ -45,13 +45,13 @@ namespace Tetris.Models
         public abstract void MoveDownShape();
         public abstract Task SnapDownShape();
         public abstract void RotateShape();
+        public abstract void ShowShape();
         #endregion
 
         #region Protected Methods
         protected abstract bool CanMoveDown();
         protected abstract void ShapeAtBottom();
         protected abstract bool CheckForLose();
-        protected abstract void ShowShape();
         protected abstract int CheckForLines();
         protected abstract void MoveDownShape(object? sender, ElapsedEventArgs e);
         protected abstract bool TryPlaceRotation(bool[,] cells, int x, int y, out int newX, out int newY);
