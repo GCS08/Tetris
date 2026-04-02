@@ -369,11 +369,11 @@ namespace Tetris.ModelsLogic
                         TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
                         doc.Get<string>(Keys.CurrentShapeMapKey + 
                         TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
+                    new Shape(doc.Get<int>(Keys.NextShapeMapKey +
                     TechnicalConsts.DotSign + Keys.ShapeIdKey),
-                        doc.Get<int>(Keys.CurrentShapeMapKey + 
+                        doc.Get<int>(Keys.NextShapeMapKey + 
                         TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
-                        doc.Get<string>(Keys.CurrentShapeMapKey + 
+                        doc.Get<string>(Keys.NextShapeMapKey + 
                         TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
                     doc.Id
                 );

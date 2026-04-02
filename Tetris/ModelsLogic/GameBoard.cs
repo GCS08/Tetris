@@ -177,8 +177,8 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftY++;
                 ShowShape();
-                if (!IsOp)
-                    SoundManager.PlayMoveDown();
+                //if (!IsOp)
+                //    SoundManager.PlayMoveDown();
             }
             else
             {
@@ -399,6 +399,7 @@ namespace Tetris.ModelsLogic
                 if (ShapesQueue == null || CurrentShape == null) return;
 
                 CurrentShape = ShapesQueue.Remove();
+                ShowShape();
                 if (ShapesQueue.IsEmpty() && !IsOp)
                     fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
             }

@@ -62,7 +62,7 @@
         public static class DebugData
         {
             #region Fields
-            public const bool StartFallTimer = true;
+            public const bool StartFallTimer = false;
             #endregion
         }
 
