@@ -177,8 +177,8 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftY++;
                 ShowShape();
-                //if (!IsOp)
-                //    SoundManager.PlayMoveDown();
+                if (!IsOp)
+                    SoundManager.PlayMoveDown();
             }
             else
             {
