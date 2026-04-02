@@ -67,6 +67,32 @@
                 Grid.Row="1"
                 Padding="20"
                 BackgroundColor="Beige"
+                IsVisible="{Binding IsNoInternetVisible}"
+                VerticalOptions="Center"
+                ZIndex="10">
+                <VerticalStackLayout>
+                    <Label
+                        FontSize="30"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        VerticalOptions="Center"
+                        Text="{x:Static m:Strings.NoInternetTitle}"
+                        TextColor="Red" />
+                    <Label
+                        FontSize="20"
+                        Margin="10"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        VerticalOptions="Center"
+                        Text="{x:Static m:Strings.NoInternetText}"
+                        TextColor="Red" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid
+                Grid.Row="1"
+                Padding="20"
+                BackgroundColor="Beige"
                 IsVisible="{Binding IsTimerVisible}"
                 RowSpacing="20"
                 ZIndex="10">

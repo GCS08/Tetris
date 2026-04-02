@@ -149,6 +149,9 @@
         public const string SnapDownString = "SDOWN";
         public const string NoGamesAvailable = "There aren't any available games." +
             "\nYou are more than welcomed to create one yourself!";
+        public const string NoInternetTitle = "No internet:";
+        public const string NoInternetText = "You have low internet connection." +
+            "\nPlease stable your internet.";
         #endregion
     }
 }

@@ -15,6 +15,7 @@ public partial class GamePageVM : ObservableObject
 {
     #region Fields
     public User User = IPlatformApplication.Current?.Services.GetService<IUser>() as User ?? new();
+    private readonly ModelsLogic.Connectivity connectivity = new();
     #endregion
 
     #region ICommands
@@ -31,6 +32,7 @@ public partial class GamePageVM : ObservableObject
     public bool IsReadyVisible { get; set; } = true;
     public bool IsTimerVisible { get; set; } = false;
     public bool IsGameFinishedVisible { get; set; } = false;
+    public bool IsNoInternetVisible => !connectivity.IsConnected;
 
     public Color GameFinishedResultColor { get; set; } = Colors.Black;
     public string GameFinishedResultText { get; set; } = Strings.LoadingResult;
@@ -57,6 +59,7 @@ public partial class GamePageVM : ObservableObject
         game.OnAllReady += OnAllReadyHandler;
         game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
         game.OnGameFinishedUI += OnGameFinishedUIHandler;
+        connectivity.ConnectivityChanged += OnConnectivityChanged;
     }
     #endregion
 
@@ -192,6 +195,18 @@ public partial class GamePageVM : ObservableObject
     private void RotateShape()
     {
         CurrentGame.RotateShape();
+    }
+
+    /// <summary>
+    /// Handles connectivity state changes from the <see cref="Connectivity"/> model.
+    /// Updates UI bindings and triggers game logic when the internet connection is lost.
+    /// </summary>
+    /// <param name="sender">The source of the connectivity change event.</param>
+    /// <param name="e">Event arguments.</param>
+    private void OnConnectivityChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(IsNoInternetVisible));
+        CurrentGame.UpdateInternet(connectivity.IsConnected);
     }
     #endregion
 }

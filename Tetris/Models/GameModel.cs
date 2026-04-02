@@ -81,6 +81,7 @@ namespace Tetris.Models
         public abstract void Ready();
         public abstract void NavToWR();
         public abstract void CreateCode();
+        public abstract void UpdateInternet(bool isConnected);
         public abstract Task<Game> GetGameByCode(int code);
         #endregion
        

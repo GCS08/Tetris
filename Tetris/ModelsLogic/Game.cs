@@ -249,6 +249,27 @@ namespace Tetris.ModelsLogic
             PrivateJoinCode = code;
             OnCodeReady?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Updates the game behavior based on internet connectivity status.
+        /// Stops all active timers when the connection is lost, and resumes them when restored.
+        /// </summary>
+        /// <param name="isConnected">
+        /// Indicates whether the device currently has an active internet connection.
+        /// </param>
+        public override void UpdateInternet(bool isConnected)
+        {
+            if (!isConnected)
+            {
+                OpFallTimer?.Stop();
+                GameBoard?.FallTimer?.Stop();
+            }
+            else
+            {
+                OpFallTimer?.Start();
+                GameBoard?.FallTimer?.Start();
+            }
+        }
         #endregion
 
         #region Protected Methods

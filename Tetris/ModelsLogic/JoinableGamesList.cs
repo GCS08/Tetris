@@ -125,9 +125,7 @@ namespace Tetris.ModelsLogic
 
             gamesObsCollection.Clear();
             foreach (Game game in newList)
-            {
                 gamesObsCollection.Add(game);
-            }
 
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }
