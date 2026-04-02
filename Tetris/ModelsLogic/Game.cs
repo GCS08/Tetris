@@ -352,6 +352,14 @@ namespace Tetris.ModelsLogic
             }
         }
 
+        /// <summary>
+        /// Processes a shape change received from Firestore.
+        /// Creates a new shape from the snapshot and inserts it into both the player's
+        /// and opponent's shape queues to keep them synchronized.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot containing the current shape data.
+        /// </param>
         protected override void ProcessShapeChange(IDocumentSnapshot snapshot)
         {
             if (GameBoard == null || GameBoard.ShapesQueue == null ||
@@ -364,6 +372,14 @@ namespace Tetris.ModelsLogic
             OpGameBoard.ShapesQueue.Insert(newShape2);
         }
 
+        /// <summary>
+        /// Processes a move change received from Firestore.
+        /// Identifies which player performed the move, extracts their move history,
+        /// sorts it by timestamp, and applies it to the opponent's board.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot containing player move data.
+        /// </param>
         protected override async void ProcessMoveChange(IDocumentSnapshot snapshot)
         {
             bool found = false;

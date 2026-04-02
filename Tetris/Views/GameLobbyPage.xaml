@@ -54,6 +54,18 @@
                         Text="{x:Static m:Strings.JoinGameButtonText}" />
                 </Grid>
                 <CollectionView Margin="20" ItemsSource="{Binding Games}">
+                    <CollectionView.EmptyView>
+                        <Grid>
+                            <Label
+                                Text="{x:Static m:Strings.NoGamesAvailable}"
+                                TextColor="White"
+                                Margin="20"
+                                HorizontalTextAlignment="Center"
+                                VerticalTextAlignment="Center"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"/>
+                        </Grid>
+                    </CollectionView.EmptyView>
                     <CollectionView.Header>
                         <Label
                             FontAttributes="Bold"

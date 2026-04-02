@@ -13,7 +13,7 @@
         public const string GamesPlayedKey = "gamesPlayed";
         public const string HighestScoreKey = "highestScore";
         public const string DateJoinedKey = "dateJoined";
-        public const string ChangeKey = "_Change";
+        public const string ChangeKey = "Changed";
         public const string ResetKey = "reset";
         public const string FbApiKey = "AIzaSyA7bPSAvpotJs-gSNvMTmwitXrjD-yed_I";
         public const string FbAppDomainKey = "com.meitar.tetris";

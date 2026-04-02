@@ -147,6 +147,8 @@
         public const string RotateString = "Rotate";
         public const string DownString = "Down";
         public const string SnapDownString = "SDOWN";
+        public const string NoGamesAvailable = "There aren't any available games." +
+            "\nYou are more than welcomed to create one yourself!";
         #endregion
     }
 }
