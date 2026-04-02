@@ -126,7 +126,6 @@ namespace Tetris.ModelsLogic
             {
                 bool found = false;
                 for (int col = 0; col < shapeWidth && !found; col++)
-                {
                     // Find the leftmost filled block in this row
                     if (CurrentShape.Cells[row, col])
                     {
@@ -135,19 +134,13 @@ namespace Tetris.ModelsLogic
 
                         // Outside board
                         if (boardX < 0)
-                        {
                             canMoveLeft = false;
-                        }
                         else
-                        {
                             // Check board collision
                             if (Board[boardY, boardX].Color != Colors.Transparent)
                                 canMoveLeft = false;
-                        }
-
                         found = true;
                     }
-                }
             }
 
             if (canMoveLeft)
