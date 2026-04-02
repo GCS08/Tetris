@@ -31,7 +31,7 @@ namespace Tetris.Models
         #endregion
 
         #region Public Methods
-        public abstract Shape Duplicate(Shape shape);
+        public abstract Shape Duplicate();
         #endregion
     }
 }

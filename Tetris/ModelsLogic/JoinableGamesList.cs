@@ -85,6 +85,10 @@ namespace Tetris.ModelsLogic
                 currentNewGame.GameBoard.CurrentShape.InGameId,
                 Converters.StringAndColorConverter.ColorToColorName
                     (currentNewGame.GameBoard.CurrentShape.Color),
+                currentNewGame.GameBoard.ShapesQueue!.First!.Value.Id,
+                currentNewGame.GameBoard.ShapesQueue.First.Value.InGameId,
+                Converters.StringAndColorConverter.ColorToColorName
+                    (currentNewGame.GameBoard.ShapesQueue.First.Value.Color!),
                 currentNewGame.IsPublicGame);
         }
 

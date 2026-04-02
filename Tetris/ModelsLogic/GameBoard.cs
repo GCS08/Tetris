@@ -24,11 +24,11 @@ namespace Tetris.ModelsLogic
         /// <param name="gameId">The unique identifier of the game.</param>
         /// <param name="currentShape">The shape that will start on the board.</param>
         /// <param name="IsOp">Indicates whether the board is in opponent mode, affecting grid sizing and behavior.</param>
-        public GameBoard(string gameId, Shape currentShape, bool IsOp)
+        public GameBoard(string gameId, Shape currentShape, Shape nextShape, bool IsOp)
         {
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
-            this.CurrentShape = currentShape;
             this.IsOp = IsOp;
+            this.CurrentShape = currentShape;
             this.GameID = gameId;
 
             FallTimer = Application.Current!.Dispatcher.CreateTimer();
@@ -38,6 +38,7 @@ namespace Tetris.ModelsLogic
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                     Board[r, c] = new Cube(Colors.Transparent);
+            ShapesQueue?.Insert(nextShape);
         }
         #endregion
 
@@ -52,7 +53,6 @@ namespace Tetris.ModelsLogic
             if (ConstData.DebugData.StartFallTimer && FallTimer != null)
                 FallTimer.Start();
             EnableMoves = true;
-            CurrentShape = ShapesQueue?.Remove();
         }
 
         /// <summary>
@@ -210,7 +210,6 @@ namespace Tetris.ModelsLogic
             if (!IsOp)
             {
                 SoundManager.PlayMoveDown();
-                FallTimer.Start();
                 await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
             }
             isMoving = false;
@@ -399,6 +398,7 @@ namespace Tetris.ModelsLogic
             {
                 if (ShapesQueue == null || CurrentShape == null) return;
 
+                CurrentShape = ShapesQueue.Remove();
                 if (ShapesQueue.IsEmpty() && !IsOp)
                     fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
             }

@@ -252,14 +252,18 @@ namespace Tetris.ModelsLogic
         /// <param name="currentPlayersCount">The current number of players in the game.</param>
         /// <param name="maxPlayersCount">The maximum number of players allowed in the game.</param>
         /// <param name="isFull">Indicates whether the game is full.</param>
-        /// <param name="currentShapeId">The ID of the current shape.</param>
-        /// <param name="currentShapeInGameId">The in-game ID of the current shape.</param>
-        /// <param name="currentShapeColor">The color of the current shape.</param>
+        /// <param name="firstShapeId">The ID of the current shape.</param>
+        /// <param name="firstShapeInGameId">The in-game ID of the current shape.</param>
+        /// <param name="firstShapeColor">The color of the current shape.</param>
+        /// <param name="secondShapeId">The ID of the next shape.</param>
+        /// <param name="secondShapeInGameId">The in-game ID of the next shape.</param>
+        /// <param name="secondShapeColor">The color of the next shape.</param>
         /// <param name="isPublicGame">Indicates whether the game is public.</param>
         /// <returns>The auto-generated document ID of the newly created game entry.</returns>
         public override string AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isFull, int currentShapeId,
-            int currentShapeInGameId, string currentShapeColor, bool isPublicGame)
+            int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
+            int firstShapeInGameId, string firstShapeColor, int secondShapeId,
+            int secondShapeInGameId, string secondShapeColor, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -272,7 +276,8 @@ namespace Tetris.ModelsLogic
                 MaxPlayersCount = maxPlayersCount,
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
-                TimeCreated = DateTime.UtcNow
+                TimeCreated = DateTime.UtcNow,
+                _Change = string.Empty
             });
 
             docRef.UpdateAsync(new Dictionary<string, object>
@@ -280,9 +285,17 @@ namespace Tetris.ModelsLogic
                 {
                     Keys.CurrentShapeMapKey, new Dictionary<string, object>
                     {
-                        { Keys.CurrentShapeIdKey, currentShapeId },
-                        { Keys.CurrentShapeInGameIdKey, currentShapeInGameId },
-                        { Keys.CurrentShapeColorKey, currentShapeColor }
+                        { Keys.ShapeIdKey, firstShapeId },
+                        { Keys.ShapeInGameIdKey, firstShapeInGameId },
+                        { Keys.ShapeColorKey, firstShapeColor }
+                    }
+                },
+                {
+                    Keys.NextShapeMapKey, new Dictionary<string, object>
+                    {
+                        { Keys.ShapeIdKey, secondShapeId },
+                        { Keys.ShapeInGameIdKey, secondShapeInGameId },
+                        { Keys.ShapeColorKey, secondShapeColor }
                     }
                 }
             });
@@ -351,11 +364,17 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
                     new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
-                    TechnicalConsts.DotSign + Keys.CurrentShapeIdKey),
+                    TechnicalConsts.DotSign + Keys.ShapeIdKey),
                         doc.Get<int>(Keys.CurrentShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey),
+                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
                         doc.Get<string>(Keys.CurrentShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!),
+                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
+                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
+                    TechnicalConsts.DotSign + Keys.ShapeIdKey),
+                        doc.Get<int>(Keys.CurrentShapeMapKey + 
+                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
+                        doc.Get<string>(Keys.CurrentShapeMapKey + 
+                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
                     doc.Id
                 );
                 newList.Add(game);
@@ -478,12 +497,17 @@ namespace Tetris.ModelsLogic
         {
             if (currentShape.Color == null) return;
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameId);
-            docRef.UpdateAsync(Keys.CurrentShapeMapKey, new Dictionary<string, object>
+            docRef.UpdateAsync(new Dictionary<object, object>
             {
-                { Keys.CurrentShapeIdKey, currentShape.Id },
-                { Keys.CurrentShapeInGameIdKey, currentShape.InGameId },
-                { Keys.CurrentShapeColorKey, Converters.
-                StringAndColorConverter.ColorToColorName(currentShape.Color) }
+                { Keys.CurrentShapeMapKey, new Dictionary<string, object>
+                    {
+                        { Keys.ShapeIdKey, currentShape.Id },
+                        { Keys.ShapeInGameIdKey, currentShape.InGameId },
+                        { Keys.ShapeColorKey, Converters.
+                        StringAndColorConverter.ColorToColorName(currentShape.Color) }
+                    }
+                },
+                { Keys.ChangeKey, Keys.CurrentShapeMapKey }
             });
         }
  
@@ -496,11 +520,11 @@ namespace Tetris.ModelsLogic
         {
             return new Shape(
                 snapshot.Get<int>(Keys.CurrentShapeMapKey +
-                TechnicalConsts.DotSign + Keys.CurrentShapeIdKey)!,
+                TechnicalConsts.DotSign + Keys.ShapeIdKey)!,
                 snapshot.Get<int>(Keys.CurrentShapeMapKey + 
-                TechnicalConsts.DotSign + Keys.CurrentShapeInGameIdKey)!,
+                TechnicalConsts.DotSign + Keys.ShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey +
-                TechnicalConsts.DotSign + Keys.CurrentShapeColorKey)!);
+                TechnicalConsts.DotSign + Keys.ShapeColorKey)!);
         }
   
         /// <summary>
@@ -516,8 +540,7 @@ namespace Tetris.ModelsLogic
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
-            int desiredIndex;
-            int maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
+            int desiredIndex, maxPlayers = currentSnapshot.Get<int>(Keys.MaxPlayersCountKey);
             List<string> ids = [];
             bool found = false;
 
@@ -542,10 +565,15 @@ namespace Tetris.ModelsLogic
 
             Dictionary<string, object> updates = new()
             {
-                { Keys.PlayerDetailsKey + desiredIndex + 
-                TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves },
-                { Keys.PlayerDetailsKey + desiredIndex + 
-                TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, true }
+                { Keys.ChangeKey, Keys.PlayerMovesKey },
+                {
+                    Keys.PlayerDetailsKey + desiredIndex + 
+                    TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves
+                },
+                {
+                    Keys.PlayerDetailsKey + desiredIndex + 
+                    TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, true
+                }
             };
 
             _ = fs.Collection(Keys.GamesCollectionName).
@@ -600,8 +628,12 @@ namespace Tetris.ModelsLogic
         public override void ResetIsShapeAtBottom(string gameID, int desiredIndex)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            dr.UpdateAsync(Keys.PlayerDetailsKey + desiredIndex
-                + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false);
+            dr.UpdateAsync(new Dictionary<string, object>
+            {
+                {Keys.PlayerDetailsKey + desiredIndex
+                + TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey, false },
+                {Keys.ChangeKey, Keys.ResetKey }
+            });
         }
 
         /// <summary>
@@ -717,17 +749,32 @@ namespace Tetris.ModelsLogic
                         docSnap.Get<int>(
                             Keys.CurrentShapeMapKey +
                             TechnicalConsts.DotSign +
-                            Keys.CurrentShapeIdKey),
+                            Keys.ShapeIdKey),
 
                         docSnap.Get<int>(
                             Keys.CurrentShapeMapKey +
                             TechnicalConsts.DotSign +
-                            Keys.CurrentShapeInGameIdKey),
+                            Keys.ShapeInGameIdKey),
 
                         docSnap.Get<string>(
                             Keys.CurrentShapeMapKey +
                             TechnicalConsts.DotSign +
-                            Keys.CurrentShapeColorKey)!),
+                            Keys.ShapeColorKey)!),
+                    new Shape(
+                        docSnap.Get<int>(
+                            Keys.NextShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.ShapeIdKey),
+
+                        docSnap.Get<int>(
+                            Keys.NextShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.ShapeInGameIdKey),
+
+                        docSnap.Get<string>(
+                            Keys.NextShapeMapKey +
+                            TechnicalConsts.DotSign +
+                            Keys.ShapeColorKey)!),
                     docSnap.Id
                 );
             }

@@ -90,6 +90,8 @@ namespace Tetris.Models
         protected abstract void OnMessageReceived(long timeLeft);
         protected abstract void OnChangeReady(IDocumentSnapshot snapshot, Exception error);
         protected abstract void OnChangeGame(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void ProcessShapeChange(IDocumentSnapshot snapshot);
+        protected abstract void ProcessMoveChange(IDocumentSnapshot snapshot);
         protected abstract void ApplyOpMove(object? sender, EventArgs e);
         protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
         protected abstract void OnCompleteChange(ObservableCollection<User> users);

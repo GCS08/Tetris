@@ -13,6 +13,8 @@
         public const string GamesPlayedKey = "gamesPlayed";
         public const string HighestScoreKey = "highestScore";
         public const string DateJoinedKey = "dateJoined";
+        public const string ChangeKey = "_Change";
+        public const string ResetKey = "reset";
         public const string FbApiKey = "AIzaSyA7bPSAvpotJs-gSNvMTmwitXrjD-yed_I";
         public const string FbAppDomainKey = "com.meitar.tetris";
         public const string EmailExistsErrorKey = "EMAIL_EXISTS";
@@ -38,10 +40,11 @@
         public const string MaxPlayersCountKey = "MaxPlayersCount";
         public const string IsFullKey = "IsFull";
         public const string IsPublicGameKey = "IsPublicGame";
-        public const string CurrentShapeIdKey = "CurrentShapeId";
-        public const string CurrentShapeInGameIdKey = "CurrentShapeInGameId";
-        public const string CurrentShapeColorKey = "CurrentShapeColor";
+        public const string ShapeIdKey = "ShapeId";
+        public const string ShapeInGameIdKey = "ShapeInGameId";
+        public const string ShapeColorKey = "ShapeColor";
         public const string CurrentShapeMapKey = "CurrentShapeMap";
+        public const string NextShapeMapKey = "NextShapeMap";
         public const string TimeCreatedKey = "TimeCreated";
         public const string MaterialSymbolsFontName = "MaterialSymbols";
         public const string OpenSansRegularFontName = "OpenSansRegular";
@@ -69,7 +72,6 @@
         public const string IsShapeAtBottomKey = "IsShapeAtBottom";
         public const string PlayerMovesKey = "PlayerMoves";
         public const string PlayerMoveKey = "PlayerMove";
-        public const string MoveKey = "Move";
         public const string PublicKey = "Public";
         public const string PrivateKey = "Private";
         public const string TitleKey = "title";

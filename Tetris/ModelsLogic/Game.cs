@@ -27,10 +27,11 @@ namespace Tetris.ModelsLogic
         /// <param name="CurrentPlayersCount">The current number of players in the game.</param>
         /// <param name="MaxPlayersCount">The maximum allowed players in the game.</param>
         /// <param name="IsPublicGame">Indicates whether the game is public or private.</param>
-        /// <param name="shape">The initial shape to display on the boards.</param>
+        /// <param name="firstShape">The initial shape to display on the boards.</param>
+        /// <param name="secondShape">The second shape to display on the boards.</param>
         /// <param name="GameID">Unique identifier for the game.</param>
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
-        int MaxPlayersCount, bool IsPublicGame, Shape shape, string GameID)
+        int MaxPlayersCount, bool IsPublicGame, Shape firstShape, Shape secondShape, string GameID)
         {
             this.CubeColor = CubeColor;
             this.CreatorName = CreatorName;
@@ -38,8 +39,8 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(GameID, shape, false);
-            this.OpGameBoard = new(GameID, shape.Duplicate(shape), true);
+            this.GameBoard = new(GameID, firstShape, secondShape, false);
+            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShape.Duplicate(), true);
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
@@ -337,45 +338,48 @@ namespace Tetris.ModelsLogic
         /// <param name="error">
         /// Any exception that occurred while retrieving the snapshot.
         /// </param>
-        protected override async void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
+        protected override void OnChangeGame(IDocumentSnapshot? snapshot, Exception? error)
         {
             if (snapshot == null) return;
+            switch (snapshot.Get<string>(Keys.ChangeKey))
+            {
+                case Keys.CurrentShapeMapKey:
+                    ProcessShapeChange(snapshot); break;
+                case Keys.PlayerMovesKey:
+                    ProcessMoveChange(snapshot); break;
+                case Keys.ResetKey:
+                    break;// no moves or the player who made the move is the current player, so ignore.
+            }
+        }
 
+        protected override void ProcessShapeChange(IDocumentSnapshot snapshot)
+        {
+            if (GameBoard == null || GameBoard.ShapesQueue == null ||
+                    OpGameBoard == null || OpGameBoard.ShapesQueue == null ||
+                    GameBoard.CurrentShape == null || OpGameBoard.CurrentShape == null) return;
+
+            Shape newShape = fbd.CreateShape(snapshot);
+            Shape newShape2 = newShape.Duplicate();
+            GameBoard.ShapesQueue.Insert(newShape);
+            OpGameBoard.ShapesQueue.Insert(newShape2);
+        }
+
+        protected override async void ProcessMoveChange(IDocumentSnapshot snapshot)
+        {
             bool found = false;
             for (DesiredIndex = 0; DesiredIndex < MaxPlayersCount && !found; DesiredIndex++)
-                if (snapshot.Get<bool>(Keys.PlayerDetailsKey + DesiredIndex + 
+                if (snapshot.Get<bool>(Keys.PlayerDetailsKey + DesiredIndex +
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
                     found = true;
+            DesiredIndex--;
 
-            if (!found)
-            {
-                if (GameBoard == null || GameBoard.ShapesQueue == null
-                    || GameBoard.ShapesQueue.Last == null || OpGameBoard == null ||
-                    OpGameBoard.ShapesQueue == null) return;
-
-                Shape newShape = fbd.CreateShape(snapshot);
-                Shape newShape2 = fbd.CreateShape(snapshot);
-                GameBoard.ShapesQueue.Insert(newShape);
-                OpGameBoard.ShapesQueue.Insert(newShape2);
-                if (GameBoard.ShapesQueue.First!.Value == newShape)
-                {
-                    GameBoard.CurrentShape = newShape;
-                    GameBoard.ShowShape();
-                }
-                if (OpGameBoard.ShapesQueue.First!.Value == newShape)
-                {   
-                    OpGameBoard.CurrentShape = newShape;
-                    OpGameBoard.ShowShape();
-                }
-            }
-            else if (snapshot.Get<string>(Keys.PlayerDetailsKey + (DesiredIndex - 1) + TechnicalConsts.DotSign
+            if (snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign
                     + Keys.PlayerIdKey) != User.UserID)// Op player has moved
             {
-                DesiredIndex--;
                 Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
                     (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
 
-                CurrentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex + 
+                CurrentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex +
                     TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
 
                 fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
@@ -385,7 +389,7 @@ namespace Tetris.ModelsLogic
                 foreach (KeyValuePair<string, string> move in playerMoveMap)
                     MovesQueue.Insert(move);
                 await MovesQueue.SortByUnixTimestampKeyAsync();
-                
+
                 IsMovesQueueSorting = false;
 
                 if (OpFallTimer != null && !OpFallTimer.IsRunning)
