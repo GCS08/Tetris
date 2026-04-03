@@ -11,6 +11,7 @@ namespace Tetris.Converters
     /// </summary>
     public class StringAndColorConverter : IValueConverter
     {
+        #region Public Methods
         /// <summary>
         /// Converts a color key string into its corresponding MAUI Color object.
         /// Used when the UI needs to display a color that is stored as a string key.
@@ -83,5 +84,6 @@ namespace Tetris.Converters
         {
             return ColorToColorName((Color)value!);
         }
+        #endregion
     }
 }

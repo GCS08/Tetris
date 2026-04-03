@@ -247,57 +247,55 @@ namespace Tetris.ModelsLogic
 
             bool initialized = false;
 
-            gameBoardGrid.SizeChanged += (s, e) =>
+            if (initialized) return;
+            if (gameBoardGrid.Width <= 0 || gameBoardGrid.Height <= 0) return;
+
+            initialized = true;
+
+            double cubeSize = Math.Min(
+                gameBoardGrid.Width / ConstData.GameGridColumnCount,
+                gameBoardGrid.Height / ConstData.GameGridRowCount
+            );
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeSize });
+
+            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeSize });
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
             {
-                if (initialized) return;
-                if (gameBoardGrid.Width <= 0 || gameBoardGrid.Height <= 0) return;
-
-                initialized = true;
-
-                double cubeSize = Math.Min(
-                    gameBoardGrid.Width / ConstData.GameGridColumnCount,
-                    gameBoardGrid.Height / ConstData.GameGridRowCount
-                );
-
-                for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                    gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeSize });
-
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                    gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeSize });
-
-                for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 {
-                    for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                    Cube cube = Board[r, c];
+
+                    BoxView boxView = new()
                     {
-                        Cube cube = Board[r, c];
+                        BackgroundColor = cube.Color
+                    };
 
-                        BoxView boxView = new()
-                        {
-                            BackgroundColor = cube.Color
-                        };
+                    cube.PropertyChanged += (s2, e2) =>
+                    {
+                        if (e2.PropertyName == nameof(Cube.Color))
+                            boxView.BackgroundColor = cube.Color;
+                    };
 
-                        cube.PropertyChanged += (s2, e2) =>
-                        {
-                            if (e2.PropertyName == nameof(Cube.Color))
-                                boxView.BackgroundColor = cube.Color;
-                        };
+                    Border border = new()
+                    {
+                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                        Stroke = Colors.Gray,
+                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                        Background = Colors.Transparent,
+                        Content = boxView
+                    };
 
-                        Border border = new()
-                        {
-                            Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
-                            Stroke = Colors.Gray,
-                            StrokeThickness = ConstData.BetweenCubesBorderWidth,
-                            Background = Colors.Transparent,
-                            Content = boxView
-                        };
-
-                        gameBoardGrid.Add(border, c, r);
-                    }
+                    gameBoardGrid.Add(border, c, r);
                 }
+            }
 
-                gameBoardGrid.HorizontalOptions = LayoutOptions.Center;
-                gameBoardGrid.VerticalOptions = LayoutOptions.Center;
-            };
+            gameBoardGrid.HorizontalOptions = LayoutOptions.Center;
+            gameBoardGrid.VerticalOptions = LayoutOptions.Center;
+            
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Tetris.Models
         public abstract event EventHandler? NotificationReceived;
         #endregion
 
-        #region Poperties
+        #region Properties
         public static NotificationManagerService? Instance { get; set; }
         #endregion
 
