@@ -404,6 +404,7 @@ namespace Tetris.ModelsLogic
         protected override async void ProcessMoveChange(IDocumentSnapshot snapshot)
         {
             bool found = false;
+            int DesiredIndex;
             for (DesiredIndex = 0; DesiredIndex < MaxPlayersCount && !found; DesiredIndex++)
                 if (snapshot.Get<bool>(Keys.PlayerDetailsKey + DesiredIndex +
                     TechnicalConsts.DotSign + Keys.IsShapeAtBottomKey))
@@ -424,8 +425,8 @@ namespace Tetris.ModelsLogic
                 IsMovesQueueSorting = true;
 
                 foreach (KeyValuePair<string, string> move in playerMoveMap)
-                    MovesQueue.Insert(move);
-                await MovesQueue.SortByUnixTimestampKeyAsync();
+                    OpMovesQueue.Insert(move);
+                await OpMovesQueue.SortByUnixTimestampKeyAsync();
 
                 IsMovesQueueSorting = false;
 
@@ -493,11 +494,11 @@ namespace Tetris.ModelsLogic
         protected override void ApplyOpMove(object? sender, EventArgs e)
         {
             if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
-            if (!MovesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != CurrentMovingOpId)
+            if (!OpMovesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != CurrentMovingOpId)
             // third check is unnecessary since it enters the second if in the
             // on change game only if its not the player who finished a moved.
             {
-                string move = MovesQueue.Remove().Value;
+                string move = OpMovesQueue.Remove().Value;
                 switch (move)
                 {
                     case Keys.RightKey:

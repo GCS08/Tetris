@@ -12,12 +12,15 @@ namespace Tetris.Models
     public abstract class JoinableGamesListModel
     {
         #region Fields
-        public ObservableCollection<Game>? gamesObsCollection;
         protected IListenerRegistration? ilr;
         protected readonly FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
         #endregion
-        
+
+        #region Properties
+        public ObservableCollection<Game>? GamesObsCollection { get; set; }
+        #endregion
+
         #region Events
         public EventHandler? OnGamesChanged;
         #endregion

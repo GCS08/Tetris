@@ -21,7 +21,7 @@ namespace Tetris.ModelsLogic
         /// </param>
         public JoinableGamesList(ObservableCollection<Game> list)
         {
-            this.gamesObsCollection = list;
+            this.GamesObsCollection = list;
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace Tetris.ModelsLogic
         {
             // create an instance so we can access fbd from the base class
             JoinableGamesList innerObject = new([]);
-            innerObject.gamesObsCollection = await innerObject.fbd.GetAvailGamesList();
+            innerObject.GamesObsCollection = await innerObject.fbd.GetAvailGamesList();
             return innerObject;
         }
 
@@ -121,11 +121,11 @@ namespace Tetris.ModelsLogic
         /// </param>
         protected override void OnCompleteChange(ObservableCollection<Game> newList)
         {
-            if (gamesObsCollection == null) return;
+            if (GamesObsCollection == null) return;
 
-            gamesObsCollection.Clear();
+            GamesObsCollection.Clear();
             foreach (Game game in newList)
-                gamesObsCollection.Add(game);
+                GamesObsCollection.Add(game);
 
             OnGamesChanged?.Invoke(this, EventArgs.Empty);
         }

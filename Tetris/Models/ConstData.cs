@@ -202,13 +202,13 @@
             public static readonly List<bool[,]> XShape =
             [
                 new bool[,] {
+                    { true, true, true },
+                    { true, true, true }
+                },
+                new bool[,] {
                     { true, true },
                     { true, true },
                     { true, true }
-                },
-                new bool[,] {
-                    { true, true, true },
-                    { true, true, true }
                 }
             ];
             #endregion

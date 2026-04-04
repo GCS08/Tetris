@@ -117,6 +117,7 @@
 
                 <Frame
                     BackgroundColor="Transparent"
+                    Padding="0, 20, 0, 0"
                     BorderColor="Transparent">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -134,6 +135,7 @@
                         <Grid
                             Grid.Row="1"
                             x:Name="OpGameBoardGrid"
+                            Margin="10"
                             BackgroundColor="#152b50"
                             FlowDirection="LeftToRight"/>
                     </Grid>
@@ -186,6 +188,5 @@
                 </Frame>
             </Grid>
         </Grid>
-
     </Grid>
 </ContentPage>

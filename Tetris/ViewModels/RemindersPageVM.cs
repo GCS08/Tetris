@@ -26,7 +26,6 @@ namespace Tetris.ViewModels
         #region Properties
         public DateTime SelectedDate { get; set; } = DateTime.Now.Date;
         public TimeSpan SelectedTime { get; set; } = DateTime.Now.TimeOfDay;
-        public string SelectedSeconds { get; set; } = TechnicalConsts.ZeroSignString;
         #endregion
 
         #region Constructors
@@ -52,7 +51,7 @@ namespace Tetris.ViewModels
         private void ScheduleReminder()
         {
             IToast toast = notifications.ScheduleReminder(SelectedDate,
-                SelectedTime, SelectedSeconds)
+                SelectedTime, TechnicalConsts.ZeroSignString)
                 ? Toast.Make(Strings.NotificationSuccess, CommunityToolkit.
                 Maui.Core.ToastDuration.Long, ConstData.ToastFontSize)
                 : Toast.Make(Strings.NotificationFail, CommunityToolkit.Maui

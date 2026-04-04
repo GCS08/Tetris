@@ -37,11 +37,10 @@ namespace Tetris.Models
         #endregion
         
         #region Properties
-        protected int DesiredIndex { get; set; } = 0;
         protected bool IsGameStarted { get; set; } = false;
         protected bool IsStatsUpdatedOnceOnGameFinished { get; set; } = false;
         protected string CurrentMovingOpId { get; set; } = string.Empty;
-        protected ModelsLogic.Queue<KeyValuePair<string, string>> MovesQueue { get; set; } = new();
+        protected ModelsLogic.Queue<KeyValuePair<string, string>> OpMovesQueue { get; set; } = new();
         protected bool IsMovesQueueSorting { get; set; } = false;
         public string CubeColor { get; set; } = string.Empty;
         public string CreatorName { get; set; } = string.Empty;

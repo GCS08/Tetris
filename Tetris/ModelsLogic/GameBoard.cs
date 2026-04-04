@@ -247,55 +247,57 @@ namespace Tetris.ModelsLogic
 
             bool initialized = false;
 
-            if (initialized) return;
-            if (gameBoardGrid.Width <= 0 || gameBoardGrid.Height <= 0) return;
-
-            initialized = true;
-
-            double cubeSize = Math.Min(
-                gameBoardGrid.Width / ConstData.GameGridColumnCount,
-                gameBoardGrid.Height / ConstData.GameGridRowCount
-            );
-
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
-                gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeSize });
-
-            for (int c = 0; c < ConstData.GameGridColumnCount; c++)
-                gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeSize });
-
-            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+            gameBoardGrid.SizeChanged += (s, e) =>
             {
+                if (initialized) return;
+                if (gameBoardGrid.Width <= 0 || gameBoardGrid.Height <= 0) return;
+
+                initialized = true;
+
+                double cubeSize = Math.Min(
+                    gameBoardGrid.Width / ConstData.GameGridColumnCount,
+                    gameBoardGrid.Height / ConstData.GameGridRowCount
+                );
+
+                for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                    gameBoardGrid.RowDefinitions.Add(new RowDefinition { Height = cubeSize });
+
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                    gameBoardGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = cubeSize });
+
+                for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 {
-                    Cube cube = Board[r, c];
-
-                    BoxView boxView = new()
+                    for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                     {
-                        BackgroundColor = cube.Color
-                    };
+                        Cube cube = Board[r, c];
 
-                    cube.PropertyChanged += (s2, e2) =>
-                    {
-                        if (e2.PropertyName == nameof(Cube.Color))
-                            boxView.BackgroundColor = cube.Color;
-                    };
+                        BoxView boxView = new()
+                        {
+                            BackgroundColor = cube.Color
+                        };
 
-                    Border border = new()
-                    {
-                        Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
-                        Stroke = Colors.Gray,
-                        StrokeThickness = ConstData.BetweenCubesBorderWidth,
-                        Background = Colors.Transparent,
-                        Content = boxView
-                    };
+                        cube.PropertyChanged += (s2, e2) =>
+                        {
+                            if (e2.PropertyName == nameof(Cube.Color))
+                                boxView.BackgroundColor = cube.Color;
+                        };
 
-                    gameBoardGrid.Add(border, c, r);
+                        Border border = new()
+                        {
+                            Margin = -0.5 * ConstData.BetweenCubesBorderWidth,
+                            Stroke = Colors.Gray,
+                            StrokeThickness = ConstData.BetweenCubesBorderWidth,
+                            Background = Colors.Transparent,
+                            Content = boxView
+                        };
+
+                        gameBoardGrid.Add(border, c, r);
+                    }
                 }
-            }
 
-            gameBoardGrid.HorizontalOptions = LayoutOptions.Center;
-            gameBoardGrid.VerticalOptions = LayoutOptions.Center;
-            
+                gameBoardGrid.HorizontalOptions = LayoutOptions.Center;
+                gameBoardGrid.VerticalOptions = LayoutOptions.Center;
+            };
         }
 
         /// <summary>
@@ -351,7 +353,6 @@ namespace Tetris.ModelsLogic
                     }
                 }
             }
-
             return canMoveDown;
         }
 
@@ -362,7 +363,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override void ShapeAtBottom()
         {
-            if (User == null || GameID == null || MovesQueue == null || FallTimer == null || CurrentShape == null) return;
+            if (User == null || GameID == null || FallTimer == null || CurrentShape == null) return;
 
             int linesCleared = CheckForLines();
             if (linesCleared > 0)

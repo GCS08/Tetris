@@ -83,7 +83,7 @@ namespace Tetris.ViewModels
             if (JoinableGamesList == null) return;
             JoinableGamesList = await JoinableGamesList.CreateAsync();
             JoinableGamesList.OnGamesChanged += OnGamesChanged;
-            Games = JoinableGamesList.gamesObsCollection;
+            Games = JoinableGamesList.GamesObsCollection;
             OnPropertyChanged(nameof(Games));
         }
 

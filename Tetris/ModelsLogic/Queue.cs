@@ -68,36 +68,6 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Returns a string representation of the queue and outputs the count of elements.
-        /// </summary>
-        /// <param name="counter">Outputs the number of elements in the queue.</param>
-        /// <returns>A string representation of the queue with values separated by arrows.</returns>
-        public override string PrintQueue(out int counter)
-        {
-            counter = 0;
-            string output = string.Empty;
-            ModelsLogic.Queue<T> temp = new();
-
-            while (!IsEmpty())
-            {
-                T value = Remove();
-                if (value != null)
-                {
-                    output += value.ToString() + TechnicalConsts.SpaceSign
-                        + TechnicalConsts.ArrowSignString + TechnicalConsts.SpaceSign;
-
-                    temp.Insert(value);
-                    counter++;
-                }
-            }
-
-            while (!temp.IsEmpty())
-                Insert(temp.Remove());
-
-            return output;
-        }
-
-        /// <summary>
         /// Sorts the queue assuming <typeparamref name="T"/> is KeyValuePair{string,string} 
         /// and the key represents a Unix timestamp.
         /// </summary>

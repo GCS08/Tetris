@@ -33,6 +33,7 @@
                     HorizontalOptions="Center"
                     LineBreakMode="WordWrap"
                     Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
+                <!--JoinGameGrid-->
                 <Grid WidthRequest="350">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -76,6 +77,7 @@
                     </CollectionView.Header>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="m:GameModel">
+                            <!--GameItemGrid-->
                             <Grid Margin="10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1.5*" />
