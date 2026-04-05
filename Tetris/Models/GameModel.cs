@@ -38,7 +38,7 @@ namespace Tetris.Models
         
         #region Properties
         protected bool IsGameStarted { get; set; } = false;
-        protected bool IsStatsUpdatedOnceOnGameFinished { get; set; } = false;
+        protected bool IsStatsUpdatedOnGameFinished { get; set; } = false;
         protected string CurrentMovingOpId { get; set; } = string.Empty;
         protected ModelsLogic.Queue<KeyValuePair<string, string>> OpMovesQueue { get; set; } = new();
         protected bool IsMovesQueueSorting { get; set; } = false;

@@ -286,13 +286,13 @@ namespace Tetris.ModelsLogic
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
                 OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
-            if (!IsStatsUpdatedOnceOnGameFinished)
+            if (!IsStatsUpdatedOnGameFinished)
             {
                 GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
                     ? GameBoard.Score : GameBoard.User.HighestScore;
                 GameBoard.User.GamesPlayed++;
                 fbd.UpdateUserPostGame(GameBoard.User);
-                IsStatsUpdatedOnceOnGameFinished = true;
+                IsStatsUpdatedOnGameFinished = true;
             }
             UnregisterTimer();
             GameBoard.FallTimer.Stop();

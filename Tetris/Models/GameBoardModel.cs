@@ -12,7 +12,6 @@ namespace Tetris.Models
     {
         #region Fields
         public IDispatcherTimer? FallTimer;
-        protected Cube[,]? Board;
         protected FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
         protected SoundManager SoundManager = IPlatformApplication.
@@ -21,7 +20,6 @@ namespace Tetris.Models
         #endregion
 
         #region Events
-        public EventHandler? OnOpQueueEmpty;
         public EventHandler? OnGameFinishedLogic;
         #endregion
 
@@ -35,6 +33,7 @@ namespace Tetris.Models
         public int Score { get; set; } = 0;
         protected ModelsLogic.Queue<string>? MovesQueue { get; set; } = new();
         protected int ComboCount { get; set; } = 1;
+        protected Cube[,]? Board { get; set; }
         #endregion
 
         #region Public Methods
