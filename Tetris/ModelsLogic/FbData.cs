@@ -277,7 +277,7 @@ namespace Tetris.ModelsLogic
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
                 TimeCreated = DateTime.UtcNow,
-                _Change = string.Empty
+                Changed = string.Empty
             });
 
             docRef.UpdateAsync(new Dictionary<string, object>

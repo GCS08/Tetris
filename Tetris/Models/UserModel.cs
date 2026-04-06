@@ -27,7 +27,7 @@ namespace Tetris.Models
         public string DateJoined { get; set; } = Preferences.Get(Keys.DateJoinedKey,
             DateTime.Now.ToString(TechnicalConsts.DateFormat));
         public string Email { get; set; } = Preferences.Get(Keys.EmailKey, string.Empty);
-        public string Password { get; set; } = Preferences.Get(Keys.PasswordKey, string.Empty);
+        public string Password { get; set; } = string.Empty;
         #endregion
 
         #region Public Methods

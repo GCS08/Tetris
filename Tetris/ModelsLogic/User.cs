@@ -86,7 +86,6 @@ namespace Tetris.ModelsLogic
             DateJoined = Preferences.Get(Keys.DateJoinedKey,
                 DateTime.Now.ToString(TechnicalConsts.DateFormat));
             Email = Preferences.Get(Keys.EmailKey, string.Empty);
-            Password = Preferences.Get(Keys.PasswordKey, string.Empty);
         }
 
         #endregion
@@ -173,7 +172,6 @@ namespace Tetris.ModelsLogic
             Preferences.Set(Keys.UserIDKey, UserID);
             Preferences.Set(Keys.UserNameKey, UserName);
             Preferences.Set(Keys.EmailKey, Email);
-            Preferences.Set(Keys.PasswordKey, Password);
             Preferences.Set(Keys.TotalLinesKey, TotalLines);
             Preferences.Set(Keys.GamesPlayedKey, GamesPlayed);
             Preferences.Set(Keys.HighestScoreKey, HighestScore);
@@ -188,10 +186,8 @@ namespace Tetris.ModelsLogic
         protected override void OnCompleteSendEmail(Task task)
         {
             if (task.IsCompletedSuccessfully)
-            {
                 _ = Shell.Current.DisplayAlert(Strings.ResetPWTitle, 
                     Strings.ResetPWMessage, Strings.ResetPWButton);
-            }
             else
             {
                 string errorMessage = fbd.IdentifyFireBaseError(task);
