@@ -364,7 +364,7 @@ namespace Tetris.ModelsLogic
                     doc.Get<int>(Keys.MaxPlayersCountKey),
                     doc.Get<bool>(Keys.IsPublicGameKey),
                     new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
-                    TechnicalConsts.DotSign + Keys.ShapeIdKey),
+                        TechnicalConsts.DotSign + Keys.ShapeIdKey),
                         doc.Get<int>(Keys.CurrentShapeMapKey + 
                         TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
                         doc.Get<string>(Keys.CurrentShapeMapKey + 
@@ -535,7 +535,7 @@ namespace Tetris.ModelsLogic
         /// <param name="gameID">The unique identifier of the game.</param>
         /// <param name="movesQueue">A queue containing the moves made by the player during the round.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public override async Task FinishRound(
+        public override async Task UploadMoves(
             string userID, string gameID, Queue<string> movesQueue)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
@@ -544,23 +544,21 @@ namespace Tetris.ModelsLogic
             List<string> ids = [];
             bool found = false;
 
-            for (int i = 0; i < maxPlayers; i++)// 1
+            for (int i = 0; i < maxPlayers; i++)
                 ids.Add(currentSnapshot.Get<string>(Keys.PlayerDetailsKey + i + 
                     TechnicalConsts.DotSign + Keys.PlayerIdKey) ?? string.Empty);
-            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)// 2
+            for (desiredIndex = 0; desiredIndex < maxPlayers && !found; desiredIndex++)
                 if (ids[desiredIndex] == userID)
                     found = true;
             desiredIndex--;
 
-            Queue<string> tempMovesQueue = new();
-            Dictionary<string, string> moves = [];
+            int counter = 0;
+            Dictionary<int, string> moves = [];
             while (!movesQueue.IsEmpty())
             {
                 string move = movesQueue.Remove();
-                tempMovesQueue.Insert(move);
-                moves.Add(DateTimeOffset.UtcNow.
-                    ToUnixTimeMilliseconds().ToString(), move);
-                Thread.Sleep(1);
+                moves.Add(counter, move);
+                counter++;
             }
 
             Dictionary<string, object> updates = new()

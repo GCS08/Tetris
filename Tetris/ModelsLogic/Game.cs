@@ -209,10 +209,10 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Moves the player's current shape low as possible.
         /// </summary>
-        public override async void SnapDownShape() 
+        public override void SnapDownShape() 
         {
             if (GameBoard == null) return;
-            await GameBoard.SnapDownShape();
+            GameBoard.SnapDownShape();
         }
 
         /// <summary>
@@ -401,7 +401,7 @@ namespace Tetris.ModelsLogic
         /// <param name="snapshot">
         /// The Firestore document snapshot containing player move data.
         /// </param>
-        protected override async void ProcessMoveChange(IDocumentSnapshot snapshot)
+        protected override void ProcessMoveChange(IDocumentSnapshot snapshot)
         {
             bool found = false;
             int DesiredIndex;
@@ -414,22 +414,16 @@ namespace Tetris.ModelsLogic
             if (snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign
                     + Keys.PlayerIdKey) != User.UserID)// Op player has moved
             {
-                Dictionary<string, string> playerMoveMap = snapshot.Get<Dictionary<string, string>>
+                fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
+                Queue<string> tempQueue = new();
+
+                Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>
                     (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
 
-                CurrentMovingOpId = snapshot.Get<string>(Keys.PlayerDetailsKey + DesiredIndex +
-                    TechnicalConsts.DotSign + Keys.PlayerIdKey)!;
+                for (int i = 0; i < playerMoveMap.Count; i++)
+                    tempQueue.Insert(playerMoveMap[i]);
 
-                fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
-
-                IsMovesQueueSorting = true;
-
-                foreach (KeyValuePair<string, string> move in playerMoveMap)
-                    OpMovesQueue.Insert(move);
-                await OpMovesQueue.SortByUnixTimestampKeyAsync();
-
-                IsMovesQueueSorting = false;
-
+                OpMovesQueueOfQueues.Insert(tempQueue);
                 if (OpFallTimer != null && !OpFallTimer.IsRunning)
                     OpFallTimer.Start();
             }
@@ -494,28 +488,31 @@ namespace Tetris.ModelsLogic
         protected override void ApplyOpMove(object? sender, EventArgs e)
         {
             if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
-            if (!OpMovesQueue.IsEmpty() && !IsMovesQueueSorting && GameBoard.User.UserID != CurrentMovingOpId)
-            // third check is unnecessary since it enters the second if in the
-            // on change game only if its not the player who finished a moved.
+            if (!OpMovesQueueOfQueues.IsEmpty())
             {
-                string move = OpMovesQueue.Remove().Value;
-                switch (move)
+                if (OpMovesQueueOfQueues.First!.Value.IsEmpty())
+                    OpMovesQueueOfQueues.Remove();
+                else
                 {
-                    case Keys.RightKey:
-                        MoveRightOpShape();
-                        break;
-                    case Keys.LeftKey:
-                        MoveLeftOpShape();
-                        break;
-                    case Keys.DownKey:
-                        MoveDownOpShape();
-                        break;
-                    case Keys.RotateKey:
-                        RotateOpShape();
-                        break;
-                    case Keys.SnapDownKey:
-                        SnapDownOpShape();
-                        break;
+                    string move = OpMovesQueueOfQueues.First!.Value.Remove();
+                    switch (move)
+                    {
+                        case Keys.RightKey:
+                            MoveRightOpShape();
+                            break;
+                        case Keys.LeftKey:
+                            MoveLeftOpShape();
+                            break;
+                        case Keys.DownKey:
+                            MoveDownOpShape();
+                            break;
+                        case Keys.RotateKey:
+                            RotateOpShape();
+                            break;
+                        case Keys.SnapDownKey:
+                            SnapDownOpShape();
+                            break;
+                    }
                 }
             }
             else
@@ -552,10 +549,10 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Moves the opponent's shape down, if possible.
         /// </summary>
-        protected override async void SnapDownOpShape()
+        protected override void SnapDownOpShape()
         {
             if (OpGameBoard == null) return;
-            await OpGameBoard.SnapDownShape();
+            OpGameBoard.SnapDownShape();
         }
 
         /// <summary>

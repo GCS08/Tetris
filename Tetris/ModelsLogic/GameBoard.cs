@@ -35,6 +35,10 @@ namespace Tetris.ModelsLogic
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
             FallTimer.Tick += (s, e) => MoveDownShape();
 
+            PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
+            PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
+            PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
                     Board[r, c] = new Cube(Colors.Transparent);
@@ -158,7 +162,7 @@ namespace Tetris.ModelsLogic
         /// it locks the shape in place and triggers end-of-round logic for the player if applicable.
         /// </summary>
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
-        public override async void MoveDownShape() 
+        public override void MoveDownShape() 
         {
             if (isMoving || !EnableMoves || CurrentShape == null || GameID == null || MovesQueue == null) return;
 
@@ -177,7 +181,7 @@ namespace Tetris.ModelsLogic
             {
                 ShapeAtBottom();
                 if (!IsOp)
-                    await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
+                    SoundManager.PlayMoveDown();
             }
             isMoving = false;
         }
@@ -188,7 +192,7 @@ namespace Tetris.ModelsLogic
         /// it locks the shape in place and triggers end-of-round logic for the player if applicable.
         /// </summary>
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
-        public override async Task SnapDownShape() 
+        public override void SnapDownShape() 
         {
             if (isMoving || FallTimer == null || CurrentShape == null || GameID == null || MovesQueue == null || !EnableMoves) return;
             
@@ -201,10 +205,7 @@ namespace Tetris.ModelsLogic
             ShowShape();
             ShapeAtBottom();
             if (!IsOp)
-            {
                 SoundManager.PlayMoveDown();
-                await fbd.FinishRound(User!.UserID, GameID, MovesQueue);
-            }
             isMoving = false;
         }
 
@@ -364,6 +365,12 @@ namespace Tetris.ModelsLogic
         protected override void ShapeAtBottom()
         {
             if (User == null || GameID == null || FallTimer == null || CurrentShape == null) return;
+            if (!IsOp)
+            {
+                QueueOfMovesQueue!.Insert(MovesQueue);
+                if (PushMovesToFirebaseTimer != null && !PushMovesToFirebaseTimer.IsRunning)
+                    PushMovesToFirebaseTimer.Start();
+            }
 
             int linesCleared = CheckForLines();
             if (linesCleared > 0)
@@ -394,6 +401,18 @@ namespace Tetris.ModelsLogic
                 ShowShape();
                 if (ShapesQueue.IsEmpty() && !IsOp)
                     fbd.AddShape(new(CurrentShape.InGameId + 1), GameID);
+            }
+        }
+
+        protected override void PushMovesToFirebase()
+        {
+            if (User == null || GameID == null) return;
+            if (!QueueOfMovesQueue.IsEmpty())
+                _ = fbd.UploadMoves(User!.UserID, GameID, QueueOfMovesQueue.Remove());
+            else
+            {
+                if (PushMovesToFirebaseTimer != null && PushMovesToFirebaseTimer.IsRunning)
+                    PushMovesToFirebaseTimer.Stop();
             }
         }
 

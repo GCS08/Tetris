@@ -66,48 +66,6 @@ namespace Tetris.ModelsLogic
             }
             return result;
         }
-
-        /// <summary>
-        /// Sorts the queue assuming <typeparamref name="T"/> is KeyValuePair{string,string} 
-        /// and the key represents a Unix timestamp.
-        /// </summary>
-        /// <returns>A task representing the asynchronous sort operation.</returns>
-        /// <remarks>
-        /// If <typeparamref name="T"/> is not KeyValuePair{string,string} or the queue is empty, 
-        /// the method exits without performing any sorting.
-        /// </remarks>
-        public override async Task SortByUnixTimestampKeyAsync()
-        {
-            bool shouldSort = typeof(T) == typeof(KeyValuePair<string, string>) && !IsEmpty();
-
-            if (shouldSort)
-            {
-                await Task.Run(() =>
-                {
-                    List<KeyValuePair<string, string>> buffer = [];
-
-                    // Drain queue into buffer
-                    while (!IsEmpty())
-                    {
-                        KeyValuePair<string, string> item = (KeyValuePair<string, string>)(object)Remove()!;
-                        buffer.Add(item);
-                    }
-
-                    // Sort by Unix timestamp key in ascending order
-                    buffer.Sort((a, b) =>
-                    {
-                        long ta = long.Parse(a.Key);
-                        long tb = long.Parse(b.Key);
-                        return ta.CompareTo(tb);
-                    });
-
-                    // Restore sorted queue
-                    foreach (KeyValuePair<string, string> item in buffer)
-                        Insert((T)(object)item);
-                });
-            }
-        }
-
         #endregion
     }
 }

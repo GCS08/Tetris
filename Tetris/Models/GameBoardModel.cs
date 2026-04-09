@@ -12,6 +12,7 @@ namespace Tetris.Models
     {
         #region Fields
         public IDispatcherTimer? FallTimer;
+        protected IDispatcherTimer? PushMovesToFirebaseTimer;
         protected FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
         protected SoundManager SoundManager = IPlatformApplication.
@@ -31,7 +32,8 @@ namespace Tetris.Models
         public bool IsOp { get; set; }
         public bool EnableMoves { get; set; } = false;
         public int Score { get; set; } = 0;
-        protected ModelsLogic.Queue<string>? MovesQueue { get; set; } = new();
+        protected ModelsLogic.Queue<string> MovesQueue { get; set; } = new();
+        protected ModelsLogic.Queue<ModelsLogic.Queue<string>> QueueOfMovesQueue { get; set; } = new();
         protected int ComboCount { get; set; } = 1;
         protected Cube[,]? Board { get; set; }
         #endregion
@@ -42,7 +44,7 @@ namespace Tetris.Models
         public abstract void MoveRightShape();
         public abstract void MoveLeftShape();
         public abstract void MoveDownShape();
-        public abstract Task SnapDownShape();
+        public abstract void SnapDownShape();
         public abstract void RotateShape();
         public abstract void ShowShape();
         #endregion
@@ -50,6 +52,7 @@ namespace Tetris.Models
         #region Protected Methods
         protected abstract bool CanMoveDown();
         protected abstract void ShapeAtBottom();
+        protected abstract void PushMovesToFirebase();
         protected abstract bool CheckForLose();
         protected abstract int CheckForLines();
         protected abstract void MoveDownShape(object? sender, ElapsedEventArgs e);

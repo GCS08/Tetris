@@ -59,7 +59,7 @@ namespace Tetris.Models
         public abstract void SetGameIsFull(string gameID);
         public abstract void AddShape(Shape currentShape, string gameId);
         public abstract Shape CreateShape(IDocumentSnapshot snapshot);
-        public abstract Task FinishRound(string userID, string gameID,
+        public abstract Task UploadMoves(string userID, string gameID,
             ModelsLogic.Queue<string> movesQueue);
         public abstract IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);

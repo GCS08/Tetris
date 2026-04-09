@@ -33,7 +33,7 @@ namespace Tetris.Interfaces
         public void SetGameIsFull(string gameID);
         public void AddShape(Shape currentShape, string gameId);
         public Shape CreateShape(IDocumentSnapshot snapshot);
-        public Task FinishRound(string userID, string gameID, 
+        public Task UploadMoves(string userID, string gameID, 
             ModelsLogic.Queue<string> movesQueue);
         public IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);

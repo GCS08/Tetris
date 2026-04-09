@@ -17,7 +17,6 @@ namespace Tetris.Models
         public abstract bool IsEmpty();
         public abstract void Insert(T value);
         public abstract T Remove();
-        public abstract Task SortByUnixTimestampKeyAsync();
         #endregion
     }
 }

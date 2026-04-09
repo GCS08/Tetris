@@ -44,6 +44,7 @@
         public const string ShapeInGameIdKey = "ShapeInGameId";
         public const string ShapeColorKey = "ShapeColor";
         public const string CurrentShapeMapKey = "CurrentShapeMap";
+        public const string CurrentShapeMapAndMovesKey = "CurrentShapeMapAndMoves";
         public const string NextShapeMapKey = "NextShapeMap";
         public const string TimeCreatedKey = "TimeCreated";
         public const string MaterialSymbolsFontName = "MaterialSymbols";

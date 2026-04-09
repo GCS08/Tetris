@@ -20,8 +20,9 @@
         public const double BetweenCubesBorderWidth = 1;
         public const int ShapesCount = 10;
         public const int ShapeFallIntervalS = 1;
+        public const double PushMovesToFirebaseInterval = 0.5;
         public const double OpShapeFallIntervalS = 0.3;
-        public const double ShapeFallIntervalMult = 9 / 10;
+        public const double ShapeFallIntervalMult = 19 / 20;
         public const double MinFallIntervalS = 0.4;
         public const int DeleteFbDocsIntervalS = 3600;
         public const int TotalGameTimeS = 6;
@@ -62,7 +63,7 @@
         public static class DebugData
         {
             #region Fields
-            public const bool StartFallTimer = true;
+            public const bool StartFallTimer = false;
             #endregion
         }
 
