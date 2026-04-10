@@ -28,10 +28,9 @@ namespace Tetris.ModelsLogic
         /// <param name="MaxPlayersCount">The maximum allowed players in the game.</param>
         /// <param name="IsPublicGame">Indicates whether the game is public or private.</param>
         /// <param name="firstShape">The initial shape to display on the boards.</param>
-        /// <param name="secondShape">The second shape to display on the boards.</param>
         /// <param name="GameID">Unique identifier for the game.</param>
         public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
-        int MaxPlayersCount, bool IsPublicGame, Shape firstShape, Shape secondShape, string GameID)
+        int MaxPlayersCount, bool IsPublicGame, Shape firstShape, string GameID)
         {
             this.CubeColor = CubeColor;
             this.CreatorName = CreatorName;
@@ -39,8 +38,45 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-            this.GameBoard = new(GameID, firstShape, secondShape, false);
-            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShape.Duplicate(), true);
+            
+            List<Shape> secondShapesList = [];
+            for (int i = 1; i < ConstData.MinShapesInQueue; i++)
+            {
+                FirstShapesList.Add(new(i));
+                secondShapesList.Add(FirstShapesList.Last().Duplicate());
+            }
+            this.GameBoard = new(GameID, firstShape, FirstShapesList, false);
+            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShapesList, true);
+            OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
+            GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
+        }
+
+        /// <summary>
+        /// Initializes a game with the specified settings, creating both player and opponent boards.
+        /// </summary>
+        /// <param name="CubeColor">The color used for cubes on the board.</param>
+        /// <param name="CreatorName">The name of the game creator.</param>
+        /// <param name="CurrentPlayersCount">The current number of players in the game.</param>
+        /// <param name="MaxPlayersCount">The maximum allowed players in the game.</param>
+        /// <param name="IsPublicGame">Indicates whether the game is public or private.</param>
+        /// <param name="firstShape">The initial shape to display on the boards.</param>
+        /// <param name="firstShapes">The initial shapes to display on the boards.</param>
+        /// <param name="GameID">Unique identifier for the game.</param>
+        public Game(string CubeColor, string CreatorName, int CurrentPlayersCount,
+        int MaxPlayersCount, bool IsPublicGame, Shape firstShape, List<Shape> firstShapes, string GameID)
+        {
+            this.CubeColor = CubeColor;
+            this.CreatorName = CreatorName;
+            this.CurrentPlayersCount = CurrentPlayersCount;
+            this.MaxPlayersCount = MaxPlayersCount;
+            this.IsPublicGame = IsPublicGame;
+            this.GameID = GameID;
+
+            List<Shape> secondShapesList = [];
+            for (int i = 1; i < ConstData.MinShapesInQueue; i++)
+                secondShapesList.Add(firstShapes[i - 1].Duplicate());
+            this.GameBoard = new(GameID, firstShape, firstShapes, false);
+            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShapesList, true);
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
@@ -384,8 +420,7 @@ namespace Tetris.ModelsLogic
         protected override void ProcessShapeChange(IDocumentSnapshot snapshot)
         {
             if (GameBoard == null || GameBoard.ShapesQueue == null ||
-                    OpGameBoard == null || OpGameBoard.ShapesQueue == null ||
-                    GameBoard.CurrentShape == null || OpGameBoard.CurrentShape == null) return;
+                    OpGameBoard == null || OpGameBoard.ShapesQueue == null) return;
 
             Shape newShape = fbd.CreateShape(snapshot);
             Shape newShape2 = newShape.Duplicate();

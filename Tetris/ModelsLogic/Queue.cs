@@ -30,7 +30,7 @@ namespace Tetris.ModelsLogic
         /// <returns><c>true</c> if the queue contains no elements; otherwise, <c>false</c>.</returns>
         public override bool IsEmpty()
         {
-            return First == null;
+            return Count == 0;
         }
 
         /// <summary>
@@ -46,6 +46,7 @@ namespace Tetris.ModelsLogic
                 First = Last;
             else
                 oldLast.Next = Last;
+            Count++;
         }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace Tetris.ModelsLogic
                 First = First.Next;
                 if (IsEmpty())
                     Last = null;
+                Count--;
             }
             return result;
         }

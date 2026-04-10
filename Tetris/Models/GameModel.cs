@@ -57,8 +57,9 @@ namespace Tetris.Models
         public ObservableCollection<User> UsersInGame { get; set; } = [];
         public GameBoard? GameBoard { get; set; }
         public GameBoard? OpGameBoard { get; set; }
+        public List<Shape> FirstShapesList { get; set; } = [];
         #endregion
-        
+
         #region Public Methods
         public abstract void RegisterTimer();
         public abstract Task OnPlayerLeaveWR();

@@ -18,8 +18,7 @@ namespace Tetris.Interfaces
         public string IdentifyFireBaseError(Task task);
         public string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            int firstShapeInGameId, string firstShapeColor, int secondShapeId,
-            int secondShapeInGameId, string secondShapeColor, bool isPublicGame);
+            int firstShapeInGameId, string firstShapeColor, List<Shape> firstShapes, bool isPublicGame);
         public IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public void GetAvailGames(Action<ObservableCollection<Game>> onComplete);

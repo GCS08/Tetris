@@ -27,7 +27,7 @@ namespace Tetris.Models
         #region Properties
         public Shape? CurrentShape { get; set; }
         public string? GameID { get; set; }
-        public ModelsLogic.Queue<Shape>? ShapesQueue { get; set; } = new();
+        public ModelsLogic.Queue<Shape> ShapesQueue { get; set; } = new();
         public User? User { get; set; }
         public bool IsOp { get; set; }
         public bool EnableMoves { get; set; } = false;

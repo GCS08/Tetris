@@ -11,6 +11,7 @@ namespace Tetris.Models
         #region Properties
         public Node<T>? First { get; set; }
         public Node<T>? Last { get; set; }
+        public int Count { get; set; } = 0;
         #endregion
 
         #region Public Methods

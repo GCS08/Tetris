@@ -44,8 +44,7 @@ namespace Tetris.Models
         public abstract string IdentifyFireBaseError(Task task);
         public abstract string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            int firstShapeInGameId, string firstShapeColor, int secondShapeId,
-            int secondShapeInGameId, string secondShapeColor, bool isPublicGame);
+            int firstShapeInGameId, string firstShapeColor, List<Shape> firstShapes, bool isPublicGame);
         public abstract IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public abstract void GetAvailGames(Action<ObservableCollection<Game>> onComplete);

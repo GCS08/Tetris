@@ -1,4 +1,5 @@
-﻿using Firebase.Auth;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using Firebase.Auth;
 using Plugin.CloudFirestore;
 using System.Collections.ObjectModel;
 using System.Net.Http.Json;
@@ -255,15 +256,11 @@ namespace Tetris.ModelsLogic
         /// <param name="firstShapeId">The ID of the current shape.</param>
         /// <param name="firstShapeInGameId">The in-game ID of the current shape.</param>
         /// <param name="firstShapeColor">The color of the current shape.</param>
-        /// <param name="secondShapeId">The ID of the next shape.</param>
-        /// <param name="secondShapeInGameId">The in-game ID of the next shape.</param>
-        /// <param name="secondShapeColor">The color of the next shape.</param>
         /// <param name="isPublicGame">Indicates whether the game is public.</param>
         /// <returns>The auto-generated document ID of the newly created game entry.</returns>
         public override string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            int firstShapeInGameId, string firstShapeColor, int secondShapeId,
-            int secondShapeInGameId, string secondShapeColor, bool isPublicGame)
+            int firstShapeInGameId, string firstShapeColor, List<Shape> firstShapes, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -277,27 +274,30 @@ namespace Tetris.ModelsLogic
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
                 TimeCreated = DateTime.UtcNow,
-                Changed = string.Empty
-            });
-
-            docRef.UpdateAsync(new Dictionary<string, object>
-            {
-                {
-                    Keys.CurrentShapeMapKey, new Dictionary<string, object>
+                Changed = string.Empty,
+                CurrentShapeMap = new Dictionary<string, object>
                     {
                         { Keys.ShapeIdKey, firstShapeId },
                         { Keys.ShapeInGameIdKey, firstShapeInGameId },
                         { Keys.ShapeColorKey, firstShapeColor }
                     }
-                },
+            });
+
+            Dictionary<string, object> nextShapeMap = [];
+            for (int i = 1; i < ConstData.MinShapesInQueue; i++)
+            {
+                nextShapeMap[i.ToString()] = new Dictionary<string, object>
                 {
-                    Keys.NextShapeMapKey, new Dictionary<string, object>
-                    {
-                        { Keys.ShapeIdKey, secondShapeId },
-                        { Keys.ShapeInGameIdKey, secondShapeInGameId },
-                        { Keys.ShapeColorKey, secondShapeColor }
-                    }
-                }
+                    { Keys.ShapeIdKey, firstShapes[i - 1].Id },
+                    { Keys.ShapeInGameIdKey, firstShapes[i - 1].InGameId },
+                    { Keys.ShapeColorKey, Converters.StringAndColorConverter
+                        .ColorToColorName(firstShapes[i - 1].Color!) }
+                };
+            }
+
+            docRef.UpdateAsync(new Dictionary<string, object>
+            {
+                { Keys.NextShapeMapKey, nextShapeMap }
             });
 
             for (int i = 0; i < maxPlayersCount; i++)
@@ -355,27 +355,45 @@ namespace Tetris.ModelsLogic
                 .WhereEqualsTo(Keys.IsPublicGameKey, true).GetAsync();
             ObservableCollection<Game> newList = [];
 
-            foreach (IDocumentSnapshot doc in snapshot.Documents)
+            foreach (IDocumentSnapshot docSnap in snapshot.Documents)
             {
+                List<Shape> firstShapes = [];
+                for (int i = 1; i < ConstData.MinShapesInQueue; i++)
+                {
+                    firstShapes.Add(
+                        new(
+                            docSnap.Get<int>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeIdKey
+                            ),
+                            docSnap.Get<int>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
+                            ),
+                            docSnap.Get<string>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeColorKey)!
+                        )
+                    );
+                }
                 Game game = new(
-                    doc.Get<string>(Keys.CubeColorKey)!,
-                    doc.Get<string>(Keys.CreatorNameKey)!,
-                    doc.Get<int>(Keys.CurrentPlayersCountKey),
-                    doc.Get<int>(Keys.MaxPlayersCountKey),
-                    doc.Get<bool>(Keys.IsPublicGameKey),
-                    new Shape(doc.Get<int>(Keys.CurrentShapeMapKey +
-                        TechnicalConsts.DotSign + Keys.ShapeIdKey),
-                        doc.Get<int>(Keys.CurrentShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
-                        doc.Get<string>(Keys.CurrentShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
-                    new Shape(doc.Get<int>(Keys.NextShapeMapKey +
-                    TechnicalConsts.DotSign + Keys.ShapeIdKey),
-                        doc.Get<int>(Keys.NextShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey),
-                        doc.Get<string>(Keys.NextShapeMapKey + 
-                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!),
-                    doc.Id
+                    docSnap.Get<string>(Keys.CubeColorKey)!,
+                    docSnap.Get<string>(Keys.CreatorNameKey)!,
+                    docSnap.Get<int>(Keys.CurrentPlayersCountKey),
+                    docSnap.Get<int>(Keys.MaxPlayersCountKey),
+                    docSnap.Get<bool>(Keys.IsPublicGameKey),
+                    new Shape(
+                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeIdKey
+                    ),
+                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
+                    ),
+                        docSnap.Get<string>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!
+                    ),
+                    firstShapes,
+                    docSnap.Id
                 );
                 newList.Add(game);
             }
@@ -737,42 +755,42 @@ namespace Tetris.ModelsLogic
 
             if (docSnap != null)
             {
-                result = new Game(
+                List<Shape> firstShapes = [];
+                for (int i = 1; i < ConstData.MinShapesInQueue; i++)
+                {
+                    firstShapes.Add(
+                        new(
+                            docSnap.Get<int>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeIdKey
+                            ),
+                            docSnap.Get<int>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
+                            ),
+                            docSnap.Get<string>(
+                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
+                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeColorKey)!
+                        )
+                    );
+                }
+                result = new(
                     docSnap.Get<string>(Keys.CubeColorKey)!,
                     docSnap.Get<string>(Keys.CreatorNameKey)!,
                     docSnap.Get<int>(Keys.CurrentPlayersCountKey),
                     docSnap.Get<int>(Keys.MaxPlayersCountKey),
                     docSnap.Get<bool>(Keys.IsPublicGameKey),
                     new Shape(
-                        docSnap.Get<int>(
-                            Keys.CurrentShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeIdKey),
-
-                        docSnap.Get<int>(
-                            Keys.CurrentShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeInGameIdKey),
-
-                        docSnap.Get<string>(
-                            Keys.CurrentShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeColorKey)!),
-                    new Shape(
-                        docSnap.Get<int>(
-                            Keys.NextShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeIdKey),
-
-                        docSnap.Get<int>(
-                            Keys.NextShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeInGameIdKey),
-
-                        docSnap.Get<string>(
-                            Keys.NextShapeMapKey +
-                            TechnicalConsts.DotSign +
-                            Keys.ShapeColorKey)!),
+                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeIdKey
+                    ),
+                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
+                    ),
+                        docSnap.Get<string>(Keys.CurrentShapeMapKey +
+                        TechnicalConsts.DotSign + Keys.ShapeColorKey)!
+                    ),
+                    firstShapes,
                     docSnap.Id
                 );
             }
