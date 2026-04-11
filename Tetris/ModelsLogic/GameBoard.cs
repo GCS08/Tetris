@@ -56,7 +56,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void StartGame()
         {
-            if (ConstData.DebugData.StartFallTimer && FallTimer != null)
+            if (ConstData.DebugData.StartFallTimer && FallTimer != null && !FallTimer.IsRunning)
                 FallTimer.Start();
             EnableMoves = true;
         }
@@ -366,7 +366,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override void ShapeAtBottom()
         {
-            if (User == null || GameID == null || FallTimer == null || CurrentShape == null) return;
+            if (User == null) return;
             if (!IsOp)
             {
                 QueueOfMovesQueue!.Insert(MovesQueue);
@@ -382,13 +382,6 @@ namespace Tetris.ModelsLogic
                 User.TotalLines += linesCleared;
                 Score += linesCleared * ConstData.ScorePerLine * ComboCount;
                 ComboCount++;
-                if (!IsOp)
-                    FallTimer.Interval = TimeSpan.FromSeconds(
-                        Math.Max(
-                            ConstData.MinFallIntervalS,
-                            FallTimer.Interval.TotalSeconds * ConstData.ShapeFallIntervalMult
-                        )
-                    );
             }
             else
                 ComboCount = 1;
@@ -397,7 +390,7 @@ namespace Tetris.ModelsLogic
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {
-                if (ShapesQueue == null || CurrentShape == null) return;
+                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
 
                 CurrentShape = ShapesQueue.Remove();
                 ShowShape();
