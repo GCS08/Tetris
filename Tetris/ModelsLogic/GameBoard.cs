@@ -68,7 +68,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void MoveRightShape()
         {
-            if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
+            if (!EnableMoves || CurrentShape == null || Board == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -109,7 +109,6 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftX++;
                 ShowShape();
-                MovesQueue.Insert(Keys.RightKey);
             }
         }
 
@@ -120,7 +119,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void MoveLeftShape()
         {
-            if (!EnableMoves || CurrentShape == null || Board == null || MovesQueue == null) return;
+            if (!EnableMoves || CurrentShape == null || Board == null) return;
 
             int shapeHeight = CurrentShape.Cells.GetLength(0);
             int shapeWidth = CurrentShape.Cells.GetLength(1);
@@ -154,7 +153,6 @@ namespace Tetris.ModelsLogic
                 EraseShape();
                 CurrentShape.TopLeftX--;
                 ShowShape();
-                MovesQueue.Insert(Keys.LeftKey);
             }
         }
 
@@ -166,10 +164,9 @@ namespace Tetris.ModelsLogic
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
         public override void MoveDownShape() 
         {
-            if (isMoving || !EnableMoves || CurrentShape == null || GameID == null || MovesQueue == null) return;
+            if (isMoving || !EnableMoves || CurrentShape == null || GameID == null) return;
 
             isMoving = true;
-            MovesQueue.Insert(Keys.DownKey);
             // Move or lock
             if (CanMoveDown())
             {
@@ -196,14 +193,13 @@ namespace Tetris.ModelsLogic
         /// <returns>A task representing the asynchronous operation of moving the shape down.</returns>
         public override void SnapDownShape() 
         {
-            if (isMoving || FallTimer == null || CurrentShape == null || GameID == null || MovesQueue == null || !EnableMoves) return;
+            if (isMoving || FallTimer == null || CurrentShape == null || GameID == null || !EnableMoves) return;
             
             isMoving = true;
             EraseShape();
             while (CanMoveDown())
                 CurrentShape.TopLeftY++;
 
-            MovesQueue.Insert(Keys.SnapDownKey);
             ShowShape();
             ShapeAtBottom();
             if (!IsOp)
@@ -219,7 +215,7 @@ namespace Tetris.ModelsLogic
         public override void RotateShape()
         {
             if (CurrentShape == null || CurrentShape.RotationStates == null
-                || !EnableMoves || MovesQueue == null) return;
+                || !EnableMoves) return;
 
             int nextIndex = (CurrentShape.RotationIndex + 1) % CurrentShape.RotationStates.Count;
             bool[,] nextCells = CurrentShape.RotationStates[nextIndex];
@@ -235,7 +231,6 @@ namespace Tetris.ModelsLogic
                 CurrentShape.RotationIndex = nextIndex;
             }
 
-            MovesQueue.Insert(Keys.RotateKey);
             ShowShape();
         }
 
@@ -317,6 +312,17 @@ namespace Tetris.ModelsLogic
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
         }
 
+        public override void ApplyMovesFromMap(Dictionary<string, int> playerMoveMap)
+        {
+            if (!IsOp) return;
+            EraseShape();
+            CurrentShape = ShapesQueue!.Remove();
+            CurrentShape.TopLeftX = playerMoveMap[Keys.X];
+            CurrentShape.TopLeftY = playerMoveMap[Keys.Y];
+            CurrentShape.RotationIndex = playerMoveMap[Keys.RotationIndex];
+            ShowShape();
+        }
+
         #endregion
 
         #region Protected Methods
@@ -369,7 +375,12 @@ namespace Tetris.ModelsLogic
             if (User == null) return;
             if (!IsOp)
             {
-                QueueOfMovesQueue!.Insert(MovesQueue);
+                QueueOfFinalStates!.Insert(new Dictionary<string, int>
+                {
+                    { Keys.X, CurrentShape!.TopLeftX },
+                    { Keys.Y, CurrentShape.TopLeftY },
+                    { Keys.RotationIndex, CurrentShape.RotationIndex }
+                });
                 if (PushMovesToFirebaseTimer != null && !PushMovesToFirebaseTimer.IsRunning)
                     PushMovesToFirebaseTimer.Start();
             }
@@ -402,8 +413,8 @@ namespace Tetris.ModelsLogic
         protected override void PushMovesToFirebase()
         {
             if (User == null || GameID == null) return;
-            if (!QueueOfMovesQueue.IsEmpty())
-                _ = fbd.UploadMoves(User!.UserID, GameID, QueueOfMovesQueue.Remove());
+            if (!QueueOfFinalStates.IsEmpty())
+                _ = fbd.UploadFinalState(User!.UserID, GameID, QueueOfFinalStates.Remove());
             else
             {
                 if (PushMovesToFirebaseTimer != null && PushMovesToFirebaseTimer.IsRunning)

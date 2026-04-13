@@ -32,8 +32,8 @@ namespace Tetris.Interfaces
         public void SetGameIsFull(string gameID);
         public void AddShape(Shape currentShape, string gameId);
         public Shape CreateShape(IDocumentSnapshot snapshot);
-        public Task UploadMoves(string userID, string gameID, 
-            ModelsLogic.Queue<string> movesQueue);
+        public Task UploadFinalState(string userID, string gameID,
+            Dictionary<string, int> movesQueue);
         public IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public void SetPlayerReady(string gameID, int maxPlayersCount, string userID);

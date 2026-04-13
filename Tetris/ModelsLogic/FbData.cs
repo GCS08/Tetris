@@ -551,10 +551,10 @@ namespace Tetris.ModelsLogic
         /// </summary>
         /// <param name="userID">The unique identifier of the player finishing the round.</param>
         /// <param name="gameID">The unique identifier of the game.</param>
-        /// <param name="movesQueue">A queue containing the moves made by the player during the round.</param>
+        /// <param name="finalState">A queue containing the moves made by the player during the round.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public override async Task UploadMoves(
-            string userID, string gameID, Queue<string> movesQueue)
+        public override async Task UploadFinalState(
+            string userID, string gameID, Dictionary<string, int> finalState)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
@@ -570,21 +570,12 @@ namespace Tetris.ModelsLogic
                     found = true;
             desiredIndex--;
 
-            int counter = 0;
-            Dictionary<int, string> moves = [];
-            while (!movesQueue.IsEmpty())
-            {
-                string move = movesQueue.Remove();
-                moves.Add(counter, move);
-                counter++;
-            }
-
             Dictionary<string, object> updates = new()
             {
                 { Keys.ChangeKey, Keys.PlayerMovesKey },
                 {
                     Keys.PlayerDetailsKey + desiredIndex + 
-                    TechnicalConsts.DotSign + Keys.PlayerMovesKey, moves
+                    TechnicalConsts.DotSign + Keys.PlayerMovesKey, finalState
                 },
                 {
                     Keys.PlayerDetailsKey + desiredIndex + 

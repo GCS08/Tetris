@@ -80,5 +80,8 @@
         public const string NotificationChannelId = "default";
         public const string NotificationChannelName = "Default";
         public const string PrivateJoinCodeKey = "PrivateJoinCode";
+        public const string X = "X";
+        public const string Y = "Y";
+        public const string RotationIndex = "RotationIndex";
     }
 }

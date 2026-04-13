@@ -450,17 +450,11 @@ namespace Tetris.ModelsLogic
                     + Keys.PlayerIdKey) != User.UserID)// Op player has moved
             {
                 fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
-                Queue<string> tempQueue = new();
 
-                Dictionary<int, string> playerMoveMap = snapshot.Get<Dictionary<int, string>>
+                Dictionary<string, int> playerMoveMap = snapshot.Get<Dictionary<string, int>>
                     (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
 
-                for (int i = 0; i < playerMoveMap.Count; i++)
-                    tempQueue.Insert(playerMoveMap[i]);
-
-                OpMovesQueueOfQueues.Insert(tempQueue);
-                if (OpFallTimer != null && !OpFallTimer.IsRunning)
-                    OpFallTimer.Start();
+                OpGameBoard?.ApplyMovesFromMap(playerMoveMap);
             }
         }
 
