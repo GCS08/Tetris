@@ -254,13 +254,12 @@ namespace Tetris.ModelsLogic
         /// <param name="maxPlayersCount">The maximum number of players allowed in the game.</param>
         /// <param name="isFull">Indicates whether the game is full.</param>
         /// <param name="firstShapeId">The ID of the current shape.</param>
-        /// <param name="firstShapeInGameId">The in-game ID of the current shape.</param>
         /// <param name="firstShapeColor">The color of the current shape.</param>
         /// <param name="isPublicGame">Indicates whether the game is public.</param>
         /// <returns>The auto-generated document ID of the newly created game entry.</returns>
         public override string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            int firstShapeInGameId, string firstShapeColor, List<Shape> firstShapes, bool isPublicGame)
+            string firstShapeColor, List<Shape> firstShapes, bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();
@@ -274,11 +273,10 @@ namespace Tetris.ModelsLogic
                 IsFull = isFull,
                 IsPublicGame = isPublicGame,
                 TimeCreated = DateTime.UtcNow,
-                Changed = string.Empty,
+                Changed = Keys.WaitingRoomKey,
                 CurrentShapeMap = new Dictionary<string, object>
                     {
                         { Keys.ShapeIdKey, firstShapeId },
-                        { Keys.ShapeInGameIdKey, firstShapeInGameId },
                         { Keys.ShapeColorKey, firstShapeColor }
                     }
             });
@@ -289,7 +287,6 @@ namespace Tetris.ModelsLogic
                 nextShapeMap[i.ToString()] = new Dictionary<string, object>
                 {
                     { Keys.ShapeIdKey, firstShapes[i - 1].Id },
-                    { Keys.ShapeInGameIdKey, firstShapes[i - 1].InGameId },
                     { Keys.ShapeColorKey, Converters.StringAndColorConverter
                         .ColorToColorName(firstShapes[i - 1].Color!) }
                 };
@@ -311,7 +308,7 @@ namespace Tetris.ModelsLogic
                             { Keys.PlayerIdKey, currentUserId },
                             { Keys.IsShapeAtBottomKey, false },
                             { Keys.IsPlayerReadyKey, false },
-                            { Keys.PlayerMovesKey, new Dictionary<string, object> { } }
+                            { Keys.FinalStateKey, new Dictionary<string, object> { } }
                         }
                     }
                 });
@@ -366,10 +363,6 @@ namespace Tetris.ModelsLogic
                                 Keys.NextShapeMapKey + TechnicalConsts.DotSign
                                 + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeIdKey
                             ),
-                            docSnap.Get<int>(
-                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
-                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
-                            ),
                             docSnap.Get<string>(
                                 Keys.NextShapeMapKey + TechnicalConsts.DotSign
                                 + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeColorKey)!
@@ -385,9 +378,6 @@ namespace Tetris.ModelsLogic
                     new Shape(
                         docSnap.Get<int>(Keys.CurrentShapeMapKey +
                         TechnicalConsts.DotSign + Keys.ShapeIdKey
-                    ),
-                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
-                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
                     ),
                         docSnap.Get<string>(Keys.CurrentShapeMapKey +
                         TechnicalConsts.DotSign + Keys.ShapeColorKey)!
@@ -430,15 +420,35 @@ namespace Tetris.ModelsLogic
         {
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(id);
             IDocumentSnapshot docSnap = await docRef.GetAsync();
-            _ = docRef.UpdateAsync(Keys.CurrentPlayersCountKey, FieldValue.Increment(1));
             bool addedOnce = false;
-            for (int i = 0; i < docSnap.Get<int>(Keys.MaxPlayersCountKey) && !addedOnce; i++)
+            int currentPlayersCount = docSnap.Get<int>(Keys.CurrentPlayersCountKey),
+                maxPlayersCount = docSnap.Get<int>(Keys.MaxPlayersCountKey);
+            for (int i = 0; i < maxPlayersCount && !addedOnce; i++)
                 if (docSnap.Get<string>(Keys.PlayerDetailsKey + i + 
                     TechnicalConsts.DotSign + Keys.PlayerIdKey) == string.Empty)
                 {
                     addedOnce = true;
-                    _ = docRef.UpdateAsync(Keys.PlayerDetailsKey + i + 
-                        TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID);
+                    _ = docRef.UpdateAsync(
+                        currentPlayersCount == maxPlayersCount ?
+                        new Dictionary<string, object>
+                        {
+                            {Keys.ChangeKey, Keys.WaitingRoomKey },
+                            { Keys.CurrentPlayersCountKey, FieldValue.Increment(1)},
+                            { Keys.IsFullKey, true},
+                            {
+                                Keys.PlayerDetailsKey + i +
+                                TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID 
+                            }
+                        }:
+                        new Dictionary<string, object>
+                        {
+                            {Keys.ChangeKey, Keys.WaitingRoomKey },
+                            { Keys.CurrentPlayersCountKey, FieldValue.Increment(1)},
+                            {
+                                Keys.PlayerDetailsKey + i +
+                                TechnicalConsts.DotSign + Keys.PlayerIdKey, joiningUserID
+                            }
+                        });
                 }
         }
      
@@ -482,29 +492,6 @@ namespace Tetris.ModelsLogic
             }
             onCompleteChange(newList);
         }
-     
-        /// <summary>
-        /// Asynchronously retrieves the current number of players for the specified game.
-        /// </summary>
-        /// <param name="gameID">The unique identifier of the game.</param>
-        /// <returns>A task representing the asynchronous operation, containing the current player count.</returns>
-        public override async Task<int> GetCurrentPlayersCount(string gameID)
-        {
-            IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document(gameID);
-            IDocumentSnapshot docSnap = await docRef.GetAsync();
-            return docSnap.Get<int>(Keys.CurrentPlayersCountKey);
-        }
- 
-        /// <summary>
-        /// Marks the specified game as full in the database.
-        /// </summary>
-        /// <param name="gameID">The unique identifier of the game to update.</param>
-        public override void SetGameIsFull(string gameID)
-        {
-            IDocumentReference documentReference = fs.Collection(
-                Keys.GamesCollectionName).Document(gameID);
-            documentReference.UpdateAsync(Keys.IsFullKey, true);
-        }
     
         /// <summary>
         /// Updates the current shape information for a specified game in the database.
@@ -520,7 +507,6 @@ namespace Tetris.ModelsLogic
                 { Keys.CurrentShapeMapKey, new Dictionary<string, object>
                     {
                         { Keys.ShapeIdKey, currentShape.Id },
-                        { Keys.ShapeInGameIdKey, currentShape.InGameId },
                         { Keys.ShapeColorKey, Converters.
                         StringAndColorConverter.ColorToColorName(currentShape.Color) }
                     }
@@ -539,8 +525,6 @@ namespace Tetris.ModelsLogic
             return new Shape(
                 snapshot.Get<int>(Keys.CurrentShapeMapKey +
                 TechnicalConsts.DotSign + Keys.ShapeIdKey)!,
-                snapshot.Get<int>(Keys.CurrentShapeMapKey + 
-                TechnicalConsts.DotSign + Keys.ShapeInGameIdKey)!,
                 snapshot.Get<string>(Keys.CurrentShapeMapKey +
                 TechnicalConsts.DotSign + Keys.ShapeColorKey)!);
         }
@@ -554,7 +538,7 @@ namespace Tetris.ModelsLogic
         /// <param name="finalState">A queue containing the moves made by the player during the round.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         public override async Task UploadFinalState(
-            string userID, string gameID, Dictionary<string, int> finalState)
+            string userID, string gameID, Dictionary<string, object> finalState)
         {
             IDocumentReference dr = fs.Collection(Keys.GamesCollectionName).Document(gameID);
             IDocumentSnapshot currentSnapshot = await dr.GetAsync();
@@ -572,10 +556,10 @@ namespace Tetris.ModelsLogic
 
             Dictionary<string, object> updates = new()
             {
-                { Keys.ChangeKey, Keys.PlayerMovesKey },
+                { Keys.ChangeKey, Keys.FinalStateKey },
                 {
                     Keys.PlayerDetailsKey + desiredIndex + 
-                    TechnicalConsts.DotSign + Keys.PlayerMovesKey, finalState
+                    TechnicalConsts.DotSign + Keys.FinalStateKey, finalState
                 },
                 {
                     Keys.PlayerDetailsKey + desiredIndex + 
@@ -620,8 +604,14 @@ namespace Tetris.ModelsLogic
                 if (snapshot.Get<string>(Keys.PlayerDetailsKey + i + 
                     TechnicalConsts.DotSign + Keys.PlayerIdKey) == userID)
                 {
-                    _ = dr.UpdateAsync(Keys.PlayerDetailsKey + i + 
-                        TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true);
+                    _ = dr.UpdateAsync(new Dictionary<string, object>
+                    {
+                        { Keys.ChangeKey, Keys.ReadyKey },
+                        {
+                            Keys.PlayerDetailsKey + i +
+                            TechnicalConsts.DotSign + Keys.IsPlayerReadyKey, true
+                        }
+                    });
                     changed = true;
                 }
         }
@@ -755,10 +745,6 @@ namespace Tetris.ModelsLogic
                                 Keys.NextShapeMapKey + TechnicalConsts.DotSign
                                 + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeIdKey
                             ),
-                            docSnap.Get<int>(
-                                Keys.NextShapeMapKey + TechnicalConsts.DotSign
-                                + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
-                            ),
                             docSnap.Get<string>(
                                 Keys.NextShapeMapKey + TechnicalConsts.DotSign
                                 + i.ToString() + TechnicalConsts.DotSign + Keys.ShapeColorKey)!
@@ -774,9 +760,6 @@ namespace Tetris.ModelsLogic
                     new Shape(
                         docSnap.Get<int>(Keys.CurrentShapeMapKey +
                         TechnicalConsts.DotSign + Keys.ShapeIdKey
-                    ),
-                        docSnap.Get<int>(Keys.CurrentShapeMapKey +
-                        TechnicalConsts.DotSign + Keys.ShapeInGameIdKey
                     ),
                         docSnap.Get<string>(Keys.CurrentShapeMapKey +
                         TechnicalConsts.DotSign + Keys.ShapeColorKey)!
@@ -806,11 +789,7 @@ namespace Tetris.ModelsLogic
                 Keys.UsersCollectionName).Document(id).GetAsync();
             User user = new()
             {
-                UserID = id,
                 UserName = docSnap.Get<string>(Keys.UserNameKey)!,
-                Email = docSnap.Get<string>(Keys.EmailKey)!,
-                DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
-                GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
                 HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
                 TotalLines = docSnap.Get<int>(Keys.TotalLinesKey)
             };

@@ -68,7 +68,7 @@ namespace Tetris.ViewModels
         public NewGameConfigPageVM(JoinableGamesList joinableGamesList)
         {
             currentNewGame = new(Keys.RedKey, User?.UserName ??
-                Strings.UsernameUa, 1, 2, true, new(0), string.Empty);
+                Strings.UsernameUa, 1, 2, true, new(), string.Empty);
             gamesList = joinableGamesList;
         }
 

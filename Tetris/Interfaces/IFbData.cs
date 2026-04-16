@@ -18,7 +18,7 @@ namespace Tetris.Interfaces
         public string IdentifyFireBaseError(Task task);
         public string AddGameToDB(string userID, string creatorName, string cubeColor,
             int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            int firstShapeInGameId, string firstShapeColor, List<Shape> firstShapes, bool isPublicGame);
+            string firstShapeColor, List<Shape> firstShapes, bool isPublicGame);
         public IListenerRegistration AddGamesCollectionListener(
             Plugin.CloudFirestore.QuerySnapshotHandler OnChange);
         public void GetAvailGames(Action<ObservableCollection<Game>> onComplete);
@@ -28,12 +28,10 @@ namespace Tetris.Interfaces
         public void DeleteGameFromDB(string id);
         public void GetPlayersFromDocument(string gameID,
             Action<ObservableCollection<ModelsLogic.User>> onCompleteChange);
-        public Task<int> GetCurrentPlayersCount(string gameID);
-        public void SetGameIsFull(string gameID);
         public void AddShape(Shape currentShape, string gameId);
         public Shape CreateShape(IDocumentSnapshot snapshot);
         public Task UploadFinalState(string userID, string gameID,
-            Dictionary<string, int> movesQueue);
+            Dictionary<string, object> movesQueue);
         public IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public void SetPlayerReady(string gameID, int maxPlayersCount, string userID);

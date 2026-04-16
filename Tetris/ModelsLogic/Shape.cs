@@ -14,13 +14,9 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Initializes a new <see cref="Shape"/> with a random type and color.
         /// </summary>
-        /// <param name="inGameId">
-        /// The unique identifier for this shape instance within the current game.
-        /// </param>
-        public Shape(int inGameId)
+        public Shape()
         {
             this.Id = rnd.Next(ConstData.ShapesCount);
-            this.InGameId = inGameId;
             this.RotationStates = ConstData.ShapeRotationState[this.Id];
             this.Color = ConstData.colors[rnd.Next(ConstData.colors.Length)];
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
@@ -28,25 +24,49 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Initializes a new <see cref="Shape"/> with a specified type, color, and in-game ID.
+        /// Initializes a new <see cref="Shape"/> with a specified type, color.
         /// </summary>
         /// <param name="id">
         /// The shape type identifier (index into <see cref="ConstData.ShapeRotationState"/>).
         /// </param>
-        /// <param name="inGameId">
-        /// The unique identifier for this shape instance within the current game.
-        /// </param>
         /// <param name="color">
         /// The color of the shape, as a string name (converted to a <see cref="Color"/>).
         /// </param>
-        public Shape(int id, int inGameId, string color)
+        public Shape(int id, string color)
         {
             this.Id = id;
-            this.InGameId = inGameId;
             this.RotationStates = ConstData.ShapeRotationState[this.Id];
             this.Color = StringAndColorConverter.ColorNameToColor(color);
             this.TopLeftX = (ConstData.GameGridColumnCount - Cells.GetLength(1)) / 2;
             this.TopLeftY = 0;
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Shape"/> with a specified type, color, rotation index, and position.
+        /// </summary>
+        /// <param name="id">
+        /// The shape type identifier (index into <see cref="ConstData.ShapeRotationState"/>).
+        /// </param>
+        /// <param name="color">
+        /// The color of the shape, as a string name (converted to a <see cref="Color"/>).
+        /// </param>
+        /// <param name="rotationIndex">
+        /// The current rotation index of the shape.
+        /// </param>
+        /// <param name="topLeftX">
+        /// The X-coordinate of the shape's top-left corner on the game grid.
+        /// </param>
+        /// <param name="topLeftY">
+        /// The Y-coordinate of the shape's top-left corner on the game grid.
+        /// </param>
+        public Shape(int id, string color, int rotationIndex, int topLeftX, int topLeftY)
+        {
+            this.Id = id;
+            this.RotationStates = ConstData.ShapeRotationState[this.Id];
+            this.RotationIndex = rotationIndex;
+            this.Color = StringAndColorConverter.ColorNameToColor(color);
+            this.TopLeftX = topLeftX;
+            this.TopLeftY = topLeftY;
         }
 
         #endregion
@@ -66,7 +86,6 @@ namespace Tetris.ModelsLogic
             if (Color != null)
                 result = new Shape(
                     Id,
-                    InGameId,
                     StringAndColorConverter.ColorToColorName(Color)
                 );
             return result!;

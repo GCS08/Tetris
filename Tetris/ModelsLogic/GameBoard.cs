@@ -46,6 +46,32 @@ namespace Tetris.ModelsLogic
             for (int i = 0; i < nextShapes.Count; i++)
                 ShapesQueue.Insert(nextShapes[i]);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameBoard"/> class with the specified game ID,
+        /// current shape, and opponent mode. Sets up the game grid, initializes cubes, and configures
+        /// the fall timer for automatic shape movement.
+        /// </summary>
+        /// <param name="gameId">The unique identifier of the game.</param>
+        /// <param name="IsOp">Indicates whether the board is in opponent mode, affecting grid sizing and behavior.</param>
+        public GameBoard(string gameId, bool IsOp)
+        {
+            Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
+            this.IsOp = IsOp;
+            this.GameID = gameId;
+
+            FallTimer = Application.Current!.Dispatcher.CreateTimer();
+            FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
+            FallTimer.Tick += (s, e) => MoveDownShape();
+
+            PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
+            PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
+            PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+
+            for (int r = 0; r < ConstData.GameGridRowCount; r++)
+                for (int c = 0; c < ConstData.GameGridColumnCount; c++)
+                    Board[r, c] = new Cube(Colors.Transparent);
+        }
         #endregion
 
         #region Public Methods
@@ -312,15 +338,17 @@ namespace Tetris.ModelsLogic
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
         }
 
-        public override void ApplyMovesFromMap(Dictionary<string, int> playerMoveMap)
+        public override void ApplyMovesFromMap(Dictionary<string, object> finalStateMap)
         {
             if (!IsOp) return;
-            EraseShape();
-            CurrentShape = ShapesQueue!.Remove();
-            CurrentShape.TopLeftX = playerMoveMap[Keys.X];
-            CurrentShape.TopLeftY = playerMoveMap[Keys.Y];
-            CurrentShape.RotationIndex = playerMoveMap[Keys.RotationIndex];
+            CurrentShape = new(
+                int.Parse(finalStateMap[Keys.ShapeIdKey].ToString()!),
+                finalStateMap[Keys.ShapeColorKey].ToString()!,
+                int.Parse(finalStateMap[Keys.RotationIndex].ToString()!),
+                int.Parse(finalStateMap[Keys.X].ToString()!),
+                int.Parse(finalStateMap[Keys.Y].ToString()!));
             ShowShape();
+            ShapeAtBottom();
         }
 
         #endregion
@@ -373,40 +401,42 @@ namespace Tetris.ModelsLogic
         protected override void ShapeAtBottom()
         {
             if (User == null) return;
+            int linesCleared = CheckForLines();
             if (!IsOp)
             {
-                QueueOfFinalStates!.Insert(new Dictionary<string, int>
+                QueueOfFinalStates!.Insert(new Dictionary<string, object>
                 {
                     { Keys.X, CurrentShape!.TopLeftX },
+                    { Keys.ShapeIdKey, CurrentShape!.Id },
                     { Keys.Y, CurrentShape.TopLeftY },
-                    { Keys.RotationIndex, CurrentShape.RotationIndex }
+                    { Keys.RotationIndex, CurrentShape.RotationIndex },
+                    { Keys.ShapeColorKey, Converters.
+                    StringAndColorConverter.ColorToColorName(CurrentShape!.Color!) }
                 });
                 if (PushMovesToFirebaseTimer != null && !PushMovesToFirebaseTimer.IsRunning)
                     PushMovesToFirebaseTimer.Start();
-            }
 
-            int linesCleared = CheckForLines();
-            if (linesCleared > 0)
-            {
-                if (!IsOp)
+                if (linesCleared > 0)
+                {
                     SoundManager.PlayLineCleared();
-                User.TotalLines += linesCleared;
-                Score += linesCleared * ConstData.ScorePerLine * ComboCount;
-                ComboCount++;
+                    User.TotalLines += linesCleared;
+                    Score += linesCleared * ConstData.ScorePerLine * ComboCount;
+                    ComboCount++;
+                }
+                else
+                    ComboCount = 1;
             }
-            else
-                ComboCount = 1;
 
             if (CheckForLose())
                 OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
             else
             {
-                if (ShapesQueue == null || CurrentShape == null || GameID == null) return;
+                if (ShapesQueue == null || CurrentShape == null || GameID == null || IsOp) return;
 
                 CurrentShape = ShapesQueue.Remove();
                 ShowShape();
-                if (ShapesQueue.Count <= ConstData.MinShapesInQueue && !IsOp)
-                    fbd.AddShape(new(ShapesQueue.Last!.Value.InGameId + 1), GameID);
+                if (ShapesQueue.Count <= ConstData.MinShapesInQueue)
+                    fbd.AddShape(new(), GameID);
             }
         }
 

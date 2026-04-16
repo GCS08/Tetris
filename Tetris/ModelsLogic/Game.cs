@@ -39,14 +39,10 @@ namespace Tetris.ModelsLogic
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
             
-            List<Shape> secondShapesList = [];
             for (int i = 1; i < ConstData.MinShapesInQueue; i++)
-            {
-                FirstShapesList.Add(new(i));
-                secondShapesList.Add(FirstShapesList.Last().Duplicate());
-            }
+                FirstShapesList.Add(new());
             this.GameBoard = new(GameID, firstShape, FirstShapesList, false);
-            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShapesList, true);
+            this.OpGameBoard = new(GameID, true);
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
@@ -71,12 +67,8 @@ namespace Tetris.ModelsLogic
             this.MaxPlayersCount = MaxPlayersCount;
             this.IsPublicGame = IsPublicGame;
             this.GameID = GameID;
-
-            List<Shape> secondShapesList = [];
-            for (int i = 1; i < ConstData.MinShapesInQueue; i++)
-                secondShapesList.Add(firstShapes[i - 1].Duplicate());
             this.GameBoard = new(GameID, firstShape, firstShapes, false);
-            this.OpGameBoard = new(GameID, firstShape.Duplicate(), secondShapesList, true);
+            this.OpGameBoard = new(GameID, true);
             OpGameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
             GameBoard.OnGameFinishedLogic += OnGameFinishedLogicHandler;
         }
@@ -110,35 +102,17 @@ namespace Tetris.ModelsLogic
         /// Handles a player leaving the waiting room or the game,
         /// updating Firestore and removing the player locally.
         /// </summary>
-        public override async Task OnPlayerLeaveWR() 
+        public override void OnPlayerLeaveWR() 
         {
+            ilr?.Remove();
             if (CurrentPlayersCount <= 1)
-            {
-                ilr?.Remove();
                 fbd.DeleteGameFromDB(GameID);
-            }
             else
             {
-                await fbd.OnPlayerLeaveWR(GameID, User.UserID);
+                _ = fbd.OnPlayerLeaveWR(GameID, User.UserID);
                 CurrentPlayersCount--;
                 UsersInGame.Remove(User);
             }            
-        }
-
-        /// <summary>
-        /// Subscribes to Firestore updates for the waiting room.
-        /// </summary>
-        public override void AddWaitingRoomListener()
-        {
-            ilr = fbd.AddGameListener(GameID, OnChangeWaitingRoom);
-        }
-
-        /// <summary>
-        /// Removes the waiting room listener from Firestore updates.
-        /// </summary>
-        public override void RemoveWaitingRoomListener()
-        {
-            ilr?.Remove();
         }
 
         /// <summary>
@@ -153,22 +127,6 @@ namespace Tetris.ModelsLogic
         /// Removes the in-game listener from Firestore updates.
         /// </summary>
         public override void RemoveGameListener()
-        {
-            ilr?.Remove();
-        }
-
-        /// <summary>
-        /// Subscribes to Firestore updates for ready-state changes.
-        /// </summary>
-        public override void AddReadyListener()
-        {
-            ilr = fbd.AddGameListener(GameID, OnChangeReady);
-        }
-
-        /// <summary>
-        /// Removes the ready-state listener from Firestore updates.
-        /// </summary>
-        public override void RemoveReadyListener()
         {
             ilr?.Remove();
         }
@@ -193,8 +151,6 @@ namespace Tetris.ModelsLogic
         {
             WeakReferenceMessenger.Default.Send(
                 new AppMessage<StartGameTimerSettings>(startGameTimerSettings));
-
-            RemoveReadyListener();
         }
 
         /// <summary>
@@ -204,12 +160,6 @@ namespace Tetris.ModelsLogic
         {
             if (GameBoard == null || OpGameBoard == null || IsGameStarted) return;
 
-            OpFallTimer = Application.Current!.Dispatcher.CreateTimer();
-            OpFallTimer.Interval =
-                TimeSpan.FromSeconds(ConstData.OpShapeFallIntervalS);
-            OpFallTimer.Tick += ApplyOpMove;
-
-            AddGameListener();
             IsGameStarted = true;
             GameBoard.StartGame();
             OpGameBoard.EnableMoves = true;
@@ -296,15 +246,9 @@ namespace Tetris.ModelsLogic
         public override void UpdateInternet(bool isConnected)
         {
             if (!isConnected)
-            {
-                OpFallTimer?.Stop();
                 GameBoard?.FallTimer?.Stop();
-            }
             else
-            {
-                OpFallTimer?.Start();
                 GameBoard?.FallTimer?.Start();
-            }
         }
         #endregion
 
@@ -321,7 +265,7 @@ namespace Tetris.ModelsLogic
         protected override void OnGameFinishedLogicHandler(object? sender, EventArgs e)
         {
             if (GameBoard == null || OpGameBoard == null || GameBoard.User == null || 
-                OpGameBoard.User == null || GameBoard.FallTimer == null || OpFallTimer == null) return;
+                OpGameBoard.User == null || GameBoard.FallTimer == null) return;
             if (!IsStatsUpdatedOnGameFinished)
             {
                 GameBoard.User.HighestScore = GameBoard.User.HighestScore < GameBoard.Score
@@ -332,7 +276,6 @@ namespace Tetris.ModelsLogic
             }
             UnregisterTimer();
             GameBoard.FallTimer.Stop();
-            OpFallTimer.Stop();
             GameBoard.EnableMoves = false;
             OpGameBoard.EnableMoves = false;
             OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
@@ -367,10 +310,7 @@ namespace Tetris.ModelsLogic
         /// The Firestore document snapshot containing current ready states of all players.
         /// May be null if an error occurred or document is missing.
         /// </param>
-        /// <param name="error">
-        /// Any exception that occurred while retrieving the snapshot.
-        /// </param>
-        protected override void OnChangeReady(IDocumentSnapshot? snapshot, Exception? error)
+        protected override void ProcessReadyChange(IDocumentSnapshot? snapshot)
         {
             if (snapshot == null) return;
             bool allReady = true;
@@ -402,8 +342,12 @@ namespace Tetris.ModelsLogic
             {
                 case Keys.CurrentShapeMapKey:
                     ProcessShapeChange(snapshot); break;
-                case Keys.PlayerMovesKey:
+                case Keys.FinalStateKey:
                     ProcessMoveChange(snapshot); break;
+                case Keys.WaitingRoomKey:
+                    ProcessWaitingRoomChange(snapshot); break;
+                case Keys.ReadyKey:
+                    ProcessReadyChange(snapshot); break;
                 case Keys.ResetKey:
                     break;// no moves or the player who made the move is the current player, so ignore.
             }
@@ -451,10 +395,10 @@ namespace Tetris.ModelsLogic
             {
                 fbd.ResetIsShapeAtBottom(GameID, DesiredIndex);
 
-                Dictionary<string, int> playerMoveMap = snapshot.Get<Dictionary<string, int>>
-                    (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.PlayerMovesKey) ?? [];
+                Dictionary<string, object> finalStateMap = snapshot.Get<Dictionary<string, object>>
+                    (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.FinalStateKey) ?? [];
 
-                OpGameBoard?.ApplyMovesFromMap(playerMoveMap);
+                OpGameBoard?.ApplyMovesFromMap(finalStateMap);
             }
         }
 
@@ -466,10 +410,7 @@ namespace Tetris.ModelsLogic
         /// The Firestore document snapshot representing the waiting room state.
         /// May be null if an error occurred or document is missing.
         /// </param>
-        /// <param name="error">
-        /// Any exception that occurred while retrieving the snapshot.
-        /// </param>
-        protected override void OnChangeWaitingRoom(IDocumentSnapshot? snapshot, Exception? error)
+        protected override void ProcessWaitingRoomChange(IDocumentSnapshot? snapshot)
         {
             if (snapshot == null) return;
             CurrentPlayersCount = snapshot.Get<int>(Keys.CurrentPlayersCountKey);
@@ -493,7 +434,6 @@ namespace Tetris.ModelsLogic
             else
             {
                 if (GameBoard == null || OpGameBoard == null || User == null) return;
-                fbd.SetGameIsFull(GameID);
                 GameBoard.GameID = GameID;
                 OpGameBoard.GameID = GameID;
                 GameBoard.User = User;
@@ -502,95 +442,6 @@ namespace Tetris.ModelsLogic
                         OpGameBoard.User = user;
                 OnGameFull?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        /// <summary>
-        /// Applies the next move from the opponent's moves queue.
-        /// Called on each tick of the opponent's fall timer (OpFallTimer)
-        /// </summary>
-        /// <param name="sender">
-        /// The source of the timer event. Usually the <see cref="DispatcherTimer"/> instance.
-        /// </param>
-        /// <param name="e">
-        /// Event arguments for the timer tick event. Usually <see cref="EventArgs.Empty"/>.
-        /// </param>
-        protected override void ApplyOpMove(object? sender, EventArgs e)
-        {
-            if (GameBoard == null || GameBoard.User == null || OpFallTimer == null) return;
-            if (!OpMovesQueueOfQueues.IsEmpty())
-            {
-                if (OpMovesQueueOfQueues.First!.Value.IsEmpty())
-                    OpMovesQueueOfQueues.Remove();
-                else
-                {
-                    string move = OpMovesQueueOfQueues.First!.Value.Remove();
-                    switch (move)
-                    {
-                        case Keys.RightKey:
-                            MoveRightOpShape();
-                            break;
-                        case Keys.LeftKey:
-                            MoveLeftOpShape();
-                            break;
-                        case Keys.DownKey:
-                            MoveDownOpShape();
-                            break;
-                        case Keys.RotateKey:
-                            RotateOpShape();
-                            break;
-                        case Keys.SnapDownKey:
-                            SnapDownOpShape();
-                            break;
-                    }
-                }
-            }
-            else
-                OpFallTimer.Stop();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape to the right, if possible.
-        /// </summary>
-        protected override void MoveRightOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.MoveRightShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape to the left, if possible.
-        /// </summary>
-        protected override void MoveLeftOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.MoveLeftShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape down, if possible.
-        /// </summary>
-        protected override void MoveDownOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.MoveDownShape();
-        }
-
-        /// <summary>
-        /// Moves the opponent's shape down, if possible.
-        /// </summary>
-        protected override void SnapDownOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.SnapDownShape();
-        }
-
-        /// <summary>
-        /// Rotates the opponent's shape, applying wall kicks if necessary.
-        /// </summary>
-        protected override void RotateOpShape()
-        {
-            if (OpGameBoard == null) return;
-            OpGameBoard.RotateShape();
         }
         #endregion
     }

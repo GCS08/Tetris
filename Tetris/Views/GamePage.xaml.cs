@@ -10,18 +10,8 @@ public partial class GamePage : ContentPage
     public GamePage(Game game)
 	{
 		InitializeComponent();
-        gpVM = new GamePageVM(game)
-        {
-            GameBoardGrid = GameBoardGrid,
-            OpGameBoardGrid = OpGameBoardGrid
-        };
+        gpVM = new GamePageVM(game, GameBoardGrid, OpGameBoardGrid);
         BindingContext = gpVM;
-        gpVM.InitializeGrid();
-    }
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        gpVM.AddReadyListener();
     }
     protected override void OnDisappearing()
     {

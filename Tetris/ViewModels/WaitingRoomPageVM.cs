@@ -32,15 +32,9 @@ namespace Tetris.ViewModels
         /// Registers event handlers for game updates and sets up a private code if needed.
         /// </summary>
         /// <param name="game">The current game instance.</param>
-        public WaitingRoomPageVM(Game? game)
+        public WaitingRoomPageVM(Game game)
         {
-            if (game == null)
-            {
-                CurrentGame = null!; // intentional
-                return;
-            }
             CurrentGame = game;
-            game.RegisterTimer();
             CurrentGame.OnPlayersChange += OnPlayersChange;
             CurrentGame.OnGameFull += OnGameFull;
             CurrentGame.OnCodeReady += OnCodeReady;
@@ -56,17 +50,9 @@ namespace Tetris.ViewModels
         /// <summary>
         /// Registers listeners needed for the waiting room updates.
         /// </summary>
-        public void AddWaitingRoomListener()
+        public void AddGameListener()
         {
-            CurrentGame.AddWaitingRoomListener();
-        }
-
-        /// <summary>
-        /// Unregisters waiting room listeners.
-        /// </summary>
-        public void RemoveWaitingRoomListener()
-        {
-            CurrentGame.RemoveWaitingRoomListener();
+            CurrentGame.AddGameListener();
         }
 
         #endregion
@@ -100,9 +86,9 @@ namespace Tetris.ViewModels
         /// <summary>
         /// Handles navigation back to the game lobby, leaving the waiting room first.
         /// </summary>
-        private async void NavToGameLobby()
+        private void NavToGameLobby()
         {
-            await CurrentGame.OnPlayerLeaveWR();
+            CurrentGame.OnPlayerLeaveWR();
             _ = Shell.Current.Navigation.PushAsync(new GameLobbyPage());
         }
 

@@ -82,7 +82,6 @@ namespace Tetris.ModelsLogic
                 currentNewGame.MaxPlayersCount,
                 currentNewGame.IsFull,
                 currentNewGame.GameBoard.CurrentShape.Id,
-                currentNewGame.GameBoard.CurrentShape.InGameId,
                 Converters.StringAndColorConverter.ColorToColorName
                     (currentNewGame.GameBoard.CurrentShape.Color),
                 currentNewGame.FirstShapesList,

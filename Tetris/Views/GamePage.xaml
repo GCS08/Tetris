@@ -75,17 +75,17 @@
                         FontSize="30"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
-                        VerticalOptions="Center"
                         Text="{x:Static m:Strings.NoInternetTitle}"
-                        TextColor="Red" />
+                        TextColor="Red"
+                        VerticalOptions="Center" />
                     <Label
-                        FontSize="20"
                         Margin="10"
+                        FontSize="20"
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
-                        VerticalOptions="Center"
                         Text="{x:Static m:Strings.NoInternetText}"
-                        TextColor="Red" />
+                        TextColor="Red"
+                        VerticalOptions="Center" />
                 </VerticalStackLayout>
             </Grid>
 
@@ -116,13 +116,13 @@
                 </Grid.RowDefinitions>
 
                 <Frame
+                    Padding="0,20,0,0"
                     BackgroundColor="Transparent"
-                    Padding="0, 20, 0, 0"
                     BorderColor="Transparent">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <Label
@@ -130,14 +130,14 @@
                             Margin="10"
                             HorizontalOptions="Center"
                             Text="{Binding OpName}"
-                            TextColor="White"/>
+                            TextColor="White" />
 
                         <Grid
-                            Grid.Row="1"
                             x:Name="OpGameBoardGrid"
+                            Grid.Row="1"
                             Margin="10"
                             BackgroundColor="#152b50"
-                            FlowDirection="LeftToRight"/>
+                            FlowDirection="LeftToRight" />
                     </Grid>
                 </Frame>
 
@@ -162,11 +162,18 @@
                             HorizontalOptions="Center"
                             Text="{Binding PlayerName}"
                             TextColor="White" />
-                        <Grid Grid.Row="1" x:Name="GameBoardGrid" BackgroundColor="#152b50" FlowDirection="LeftToRight" />
-                        <Grid Grid.Row="2" HorizontalOptions="Center" FlowDirection="LeftToRight">
+                        <Grid
+                            x:Name="GameBoardGrid"
+                            Grid.Row="1"
+                            BackgroundColor="#152b50"
+                            FlowDirection="LeftToRight" />
+                        <Grid
+                            Grid.Row="2"
+                            FlowDirection="LeftToRight"
+                            HorizontalOptions="Center">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50"/>
-                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
                             </Grid.RowDefinitions>
 
                             <Grid.ColumnDefinitions>
@@ -178,11 +185,46 @@
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
 
-                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="0" Command="{Binding MoveLeftShapeCommand}" Text="{x:Static m:Strings.LeftString}" />
-                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="2" Command="{Binding RotateShapeCommand}" Text="{x:Static m:Strings.RotateString}" />
-                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="0" Grid.Column="4" Command="{Binding MoveRightShapeCommand}" Text="{x:Static m:Strings.RightString}" />
-                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="1" Command="{Binding MoveDownShapeCommand}" Text="{x:Static m:Strings.DownString}" />
-                            <Button Padding="0" Margin="5" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="3" Command="{Binding SnapDownShapeCommand}" Text="{x:Static m:Strings.SnapDownString}" />
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Padding="0"
+                                Command="{Binding MoveLeftShapeCommand}"
+                                Text="{x:Static m:Strings.LeftString}" />
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Padding="0"
+                                Command="{Binding RotateShapeCommand}"
+                                Text="{x:Static m:Strings.RotateString}" />
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="4"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Padding="0"
+                                Command="{Binding MoveRightShapeCommand}"
+                                Text="{x:Static m:Strings.RightString}" />
+                            <Button
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Padding="0"
+                                Command="{Binding MoveDownShapeCommand}"
+                                Text="{x:Static m:Strings.DownString}" />
+                            <Button
+                                Grid.Row="1"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Padding="0"
+                                Command="{Binding SnapDownShapeCommand}"
+                                Text="{x:Static m:Strings.SnapDownString}" />
                         </Grid>
                     </Grid>
                 </Frame>

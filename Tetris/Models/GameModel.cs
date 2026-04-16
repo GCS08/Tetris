@@ -17,7 +17,6 @@ namespace Tetris.Models
             Current?.Services.GetService<IUser>() as User ?? new();
         protected FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
-        protected IDispatcherTimer? OpFallTimer;
         protected IListenerRegistration? ilr;
         protected StartGameTimerSettings startGameTimerSettings = 
             new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
@@ -39,7 +38,6 @@ namespace Tetris.Models
         #region Properties
         protected bool IsGameStarted { get; set; } = false;
         protected bool IsStatsUpdatedOnGameFinished { get; set; } = false;
-        protected ModelsLogic.Queue<ModelsLogic.Queue<string>> OpMovesQueueOfQueues { get; set; } = new();
         public string CubeColor { get; set; } = string.Empty;
         public string CreatorName { get; set; } = string.Empty;
         public int CurrentPlayersCount { get; set; }
@@ -62,13 +60,9 @@ namespace Tetris.Models
 
         #region Public Methods
         public abstract void RegisterTimer();
-        public abstract Task OnPlayerLeaveWR();
-        public abstract void AddWaitingRoomListener();
-        public abstract void RemoveWaitingRoomListener();
+        public abstract void OnPlayerLeaveWR();
         public abstract void AddGameListener();
         public abstract void RemoveGameListener();
-        public abstract void AddReadyListener();
-        public abstract void RemoveReadyListener();
         public abstract void PrepareGame();
         public abstract void StartGame();
         public abstract void MoveRightShape();
@@ -87,18 +81,12 @@ namespace Tetris.Models
         protected abstract void UnregisterTimer();
         protected abstract void OnGameFinishedLogicHandler(object? sender, EventArgs e);
         protected abstract void OnMessageReceived(long timeLeft);
-        protected abstract void OnChangeReady(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void ProcessReadyChange(IDocumentSnapshot snapshot);
         protected abstract void OnChangeGame(IDocumentSnapshot snapshot, Exception error);
         protected abstract void ProcessShapeChange(IDocumentSnapshot snapshot);
         protected abstract void ProcessMoveChange(IDocumentSnapshot snapshot);
-        protected abstract void ApplyOpMove(object? sender, EventArgs e);
-        protected abstract void OnChangeWaitingRoom(IDocumentSnapshot snapshot, Exception error);
+        protected abstract void ProcessWaitingRoomChange(IDocumentSnapshot snapshot);
         protected abstract void OnCompleteChange(ObservableCollection<User> users);
-        protected abstract void MoveRightOpShape();
-        protected abstract void MoveLeftOpShape();
-        protected abstract void MoveDownOpShape();
-        protected abstract void SnapDownOpShape();
-        protected abstract void RotateOpShape();
         #endregion
     }
 }

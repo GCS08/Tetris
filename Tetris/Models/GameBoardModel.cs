@@ -32,7 +32,7 @@ namespace Tetris.Models
         public bool IsOp { get; set; }
         public bool EnableMoves { get; set; } = false;
         public int Score { get; set; } = 0;
-        protected ModelsLogic.Queue<Dictionary<string, int>> QueueOfFinalStates { get; set; } = new();
+        protected ModelsLogic.Queue<Dictionary<string, object>> QueueOfFinalStates { get; set; } = new();
         protected int ComboCount { get; set; } = 1;
         protected Cube[,]? Board { get; set; }
         #endregion
@@ -46,7 +46,7 @@ namespace Tetris.Models
         public abstract void SnapDownShape();
         public abstract void RotateShape();
         public abstract void ShowShape();
-        public abstract void ApplyMovesFromMap(Dictionary<string, int> playerMoveMap);
+        public abstract void ApplyMovesFromMap(Dictionary<string, object> playerMoveMap);
         #endregion
 
         #region Protected Methods

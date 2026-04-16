@@ -52,14 +52,18 @@ public partial class GamePageVM : ObservableObject
     /// Registers event handlers for game readiness, timer updates, and game finish UI.
     /// </summary>
     /// <param name="game">The game instance to bind to this ViewModel.</param>
-    public GamePageVM(Game game)
+    public GamePageVM(Game game, Grid GameBoardGrid, Grid OpGameBoardGrid)
     {
         this.CurrentGame = game;
-        if (game.GameBoard == null || game.OpGameBoard == null) return;
+        this.GameBoardGrid = GameBoardGrid;
+        this.OpGameBoardGrid = OpGameBoardGrid;
+
+        game.RegisterTimer();
         game.OnAllReady += OnAllReadyHandler;
         game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
         game.OnGameFinishedUI += OnGameFinishedUIHandler;
         connectivity.ConnectivityChanged += OnConnectivityChanged;
+        InitializeGrid();
     }
     #endregion
 
@@ -75,14 +79,6 @@ public partial class GamePageVM : ObservableObject
             || GameBoardGrid == null || OpGameBoardGrid == null) return;
         CurrentGame.GameBoard.InitializeGrid(GameBoardGrid);
         CurrentGame.OpGameBoard.InitializeGrid(OpGameBoardGrid);
-    }
-
-    /// <summary>
-    /// Adds a listener for the "ready" event from the game.
-    /// </summary>
-    public void AddReadyListener()
-    {
-        CurrentGame.AddReadyListener();
     }
 
     /// <summary>
