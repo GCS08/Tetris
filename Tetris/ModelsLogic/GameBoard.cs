@@ -35,9 +35,12 @@ namespace Tetris.ModelsLogic
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
             FallTimer.Tick += (s, e) => MoveDownShape();
 
-            PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
-            PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
-            PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+            if (!IsOp)
+            {
+                PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
+                PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
+                PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+            }
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
@@ -64,9 +67,12 @@ namespace Tetris.ModelsLogic
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
             FallTimer.Tick += (s, e) => MoveDownShape();
 
-            PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
-            PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
-            PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+            if (!IsOp)
+            {
+                PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
+                PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
+                PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
+            }
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
@@ -400,7 +406,6 @@ namespace Tetris.ModelsLogic
         /// </summary>
         protected override void ShapeAtBottom()
         {
-            if (User == null) return;
             int linesCleared = CheckForLines();
             if (!IsOp)
             {
@@ -416,7 +421,7 @@ namespace Tetris.ModelsLogic
                 if (PushMovesToFirebaseTimer != null && !PushMovesToFirebaseTimer.IsRunning)
                     PushMovesToFirebaseTimer.Start();
 
-                if (linesCleared > 0)
+                if (linesCleared > 0 && User != null)
                 {
                     SoundManager.PlayLineCleared();
                     User.TotalLines += linesCleared;

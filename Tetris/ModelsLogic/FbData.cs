@@ -429,7 +429,7 @@ namespace Tetris.ModelsLogic
                 {
                     addedOnce = true;
                     _ = docRef.UpdateAsync(
-                        currentPlayersCount == maxPlayersCount ?
+                        currentPlayersCount + 1 == maxPlayersCount ?
                         new Dictionary<string, object>
                         {
                             {Keys.ChangeKey, Keys.WaitingRoomKey },
@@ -789,9 +789,13 @@ namespace Tetris.ModelsLogic
                 Keys.UsersCollectionName).Document(id).GetAsync();
             User user = new()
             {
+                UserID = id,
                 UserName = docSnap.Get<string>(Keys.UserNameKey)!,
+                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey),
+                GamesPlayed = docSnap.Get<int>(Keys.GamesPlayedKey),
                 HighestScore = docSnap.Get<int>(Keys.HighestScoreKey),
-                TotalLines = docSnap.Get<int>(Keys.TotalLinesKey)
+                DateJoined = docSnap.Get<string>(Keys.DateJoinedKey)!,
+                Email = docSnap.Get<string>(Keys.EmailKey)!
             };
             return user;
         }
