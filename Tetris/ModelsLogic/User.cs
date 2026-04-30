@@ -86,6 +86,7 @@ namespace Tetris.ModelsLogic
             DateJoined = Preferences.Get(Keys.DateJoinedKey,
                 DateTime.Now.ToString(TechnicalConsts.DateFormat));
             Email = Preferences.Get(Keys.EmailKey, string.Empty);
+            Password = string.Empty;
         }
 
         #endregion

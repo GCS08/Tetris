@@ -41,12 +41,12 @@ namespace Tetris.ModelsLogic
                 string userId = facl.User.Uid;
                 _ = fs.Collection(Keys.UsersCollectionName).Document(userId).SetAsync(new
                 {
-                    userName,
-                    email,
-                    dateJoined = DateTime.Now.ToString(TechnicalConsts.DateFormat),
-                    gamesPlayed = 0,
-                    highestScore = 0,
-                    totalLinesCleared = 0,
+                    UserName = userName,
+                    Email = email,
+                    DateJoined = DateTime.Now.ToString(TechnicalConsts.DateFormat),
+                    GamesPlayed = 0,
+                    HighestScore = 0,
+                    TotalLinesCleared = 0,
                 });
                 
                 string idToken = await facl.User.GetIdTokenAsync(); 
@@ -257,9 +257,17 @@ namespace Tetris.ModelsLogic
         /// <param name="firstShapeColor">The color of the current shape.</param>
         /// <param name="isPublicGame">Indicates whether the game is public.</param>
         /// <returns>The auto-generated document ID of the newly created game entry.</returns>
-        public override string AddGameToDB(string userID, string creatorName, string cubeColor,
-            int currentPlayersCount, int maxPlayersCount, bool isFull, int firstShapeId,
-            string firstShapeColor, List<Shape> firstShapes, bool isPublicGame)
+        public override string AddGameToDB(
+            string userID, 
+            string creatorName, 
+            string cubeColor,
+            int currentPlayersCount, 
+            int maxPlayersCount, 
+            bool isFull, 
+            int firstShapeId,
+            string firstShapeColor, 
+            List<Shape> firstShapes, 
+            bool isPublicGame)
         {
             // Create a new document reference with an auto-generated ID
             IDocumentReference docRef = fs.Collection(Keys.GamesCollectionName).Document();

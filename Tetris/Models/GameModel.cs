@@ -20,6 +20,8 @@ namespace Tetris.Models
         protected IListenerRegistration? ilr;
         protected StartGameTimerSettings startGameTimerSettings = 
             new(ConstData.TotalGameTimeS * 1000, ConstData.GameTimeIntervalS * 1000);
+        protected bool IsGameStarted = false; 
+        protected bool IsStatsUpdatedOnGameFinished = false;
         #endregion
         
         #region Events
@@ -36,8 +38,6 @@ namespace Tetris.Models
         #endregion
         
         #region Properties
-        protected bool IsGameStarted { get; set; } = false;
-        protected bool IsStatsUpdatedOnGameFinished { get; set; } = false;
         public string CubeColor { get; set; } = string.Empty;
         public string CreatorName { get; set; } = string.Empty;
         public int CurrentPlayersCount { get; set; }

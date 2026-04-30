@@ -11,13 +11,16 @@ namespace Tetris.Models
     public abstract class GameBoardModel
     {
         #region Fields
-        public IDispatcherTimer? FallTimer;
         protected IDispatcherTimer? PushMovesToFirebaseTimer;
         protected FbData fbd = IPlatformApplication.
             Current?.Services.GetService<IFbData>() as FbData ?? new();
         protected SoundManager SoundManager = IPlatformApplication.
             Current?.Services.GetService<ISoundManager>() as SoundManager ?? new();
         protected bool isMoving = false;
+        protected int ComboCount = 1;
+        protected Cube[,]? Board;
+        protected ModelsLogic.Queue<Dictionary
+            <string, object>> QueueOfFinalStates = new();
         #endregion
 
         #region Events
@@ -25,6 +28,7 @@ namespace Tetris.Models
         #endregion
 
         #region Properties
+        public IDispatcherTimer? FallTimer { get; set; }
         public Shape? CurrentShape { get; set; }
         public string? GameID { get; set; }
         public ModelsLogic.Queue<Shape> ShapesQueue { get; set; } = new();
@@ -32,9 +36,6 @@ namespace Tetris.Models
         public bool IsOp { get; set; }
         public bool EnableMoves { get; set; } = false;
         public int Score { get; set; } = 0;
-        protected ModelsLogic.Queue<Dictionary<string, object>> QueueOfFinalStates { get; set; } = new();
-        protected int ComboCount { get; set; } = 1;
-        protected Cube[,]? Board { get; set; }
         #endregion
 
         #region Public Methods

@@ -26,8 +26,7 @@ namespace Tetris.ModelsLogic
                 .MauiContext?.Services.GetService<INotificationManagerService>();
 
             // Subscribe to notification events if service is available
-            if (notificationManager != null)
-                notificationManager.NotificationReceived += OnNotificationReceived;
+            notificationManager?.NotificationReceived += OnNotificationReceived;
         }
 
         #endregion

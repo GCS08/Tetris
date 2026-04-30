@@ -10,15 +10,12 @@ namespace Tetris.Models
     {
         #region Fields
         protected INotificationManagerService? notificationManager;
+        protected PermissionStatus PermissionStatus = Permissions.
+            CheckStatusAsync<Permissions.PostNotifications>().Result;
         #endregion
 
         #region Events
         public EventHandler<NotificationEventArgs>? NotificationReceived;
-        #endregion
-        
-        #region Properties
-        protected PermissionStatus PermissionStatus { get; set; }
-            = Permissions.CheckStatusAsync<Permissions.PostNotifications>().Result;
         #endregion
 
         #region Public Methods

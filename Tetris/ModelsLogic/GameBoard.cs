@@ -344,6 +344,15 @@ namespace Tetris.ModelsLogic
                             CurrentShape.TopLeftX].Color = CurrentShape.Color;
         }
 
+        /// <summary>
+        /// Applies a full shape state update from a received data map.
+        /// This is typically used to synchronize the opponent's board by reconstructing
+        /// the current shape from its serialized state.
+        /// </summary>
+        /// <param name="finalStateMap">
+        /// A dictionary containing the serialized state of the shape, including:
+        /// shape ID, color, rotation index, and position (X, Y).
+        /// </param>
         public override void ApplyMovesFromMap(Dictionary<string, object> finalStateMap)
         {
             if (!IsOp) return;
@@ -360,6 +369,7 @@ namespace Tetris.ModelsLogic
         #endregion
 
         #region Protected Methods
+
         /// <summary>
         /// Determines whether the current shape can move one cell downward on the game board.
         /// The method checks the lowest occupied cell in each column of the shape and verifies
@@ -445,6 +455,11 @@ namespace Tetris.ModelsLogic
             }
         }
 
+        /// <summary>
+        /// Pushes pending final shape states to Firebase.
+        /// If there are queued states, the next one is uploaded.
+        /// If the queue is empty, the push timer is stopped to avoid unnecessary execution.
+        /// </summary>
         protected override void PushMovesToFirebase()
         {
             if (User == null || GameID == null) return;
@@ -513,6 +528,7 @@ namespace Tetris.ModelsLogic
 
             return linesCleared;
         }
+        
         /// <summary>
         /// Removes the current shape from the game board by setting the colors of its occupied cubes to transparent.
         /// </summary>

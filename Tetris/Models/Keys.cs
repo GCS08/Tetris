@@ -6,15 +6,15 @@
     /// </summary>
     public static class Keys
     {
-        public const string UserNameKey = "userName";
-        public const string PasswordKey = "password";
-        public const string EmailKey = "email";
-        public const string TotalLinesKey = "totalLinesCleared";
-        public const string GamesPlayedKey = "gamesPlayed";
-        public const string HighestScoreKey = "highestScore";
-        public const string DateJoinedKey = "dateJoined";
+        public const string UserNameKey = "UserName";
+        public const string PasswordKey = "Password";
+        public const string EmailKey = "Email";
+        public const string TotalLinesKey = "TotalLinesCleared";
+        public const string GamesPlayedKey = "GamesPlayed";
+        public const string HighestScoreKey = "HighestScore";
+        public const string DateJoinedKey = "DateJoined";
         public const string ChangeKey = "Changed";
-        public const string ResetKey = "reset";
+        public const string ResetKey = "Reset";
         public const string FbApiKey = "AIzaSyA7bPSAvpotJs-gSNvMTmwitXrjD-yed_I";
         public const string FbAppDomainKey = "com.meitar.tetris";
         public const string EmailExistsErrorKey = "EMAIL_EXISTS";
