@@ -33,57 +33,59 @@
                     HorizontalOptions="Center"
                     LineBreakMode="WordWrap"
                     Text="{x:Static m:Strings.CreateNewRoomButtonText}" />
-                <!--JoinGameGrid-->
+                <!--  JoinGameGrid  -->
                 <Grid WidthRequest="350">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Entry
-                        Keyboard="Numeric"
-                        TextColor="White"
+                        Grid.Column="0"
                         FontSize="40"
                         HorizontalTextAlignment="Center"
+                        Keyboard="Numeric"
                         Text="{Binding EnteredCode, Mode=TwoWay}"
-                        Grid.Column="1"/>
+                        TextColor="White" />
                     <Button
-                        Grid.Column="0"
+                        Grid.Column="1"
                         Margin="10"
                         Command="{Binding EnterPrivateGameCommand}"
                         FontSize="30"
                         HorizontalOptions="Center"
                         Text="{x:Static m:Strings.JoinGameButtonText}" />
                 </Grid>
-                <CollectionView Margin="20" ItemsSource="{Binding Games}">
+                <CollectionView
+                    Margin="20"
+                    HeightRequest="200"
+                    ItemsSource="{Binding Games}">
                     <CollectionView.EmptyView>
-                        <Grid>
+                        <Grid Margin="0,25,0,0">
                             <Label
+                                Margin="20"
+                                HorizontalOptions="Center"
+                                HorizontalTextAlignment="Center"
                                 Text="{x:Static m:Strings.NoGamesAvailable}"
                                 TextColor="White"
-                                Margin="20"
-                                HorizontalTextAlignment="Center"
-                                VerticalTextAlignment="Center"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"/>
+                                VerticalOptions="Center"
+                                VerticalTextAlignment="Center" />
                         </Grid>
                     </CollectionView.EmptyView>
                     <CollectionView.Header>
                         <Label
                             FontAttributes="Bold"
                             FontSize="23"
-                            HorizontalOptions="End"
                             Text="{x:Static m:Strings.AvailableGamesTitle}"
                             TextColor="White" />
                     </CollectionView.Header>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="m:GameModel">
-                            <!--GameItemGrid-->
-                            <Grid Margin="10">
+                            <!--  GameItemGrid  -->
+                            <Grid Margin="10" FlowDirection="RightToLeft">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1.5*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />

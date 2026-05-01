@@ -170,8 +170,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void MoveRightShape() 
         {
-            if (GameBoard == null) return;
-            GameBoard.MoveRightShape();
+            GameBoard?.MoveRightShape();
         }
 
         /// <summary>
@@ -179,8 +178,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void MoveLeftShape() 
         {
-            if (GameBoard == null) return;
-            GameBoard.MoveLeftShape();
+            GameBoard?.MoveLeftShape();
         }
 
         /// <summary>
@@ -188,8 +186,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void MoveDownShape() 
         {
-            if (GameBoard == null) return;
-            GameBoard.MoveDownShape();
+            GameBoard?.MoveDownShape();
         }
 
         /// <summary>
@@ -197,8 +194,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void SnapDownShape() 
         {
-            if (GameBoard == null) return;
-            GameBoard.SnapDownShape();
+            GameBoard?.SnapDownShape();
         }
 
         /// <summary>
@@ -206,8 +202,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         public override void RotateShape() 
         {
-            if (GameBoard == null) return;
-            GameBoard.RotateShape();
+            GameBoard?.RotateShape();
         }
 
         /// <summary>

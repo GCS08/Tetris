@@ -26,7 +26,8 @@ namespace Tetris.ModelsLogic
                 .MauiContext?.Services.GetService<INotificationManagerService>();
 
             // Subscribe to notification events if service is available
-            notificationManager?.NotificationReceived += OnNotificationReceived;
+            if (notificationManager != null)
+                notificationManager.NotificationReceived += OnNotificationReceived;
         }
 
         #endregion
@@ -39,8 +40,8 @@ namespace Tetris.ModelsLogic
         /// <param name="title">The title of the notification.</param>
         /// <param name="message">The message content of the notification.</param>
         /// <param name="notifyTime">
-        /// Optional. The time at which to display the notification. 
-        /// If <c>null</c>, the notification is sent immediately.
+        ///     Optional. The time at which to display the notification. 
+        ///     If <c>null</c>, the notification is sent immediately.
         /// </param>
         /// <returns>
         /// <c>true</c> if the notification was successfully sent; <c>false</c> if permissions are not granted or the notification manager is unavailable.
