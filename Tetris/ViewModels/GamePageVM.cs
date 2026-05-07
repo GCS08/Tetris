@@ -58,10 +58,10 @@ public partial class GamePageVM : ObservableObject
         this.GameBoardGrid = GameBoardGrid;
         this.OpGameBoardGrid = OpGameBoardGrid;
 
-        game.RegisterTimer();
-        game.OnAllReady += OnAllReadyHandler;
-        game.OnTimeLeftChanged += OnTimeLeftChangedHandler;
-        game.OnGameFinishedUI += OnGameFinishedUIHandler;
+        CurrentGame.RegisterTimer();
+        CurrentGame.OnAllReady += OnAllReadyHandler;
+        CurrentGame.OnTimeLeftChanged += OnTimeLeftChangedHandler;
+        CurrentGame.OnGameFinishedUI += OnGameFinishedUIHandler;
         connectivity.ConnectivityChanged += OnConnectivityChanged;
         InitializeGrid();
     }
