@@ -32,8 +32,8 @@ namespace Tetris.Models
         #endregion
 
         #region Public Methods
-        public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email
-            , string password, string userName, Func<Task, bool> OnCompleteRegister);
+        public abstract Task<bool> CreateUserWithEmailAndPWAsync(string email, 
+            string password, string userName, Func<Task, bool> OnCompleteRegister);
         public abstract Task<bool> SignInWithEmailAndPWAsync(string email, 
             string password, Func<Task, Task<bool>> OnCompleteLogin);
         public abstract void SignOut();
