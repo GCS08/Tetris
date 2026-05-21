@@ -47,13 +47,13 @@ namespace Tetris.Models
         public abstract void SnapDownShape();
         public abstract void RotateShape();
         public abstract void ShowShape();
-        public abstract void ApplyMovesFromMap(Dictionary<string, object> playerMoveMap);
+        public abstract void ApplyFinalState(Dictionary<string, object> playerMoveMap);
         #endregion
 
         #region Protected Methods
         protected abstract bool CanMoveDown();
         protected abstract void ShapeAtBottom();
-        protected abstract void PushMovesToFirebase();
+        protected abstract void PushFinalStatesToFirebase();
         protected abstract bool CheckForLose();
         protected abstract int CheckForLines();
         protected abstract void MoveDownShape(object? sender, ElapsedEventArgs e);

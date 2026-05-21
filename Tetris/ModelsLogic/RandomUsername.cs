@@ -19,7 +19,7 @@ namespace Tetris.ModelsLogic
         /// the response is invalid, or an exception occurs.
         /// </returns>
         /// <remarks>
-        /// - Uses <see cref="HttpClient"/> (assumed to be <c>client</c> in the base class) to perform the request.
+        /// - Uses <see cref="HttpClient"/> (assumed to be client in the base class) to perform the request.
         /// - Parses the JSON response to extract the username.
         /// - Handles network errors, non-success HTTP codes, and parsing exceptions gracefully.
         /// </remarks>

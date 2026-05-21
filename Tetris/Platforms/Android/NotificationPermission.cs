@@ -14,7 +14,7 @@ namespace Tetris.Platforms.Android
         /// Gets the list of Android permissions required for this platform permission.
         /// </summary>
         /// <remarks>
-        /// Only includes <c>Manifest.Permission.PostNotifications</c> on Android 13+ (API 33+),
+        /// Only includes Manifest.Permission.PostNotifications on Android 13+ (API 33+),
         /// and marks it as a runtime permission.
         /// </remarks>
         public override (string androidPermission, bool isRuntime)[] RequiredPermissions

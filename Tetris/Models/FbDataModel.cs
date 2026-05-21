@@ -57,7 +57,7 @@ namespace Tetris.Models
         public abstract void AddShape(Shape currentShape, string gameId);
         public abstract Shape CreateShape(IDocumentSnapshot snapshot);
         public abstract Task UploadFinalState(string userID, string gameID,
-            Dictionary<string, object> movesQueue);
+            Dictionary<string, object> finalState);
         public abstract IListenerRegistration? AddGameListener(string gameID,
         Plugin.CloudFirestore.DocumentSnapshotHandler OnChange);
         public abstract void SetPlayerReady(string gameID, 

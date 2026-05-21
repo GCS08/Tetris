@@ -27,7 +27,7 @@ namespace Tetris.ModelsLogic
         /// <summary>
         /// Determines whether the queue is empty.
         /// </summary>
-        /// <returns><c>true</c> if the queue contains no elements; otherwise, <c>false</c>.</returns>
+        /// <returns>true if the queue contains no elements; otherwise, false.</returns>
         public override bool IsEmpty()
         {
             return Count == 0;
@@ -53,7 +53,7 @@ namespace Tetris.ModelsLogic
         /// Removes and returns the element at the head (front) of the queue.
         /// </summary>
         /// <returns>
-        /// The value of the removed element, or <c>default</c> if the queue is empty.
+        /// The value of the removed element, or default if the queue is empty.
         /// </returns>
         public override T Remove()
         {

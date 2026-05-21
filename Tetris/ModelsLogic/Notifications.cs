@@ -41,10 +41,10 @@ namespace Tetris.ModelsLogic
         /// <param name="message">The message content of the notification.</param>
         /// <param name="notifyTime">
         ///     Optional. The time at which to display the notification. 
-        ///     If <c>null</c>, the notification is sent immediately.
+        ///     If null, the notification is sent immediately.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the notification was successfully sent; <c>false</c> if permissions are not granted or the notification manager is unavailable.
+        /// true if the notification was successfully sent; false if permissions are not granted or the notification manager is unavailable.
         /// </returns>
         public override bool PushNotification(string title, string message, DateTime? notifyTime = null)
         {
@@ -69,7 +69,7 @@ namespace Tetris.ModelsLogic
         /// <param name="selectedTime">The time (hours and minutes) for the reminder.</param>
         /// <param name="selectedSeconds">The seconds portion as a string. Non-numeric values are treated as 0.</param>
         /// <returns>
-        /// <c>true</c> if the reminder was successfully scheduled in the future; <c>false</c> if the calculated time is in the past.
+        /// true if the reminder was successfully scheduled in the future; false if the calculated time is in the past.
         /// </returns>
         public override bool ScheduleReminder(DateTime selectedDate, TimeSpan selectedTime, string selectedSeconds)
         {

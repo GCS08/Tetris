@@ -298,28 +298,6 @@ namespace Tetris.ModelsLogic
         }
 
         /// <summary>
-        /// Called when a snapshot of the "ready" state changes in the database. 
-        /// Checks if all players are ready and raises OnAllReady if so.
-        /// </summary>
-        /// <param name="snapshot">
-        /// The Firestore document snapshot containing current ready states of all players.
-        /// May be null if an error occurred or document is missing.
-        /// </param>
-        protected override void ProcessReadyChange(IDocumentSnapshot? snapshot)
-        {
-            if (snapshot == null) return;
-            bool allReady = true;
-            for (int i = 0; i < MaxPlayersCount && allReady; i++)
-            {
-                if (!snapshot.Get<bool>(Keys.PlayerDetailsKey + i + 
-                    TechnicalConsts.DotSign + Keys.IsPlayerReadyKey))
-                    allReady = false;
-            }
-            if (allReady)
-                OnAllReady?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
         /// Called when a snapshot of the main game document changes in the database.
         /// Handles opponent moves, updates shapes queues, and starts the opponent timer if needed.
         /// </summary>
@@ -346,6 +324,28 @@ namespace Tetris.ModelsLogic
                 case Keys.ResetKey:
                     break;// no moves or the player who made the move is the current player, so ignore.
             }
+        }
+
+        /// <summary>
+        /// Called when a snapshot of the "ready" state changes in the database. 
+        /// Checks if all players are ready and raises OnAllReady if so.
+        /// </summary>
+        /// <param name="snapshot">
+        /// The Firestore document snapshot containing current ready states of all players.
+        /// May be null if an error occurred or document is missing.
+        /// </param>
+        protected override void ProcessReadyChange(IDocumentSnapshot? snapshot)
+        {
+            if (snapshot == null) return;
+            bool allReady = true;
+            for (int i = 0; i < MaxPlayersCount && allReady; i++)
+            {
+                if (!snapshot.Get<bool>(Keys.PlayerDetailsKey + i + 
+                    TechnicalConsts.DotSign + Keys.IsPlayerReadyKey))
+                    allReady = false;
+            }
+            if (allReady)
+                OnAllReady?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -393,7 +393,7 @@ namespace Tetris.ModelsLogic
                 Dictionary<string, object> finalStateMap = snapshot.Get<Dictionary<string, object>>
                     (Keys.PlayerDetailsKey + DesiredIndex + TechnicalConsts.DotSign + Keys.FinalStateKey) ?? [];
 
-                OpGameBoard?.ApplyMovesFromMap(finalStateMap);
+                OpGameBoard?.ApplyFinalState(finalStateMap);
             }
         }
 

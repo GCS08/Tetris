@@ -35,12 +35,10 @@ namespace Tetris.ModelsLogic
             FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
             FallTimer.Tick += (s, e) => MoveDownShape();
 
-            if (!IsOp)
-            {
-                PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
-                PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
-                PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
-            }
+            PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
+            PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
+            PushMovesToFirebaseTimer.Tick += (s, e) => PushFinalStatesToFirebase();
+            
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
@@ -62,17 +60,6 @@ namespace Tetris.ModelsLogic
             Board = new Cube[ConstData.GameGridRowCount, ConstData.GameGridColumnCount];
             this.IsOp = IsOp;
             this.GameID = gameId;
-
-            FallTimer = Application.Current!.Dispatcher.CreateTimer();
-            FallTimer.Interval = TimeSpan.FromSeconds(ConstData.ShapeFallIntervalS);
-            FallTimer.Tick += (s, e) => MoveDownShape();
-
-            if (!IsOp)
-            {
-                PushMovesToFirebaseTimer = Application.Current!.Dispatcher.CreateTimer();
-                PushMovesToFirebaseTimer.Interval = TimeSpan.FromSeconds(ConstData.PushMovesToFirebaseInterval);
-                PushMovesToFirebaseTimer.Tick += (s, e) => PushMovesToFirebase();
-            }
 
             for (int r = 0; r < ConstData.GameGridRowCount; r++)
                 for (int c = 0; c < ConstData.GameGridColumnCount; c++)
@@ -353,7 +340,7 @@ namespace Tetris.ModelsLogic
         /// A dictionary containing the serialized state of the shape, including:
         /// shape ID, color, rotation index, and position (X, Y).
         /// </param>
-        public override void ApplyMovesFromMap(Dictionary<string, object> finalStateMap)
+        public override void ApplyFinalState(Dictionary<string, object> finalStateMap)
         {
             if (!IsOp) return;
             CurrentShape = new(
@@ -365,7 +352,6 @@ namespace Tetris.ModelsLogic
             ShowShape();
             ShapeAtBottom();
         }
-
         #endregion
 
         #region Protected Methods
@@ -460,7 +446,7 @@ namespace Tetris.ModelsLogic
         /// If there are queued states, the next one is uploaded.
         /// If the queue is empty, the push timer is stopped to avoid unnecessary execution.
         /// </summary>
-        protected override void PushMovesToFirebase()
+        protected override void PushFinalStatesToFirebase()
         {
             if (User == null || GameID == null) return;
             if (!QueueOfFinalStates.IsEmpty())

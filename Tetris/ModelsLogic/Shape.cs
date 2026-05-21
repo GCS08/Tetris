@@ -78,7 +78,7 @@ namespace Tetris.ModelsLogic
         /// </summary>
         /// <returns>
         /// A new <see cref="Shape"/> instance with the same Id, InGameId, and <see cref="Color"/>.
-        /// Returns <c>null</c> if the original shape's color is <c>null</c>.
+        /// Returns null if the original shape's color is null.
         /// </returns>
         public override Shape Duplicate()
         {
