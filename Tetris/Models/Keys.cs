@@ -6,6 +6,7 @@
     /// </summary>
     public static class Keys
     {
+        #region Fields
         public const string UserNameKey = "UserName";
         public const string PasswordKey = "Password";
         public const string EmailKey = "Email";
@@ -77,5 +78,6 @@
         public const string X = "X";
         public const string Y = "Y";
         public const string RotationIndex = "RotationIndex";
+        #endregion
     }
 }

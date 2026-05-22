@@ -5,6 +5,7 @@
     /// </summary>
     public static class Icons
     {
+        #region Fields
         public const string Delete = "\ue872";
         public const string Restore_from_trash = "\ue938";
         public const string Delete_forever = "\ue92b";
@@ -3430,5 +3431,6 @@
         public const string Digit_seven = "\u0037";
         public const string Digit_eight = "\u0038";
         public const string Digit_nine = "\u0039";
+        #endregion
     }
 }
