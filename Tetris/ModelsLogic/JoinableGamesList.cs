@@ -123,7 +123,10 @@ namespace Tetris.ModelsLogic
             foreach (Game game in newList)
                 GamesObsCollection.Add(game);
 
-            OnGamesChanged?.Invoke(this, EventArgs.Empty);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnGamesChanged?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         #endregion

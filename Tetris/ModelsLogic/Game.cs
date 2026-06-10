@@ -228,7 +228,10 @@ namespace Tetris.ModelsLogic
                 success = await fbd.SetPrivateJoinCode(GameID, code);
             }
             PrivateJoinCode = code;
-            OnCodeReady?.Invoke(this, EventArgs.Empty);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnCodeReady?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         /// <summary>
@@ -273,7 +276,10 @@ namespace Tetris.ModelsLogic
             GameBoard.FallTimer.Stop();
             GameBoard.EnableMoves = false;
             OpGameBoard.EnableMoves = false;
-            OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnGameFinishedUI?.Invoke(sender as GameBoard, EventArgs.Empty);
+            });
         }
 
         /// <summary>
@@ -345,7 +351,10 @@ namespace Tetris.ModelsLogic
                     allReady = false;
             }
             if (allReady)
-                OnAllReady?.Invoke(this, EventArgs.Empty);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    OnAllReady?.Invoke(this, EventArgs.Empty);
+                });
         }
 
         /// <summary>
@@ -425,7 +434,10 @@ namespace Tetris.ModelsLogic
             foreach (User user in users) { UsersInGame.Add(user); }
 
             if (!IsFull)
-                OnPlayersChange?.Invoke(this, EventArgs.Empty);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    OnPlayersChange?.Invoke(this, EventArgs.Empty);
+                });
             else
             {
                 if (GameBoard == null || OpGameBoard == null || User == null) return;
@@ -435,7 +447,10 @@ namespace Tetris.ModelsLogic
                 foreach (User user in UsersInGame)
                     if (user.UserID != User.UserID)
                         OpGameBoard.User = user;
-                OnGameFull?.Invoke(this, EventArgs.Empty);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    OnGameFull?.Invoke(this, EventArgs.Empty);
+                });
             }
         }
         #endregion

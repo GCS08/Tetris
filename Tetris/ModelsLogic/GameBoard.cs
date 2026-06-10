@@ -429,7 +429,10 @@ namespace Tetris.ModelsLogic
             }
 
             if (CheckForLose())
-                OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    OnGameFinishedLogic?.Invoke(this, EventArgs.Empty);
+                });
             else
             {
                 if (ShapesQueue == null || CurrentShape == null || GameID == null || IsOp) return;

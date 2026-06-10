@@ -128,7 +128,10 @@ namespace Tetris.Platforms.Android
                 Title = title,
                 Message = message,
             };
-            Instance?.NotificationReceived?.Invoke(null, args);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Instance?.NotificationReceived?.Invoke(null, args);
+            });
         }
 
         #endregion

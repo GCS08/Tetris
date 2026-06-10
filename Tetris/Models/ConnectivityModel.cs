@@ -40,7 +40,10 @@
                 if (_isConnected != value)
                 {
                     _isConnected = value;
-                    ConnectivityChanged?.Invoke(this, EventArgs.Empty);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ConnectivityChanged?.Invoke(this, EventArgs.Empty);
+                    });
                 }
             }
         }
